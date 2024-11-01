@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'firebase_options.dart';
 import 'find_unique_trades.dart';
 
-
 void main() async {
-  //WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
+  await fetchDocumentsTESTING();
   runApp(const meme_hunter());
 }
 
@@ -69,12 +70,13 @@ class MemeHunterPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
           ),
-          ElevatedButton(
-            onPressed: () {
-              fetchUniqueTrades();
-            },
-            child: Text('testing'),
-          ),
+          // LayoutBuilder(
+          //   builder: (context, constraints) {
+          //     // Use constraints.maxWidth and constraints.maxHeight
+          //
+          //     return TokensDataTable();
+          //   },
+          // ),
         ],
       ),
     );
