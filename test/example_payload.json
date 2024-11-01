@@ -1,0 +1,3159 @@
+{
+  "data": {
+    "EVM": {
+      "DEXTradeByTokens": [
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped Ether",
+              "Symbol": "WETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "77620"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Tether USD",
+              "Symbol": "USDT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "8274"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "USD Coin",
+              "Symbol": "USDC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "7471"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Tee_Hee_He",
+              "Symbol": "TEE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "3397"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped QUIL",
+              "Symbol": "wQUIL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1666"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Ethereum",
+              "Symbol": "ETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1576"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TeaDog",
+              "Symbol": "TEA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1511"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Daram",
+              "Symbol": "Daram"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1444"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "RIP SOL",
+              "Symbol": "RIPSOL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1266"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Mascot of Bitcoin",
+              "Symbol": "BLAND"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1210"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TITAN X",
+              "Symbol": "TITANX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1174"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SPX6900",
+              "Symbol": "SPX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1167"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Hoppy",
+              "Symbol": "HOPPY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1157"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped BTC",
+              "Symbol": "WBTC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1150"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Swag",
+              "Symbol": "SWAG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1126"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MAGA",
+              "Symbol": "TRUMP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1083"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Computer Assisted Biologically Augmented Lifeform",
+              "Symbol": "CABAL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1039"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Mr HATS",
+              "Symbol": "HATS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "1015"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Vatican Mascot",
+              "Symbol": "LUCE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "988"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MAGA",
+              "Symbol": "MAGA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "950"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Department Of Government Efficiency",
+              "Symbol": "DOGE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "937"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Beans Finance",
+              "Symbol": "BEANS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "930"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Shiba Wing",
+              "Symbol": "WING"
+            }
+          },
+          "tradesCountWithUniqueTraders": "921"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "New Mascot of The Holy Church",
+              "Symbol": "TENEBRO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "892"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Copium",
+              "Symbol": "COPIUM"
+            }
+          },
+          "tradesCountWithUniqueTraders": "881"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Realio Network",
+              "Symbol": "RIO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "815"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "",
+              "Symbol": ""
+            }
+          },
+          "tradesCountWithUniqueTraders": "748"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Ethervista",
+              "Symbol": "VISTA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "744"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dognald Trump",
+              "Symbol": "DOGNALD"
+            }
+          },
+          "tradesCountWithUniqueTraders": "734"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SPEEDY",
+              "Symbol": "$SPEEDY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "727"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Shiba $Wing",
+              "Symbol": "WING"
+            }
+          },
+          "tradesCountWithUniqueTraders": "719"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Invesdao",
+              "Symbol": "iDAO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "692"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Bork",
+              "Symbol": "BORK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "689"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Mog Coin",
+              "Symbol": "Mog"
+            }
+          },
+          "tradesCountWithUniqueTraders": "656"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MSTR2100",
+              "Symbol": "MSTR"
+            }
+          },
+          "tradesCountWithUniqueTraders": "656"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "47th President of the United States",
+              "Symbol": "TRUMP47"
+            }
+          },
+          "tradesCountWithUniqueTraders": "655"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dai Stablecoin",
+              "Symbol": "DAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "614"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pepe",
+              "Symbol": "PEPE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "569"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SPX6900 2.0",
+              "Symbol": "SPX2.0"
+            }
+          },
+          "tradesCountWithUniqueTraders": "561"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pepe Copium",
+              "Symbol": "COPIUM"
+            }
+          },
+          "tradesCountWithUniqueTraders": "537"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Apu Apustaja",
+              "Symbol": "APU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "535"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MOO DENG",
+              "Symbol": "MOODENG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "510"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Block",
+              "Symbol": "BLOCK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "506"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Momo Magic Cat",
+              "Symbol": "MOMO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "505"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Coinbase Wrapped Staked ETH",
+              "Symbol": "cbETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "481"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Gobby",
+              "Symbol": "GOBBY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "479"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "HarryPotterObamaSonic10Inu",
+              "Symbol": "BITCOIN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "474"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ApeCoin",
+              "Symbol": "APE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "461"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Goatseus Maximus",
+              "Symbol": "GOAT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "455"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Ethcoin",
+              "Symbol": "ETHC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "446"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Zero1 Token",
+              "Symbol": "DEAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "442"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ERC837",
+              "Symbol": "ERC837"
+            }
+          },
+          "tradesCountWithUniqueTraders": "431"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Tee_Hee_He",
+              "Symbol": "HEE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "422"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Mascot Halloween",
+              "Symbol": "BAT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "420"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped liquid staked Ether 2.0",
+              "Symbol": "wstETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "418"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DOG",
+              "Symbol": "$DOG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "412"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Klaus",
+              "Symbol": "KLAUS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "412"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Neiro",
+              "Symbol": "Neiro"
+            }
+          },
+          "tradesCountWithUniqueTraders": "407"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DOGE MASCOT",
+              "Symbol": "SHIBU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "399"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Smart Donna",
+              "Symbol": "DONNA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "396"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PeiPei",
+              "Symbol": "PEIPEI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "395"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "pepeCoin",
+              "Symbol": "pepecoin"
+            }
+          },
+          "tradesCountWithUniqueTraders": "381"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Neiro",
+              "Symbol": "NEIRO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "380"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Balkan Dwarf",
+              "Symbol": "Kekec"
+            }
+          },
+          "tradesCountWithUniqueTraders": "376"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Eigen",
+              "Symbol": "EIGEN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "371"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DragonX",
+              "Symbol": "DRAGONX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "362"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Reddit Mascot",
+              "Symbol": "SNOO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "356"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Performance AI",
+              "Symbol": "PAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "346"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Donald Trump",
+              "Symbol": "DJT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "343"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Janet",
+              "Symbol": "JANET"
+            }
+          },
+          "tradesCountWithUniqueTraders": "337"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "We are garbage",
+              "Symbol": "GARBAGE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "336"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Liquid staked Ether 2.0",
+              "Symbol": "stETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "336"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Frogs",
+              "Symbol": "Frogs"
+            }
+          },
+          "tradesCountWithUniqueTraders": "334"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "GameStop",
+              "Symbol": "GME"
+            }
+          },
+          "tradesCountWithUniqueTraders": "326"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "cherrypicksAI",
+              "Symbol": "CHERRY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "322"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MemeCoinGirl",
+              "Symbol": "MIKO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "311"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Destra Network",
+              "Symbol": "DSync"
+            }
+          },
+          "tradesCountWithUniqueTraders": "311"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped TAO",
+              "Symbol": "wTAO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "306"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "VOLT.WIN",
+              "Symbol": "VOLT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "305"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Doggo",
+              "Symbol": "DOGGO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "301"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SHIBA INU",
+              "Symbol": "SHIB"
+            }
+          },
+          "tradesCountWithUniqueTraders": "299"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "",
+              "Symbol": "PUNK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "299"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Andy",
+              "Symbol": "ANDY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "298"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Trump Vance",
+              "Symbol": "47"
+            }
+          },
+          "tradesCountWithUniqueTraders": "297"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dione",
+              "Symbol": "Dione"
+            }
+          },
+          "tradesCountWithUniqueTraders": "293"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Kabosu",
+              "Symbol": "KABOSU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "291"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "OPENAI MASCOT",
+              "Symbol": "$SKY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "286"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ChainLink Token",
+              "Symbol": "LINK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "282"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PIPI",
+              "Symbol": "PIPI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "282"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MOG CAT",
+              "Symbol": "MOG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "278"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "America Pac",
+              "Symbol": "PAC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "278"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "USDe",
+              "Symbol": "USDe"
+            }
+          },
+          "tradesCountWithUniqueTraders": "276"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Baby Pepe",
+              "Symbol": "BABYPEPE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "276"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Kendu Inu",
+              "Symbol": "Kendu"
+            }
+          },
+          "tradesCountWithUniqueTraders": "271"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "pufETH",
+              "Symbol": "pufETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "271"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "KAMALA HARRIS",
+              "Symbol": "HARRIS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "270"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Elon Trump Forever",
+              "Symbol": "ETF"
+            }
+          },
+          "tradesCountWithUniqueTraders": "268"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TRUMP MAGA",
+              "Symbol": "MAGA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "266"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped SOL",
+              "Symbol": "SOL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "260"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Year of the Snake",
+              "Symbol": "SHE  "
+            }
+          },
+          "tradesCountWithUniqueTraders": "259"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Oscar",
+              "Symbol": "OSCAR"
+            }
+          },
+          "tradesCountWithUniqueTraders": "257"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Beam",
+              "Symbol": "BEAM"
+            }
+          },
+          "tradesCountWithUniqueTraders": "256"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PAAL AI",
+              "Symbol": "$PAAL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "256"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Aped",
+              "Symbol": "APED"
+            }
+          },
+          "tradesCountWithUniqueTraders": "255"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Non-Playable Coin",
+              "Symbol": "NPC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "255"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BONZI",
+              "Symbol": "BONZI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "253"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Matic Token",
+              "Symbol": "MATIC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "251"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Martian Dog",
+              "Symbol": "MARVIN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "250"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Doland Tremp",
+              "Symbol": "TREMP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "249"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "QQQ6900",
+              "Symbol": "QQQ"
+            }
+          },
+          "tradesCountWithUniqueTraders": "247"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Landwolf",
+              "Symbol": "WOLF"
+            }
+          },
+          "tradesCountWithUniqueTraders": "246"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Turbo",
+              "Symbol": "TURBO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "246"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Brett",
+              "Symbol": "BRETT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "246"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Rivet",
+              "Symbol": "RIVET"
+            }
+          },
+          "tradesCountWithUniqueTraders": "244"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Autistic Intelligence",
+              "Symbol": "AI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "243"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Donarudo Torunp",
+              "Symbol": "TORUNP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "242"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Strawberry AI",
+              "Symbol": "BERRY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "241"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "GPS Scanner",
+              "Symbol": "GPS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "239"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "",
+              "Symbol": "EV"
+            }
+          },
+          "tradesCountWithUniqueTraders": "239"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Google Cat",
+              "Symbol": "MOMO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "237"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Trump47",
+              "Symbol": "POTUS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "236"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "swETH",
+              "Symbol": "swETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "233"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BOBO",
+              "Symbol": "BOBO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "230"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Star Dogs",
+              "Symbol": "STARS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "229"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PepeFork",
+              "Symbol": "PORK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "227"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "$69,420.69",
+              "Symbol": "69420"
+            }
+          },
+          "tradesCountWithUniqueTraders": "225"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BEBE",
+              "Symbol": "BEBE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "224"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "EVTerminal",
+              "Symbol": "EV"
+            }
+          },
+          "tradesCountWithUniqueTraders": "224"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Mars",
+              "Symbol": "MARS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "224"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Clearpool",
+              "Symbol": "CPOOL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "224"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Microsoft 6900",
+              "Symbol": "MSFT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "221"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "C1337",
+              "Symbol": "CLT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "218"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Collaborative Autists Building Autonomous Liquidity",
+              "Symbol": "CABAL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "217"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "A.P.E. AI",
+              "Symbol": "APET"
+            }
+          },
+          "tradesCountWithUniqueTraders": "216"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Fist Pump Trump",
+              "Symbol": "FTP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "215"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SORA GROK",
+              "Symbol": "GROK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "214"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pup Is Looking",
+              "Symbol": "PUPIL "
+            }
+          },
+          "tradesCountWithUniqueTraders": "213"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Book of Ethereum",
+              "Symbol": "BOOE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "213"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Sync327",
+              "Symbol": "SYNC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "210"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Trump Vance 2024",
+              "Symbol": "TRUMP VANCE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "209"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ENA",
+              "Symbol": "ENA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "206"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Orange Elephant Republican Mascot",
+              "Symbol": "OREL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "205"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Jomon Inu",
+              "Symbol": "JOMON"
+            }
+          },
+          "tradesCountWithUniqueTraders": "202"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "THECAT",
+              "Symbol": "THECAT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "202"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Draggy",
+              "Symbol": "DRAGGY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "202"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wojak Coin",
+              "Symbol": "WOJAK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "201"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Flying Avocado Cat",
+              "Symbol": "FAC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "199"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "basedAI",
+              "Symbol": "basedAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "199"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Usual USD",
+              "Symbol": "USD0"
+            }
+          },
+          "tradesCountWithUniqueTraders": "198"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TRUMP MEME",
+              "Symbol": "MEME"
+            }
+          },
+          "tradesCountWithUniqueTraders": "197"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Comedian",
+              "Symbol": "Ban"
+            }
+          },
+          "tradesCountWithUniqueTraders": "196"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "USD0 Liquid Bond",
+              "Symbol": "USD0++"
+            }
+          },
+          "tradesCountWithUniqueTraders": "196"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Tee_Hee_He Frog",
+              "Symbol": "RALPH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "196"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Book of Meme 3.0",
+              "Symbol": "BOME"
+            }
+          },
+          "tradesCountWithUniqueTraders": "195"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Hana",
+              "Symbol": "HANA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "194"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Morphware",
+              "Symbol": "XMW"
+            }
+          },
+          "tradesCountWithUniqueTraders": "194"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DJT4700\u00a0",
+              "Symbol": "$DJT4700"
+            }
+          },
+          "tradesCountWithUniqueTraders": "193"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BOME TRUMP",
+              "Symbol": "TRUMP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "190"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Copium",
+              "Symbol": "Copium"
+            }
+          },
+          "tradesCountWithUniqueTraders": "190"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Marvin Inu",
+              "Symbol": "Marvin"
+            }
+          },
+          "tradesCountWithUniqueTraders": "190"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Fefe",
+              "Symbol": "FEFE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "189"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Neiro Pump",
+              "Symbol": "NEIRO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "188"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Boppy The Bat",
+              "Symbol": "BOPPY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "187"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MIFFY THE RABBIT",
+              "Symbol": "Miffy"
+            }
+          },
+          "tradesCountWithUniqueTraders": "186"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "NodeAI",
+              "Symbol": "GPU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "185"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Fideum",
+              "Symbol": "FI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "184"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "AMATERASU OMIKAMI",
+              "Symbol": "OMIKAMI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "183"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "CSI888",
+              "Symbol": "CSI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "183"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Virtual Protocol",
+              "Symbol": "VIRTUAL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "182"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Autonolas",
+              "Symbol": "OLAS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "182"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PUFFER",
+              "Symbol": "PUFFER"
+            }
+          },
+          "tradesCountWithUniqueTraders": "182"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Joe Coin",
+              "Symbol": "JOE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "180"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Empyreal",
+              "Symbol": "EMP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "179"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Tao Ce\u03c4i",
+              "Symbol": "CETI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "178"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pochita",
+              "Symbol": "POCHITA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "178"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Doge NFT",
+              "Symbol": "DOG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "177"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Render Token",
+              "Symbol": "RNDR"
+            }
+          },
+          "tradesCountWithUniqueTraders": "177"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Ondo",
+              "Symbol": "ONDO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "177"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Chintai Exchange Token",
+              "Symbol": "CHEX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "177"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Grimace",
+              "Symbol": "GRIMACE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "176"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Miza AI",
+              "Symbol": "MIZA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "175"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Fetch",
+              "Symbol": "FET"
+            }
+          },
+          "tradesCountWithUniqueTraders": "175"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Uniswap",
+              "Symbol": "UNI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "173"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Kekistan",
+              "Symbol": "KEK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "170"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Aave Token",
+              "Symbol": "AAVE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "169"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "LCX",
+              "Symbol": "LCX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "167"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "First City in Mars",
+              "Symbol": "TERMINUS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "166"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Coinbase Wrapped BTC",
+              "Symbol": "cbBTC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "165"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Sanin",
+              "Symbol": "SANIN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "165"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped eETH",
+              "Symbol": "weETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "164"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Gou",
+              "Symbol": "GOU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "164"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Doom Bot",
+              "Symbol": "Doom"
+            }
+          },
+          "tradesCountWithUniqueTraders": "163"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Super Trump",
+              "Symbol": "STRUMP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "162"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TRUMP DOGS",
+              "Symbol": "DOGS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "162"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "NeuralAI",
+              "Symbol": "NEURAL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "162"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BananaCat",
+              "Symbol": "BCAT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "157"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Saitama Inu",
+              "Symbol": "SAITAMA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "157"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "LOTUS",
+              "Symbol": "LOTUS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "155"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Fight to MAGA",
+              "Symbol": "FIGHT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "154"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "0x0.ai: AI Smart Contract Auditor",
+              "Symbol": "0x0"
+            }
+          },
+          "tradesCountWithUniqueTraders": "151"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Rollbit Coin",
+              "Symbol": "RLB"
+            }
+          },
+          "tradesCountWithUniqueTraders": "151"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Popcat (ERC)",
+              "Symbol": "POPCAT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "150"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Izzy",
+              "Symbol": "IZZY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "149"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pendle",
+              "Symbol": "PENDLE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "149"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "OpenLM RevShare Token",
+              "Symbol": "OLM"
+            }
+          },
+          "tradesCountWithUniqueTraders": "148"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Memecoin",
+              "Symbol": "MEME"
+            }
+          },
+          "tradesCountWithUniqueTraders": "148"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Doge Mascot",
+              "Symbol": "SHIBU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "147"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ParallelAI",
+              "Symbol": "PAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "147"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "COFFEE",
+              "Symbol": "COFFEE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "147"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "RyuJin",
+              "Symbol": "RYU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "145"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TrumpCat",
+              "Symbol": "TrumpCat"
+            }
+          },
+          "tradesCountWithUniqueTraders": "145"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Renzo Restaked ETH",
+              "Symbol": "ezETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "143"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dog Killer",
+              "Symbol": "DK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "142"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Nelson the Bull Terrier",
+              "Symbol": "WALTER"
+            }
+          },
+          "tradesCountWithUniqueTraders": "142"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "TRUTH",
+              "Symbol": "TRUTH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "142"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "GPUx64 Mining",
+              "Symbol": "GPUX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "139"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "OpenAI Mascot",
+              "Symbol": "SKY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "139"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "HashAI",
+              "Symbol": "HashAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "138"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Lombard Staked Bitcoin",
+              "Symbol": "LBTC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "138"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DowJones6900",
+              "Symbol": "DJIA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "138"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wrapped TON Coin",
+              "Symbol": "TONCOIN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "136"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "INFERNO",
+              "Symbol": "INF"
+            }
+          },
+          "tradesCountWithUniqueTraders": "136"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "FUNGUY",
+              "Symbol": "FNGY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "135"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "47th President of the United States",
+              "Symbol": "KAMALA47"
+            }
+          },
+          "tradesCountWithUniqueTraders": "134"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Magnificent 7777",
+              "Symbol": "MAGIC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "132"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DogeX",
+              "Symbol": "DogeX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "132"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "FWOG",
+              "Symbol": "FWOG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "132"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "flip flop floop",
+              "Symbol": "floop"
+            }
+          },
+          "tradesCountWithUniqueTraders": "131"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Anonymous AI",
+              "Symbol": "ANON"
+            }
+          },
+          "tradesCountWithUniqueTraders": "130"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Real Smurf Cat",
+              "Symbol": "\u0448\u0430\u0439\u043b\u0443\u0448\u0430\u0439"
+            }
+          },
+          "tradesCountWithUniqueTraders": "129"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "REDDIT MASCOT",
+              "Symbol": "SNOO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "128"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Element 280",
+              "Symbol": "ELMNT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "128"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Jesus Coin",
+              "Symbol": "JESUS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "127"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Curve.Fi USD Stablecoin",
+              "Symbol": "crvUSD"
+            }
+          },
+          "tradesCountWithUniqueTraders": "125"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Titan Farms Incentive Token",
+              "Symbol": "TINC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "125"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Roaring Kitty",
+              "Symbol": "$ROAR"
+            }
+          },
+          "tradesCountWithUniqueTraders": "124"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Prime",
+              "Symbol": "PRIME"
+            }
+          },
+          "tradesCountWithUniqueTraders": "124"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "AI Marvin",
+              "Symbol": "AIMARVIN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "123"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wat",
+              "Symbol": "WAT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "123"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Very Stable Genius",
+              "Symbol": "VSG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "122"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Aethir Token",
+              "Symbol": "ATH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "122"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SOON EV AI",
+              "Symbol": "SOON"
+            }
+          },
+          "tradesCountWithUniqueTraders": "121"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Google Cat",
+              "Symbol": "MOMO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "121"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Copium",
+              "Symbol": "COPE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "121"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "trumpwifhat",
+              "Symbol": "TWIF"
+            }
+          },
+          "tradesCountWithUniqueTraders": "120"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Banana",
+              "Symbol": "BANANA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "118"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "GURU Token",
+              "Symbol": "GURU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "118"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ether.fi governance token",
+              "Symbol": "ETHFI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "117"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Sendr",
+              "Symbol": "SENDR"
+            }
+          },
+          "tradesCountWithUniqueTraders": "117"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Kabosu",
+              "Symbol": "Kabosu"
+            }
+          },
+          "tradesCountWithUniqueTraders": "117"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Oggie",
+              "Symbol": "OGGIE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "116"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Business Coin",
+              "Symbol": "BUSINESS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "116"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Joma",
+              "Symbol": "JOMA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "116"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ETHEREUM IS GOOD",
+              "Symbol": "EBULL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "115"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Wheelchair Cat",
+              "Symbol": "CRIPPL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "115"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Blobby the Blob Fish",
+              "Symbol": "BLOBBY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "114"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Artificial General Intelligence",
+              "Symbol": "AGI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "114"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Brian Griffin",
+              "Symbol": "BRIAN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "114"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Bitcoin6900",
+              "Symbol": "BTC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "114"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "LooPIN",
+              "Symbol": "LOOPIN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "114"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Republican Party",
+              "Symbol": "GOP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "113"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "JD Vance",
+              "Symbol": "VANCE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "113"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Terminus",
+              "Symbol": "Terminus"
+            }
+          },
+          "tradesCountWithUniqueTraders": "113"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Office Helper Clippy",
+              "Symbol": "CLIPPY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "112"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Trump Vance",
+              "Symbol": "$MAGA2024"
+            }
+          },
+          "tradesCountWithUniqueTraders": "112"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Maker",
+              "Symbol": "MKR"
+            }
+          },
+          "tradesCountWithUniqueTraders": "111"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Vector Smart Gas",
+              "Symbol": "VSG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "111"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Homestar Runner",
+              "Symbol": "RUNNER"
+            }
+          },
+          "tradesCountWithUniqueTraders": "111"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "\u201cBRX9000\u201d",
+              "Symbol": "BRX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "110"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BuildAI",
+              "Symbol": "Build"
+            }
+          },
+          "tradesCountWithUniqueTraders": "110"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "AxonDAO Governance Token",
+              "Symbol": "AXGT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "109"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "HEX",
+              "Symbol": "HEX"
+            }
+          },
+          "tradesCountWithUniqueTraders": "109"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Cosmic Network",
+              "Symbol": "COSMIC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "109"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Cheeseball the Wizard",
+              "Symbol": "CHEESEBALL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "107"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Kaspa",
+              "Symbol": "KAS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "107"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "AMC",
+              "Symbol": "AMC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "107"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dork Lord",
+              "Symbol": "DORKY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "106"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dogelon",
+              "Symbol": "ELON"
+            }
+          },
+          "tradesCountWithUniqueTraders": "106"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Gala",
+              "Symbol": "GALA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "106"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "BONE SHIBASWAP",
+              "Symbol": "BONE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "106"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Multi AI",
+              "Symbol": "MULTI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "104"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Catalorian",
+              "Symbol": "CATALORIAN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "104"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Casper the Friendly Ghost ",
+              "Symbol": "CASPER"
+            }
+          },
+          "tradesCountWithUniqueTraders": "104"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Instadapp",
+              "Symbol": "INST"
+            }
+          },
+          "tradesCountWithUniqueTraders": "104"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DARK MAGA",
+              "Symbol": "DMAGA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "104"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Momo",
+              "Symbol": "MOMO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "104"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Giggle Academy",
+              "Symbol": "GIGGLE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "103"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Byte",
+              "Symbol": "BYTE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "103"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "ApuApustajas",
+              "Symbol": "APU"
+            }
+          },
+          "tradesCountWithUniqueTraders": "102"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pet Rock",
+              "Symbol": "SAND"
+            }
+          },
+          "tradesCountWithUniqueTraders": "102"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "World Liberty Financial",
+              "Symbol": "WLF"
+            }
+          },
+          "tradesCountWithUniqueTraders": "102"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dream Big Again",
+              "Symbol": "DBA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "101"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "CABI",
+              "Symbol": "CABI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "101"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Flip",
+              "Symbol": "FLIP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "100"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "CANDUL",
+              "Symbol": "CANDUL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "100"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Maple Token",
+              "Symbol": "MPL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "100"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "SuperFarm",
+              "Symbol": "SUPER"
+            }
+          },
+          "tradesCountWithUniqueTraders": "100"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Peezy",
+              "Symbol": "PEEZY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "100"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Root Network",
+              "Symbol": "ROOT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "99"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "VERA",
+              "Symbol": "VRA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "99"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "KiboShib",
+              "Symbol": "KIBSHI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "99"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Original Bitcoin Mascot",
+              "Symbol": " Mr. Bitcoin"
+            }
+          },
+          "tradesCountWithUniqueTraders": "99"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PayPal USD",
+              "Symbol": "PYUSD"
+            }
+          },
+          "tradesCountWithUniqueTraders": "98"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "dancing triangle",
+              "Symbol": "triangle"
+            }
+          },
+          "tradesCountWithUniqueTraders": "98"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "HYDRA",
+              "Symbol": "HYDRA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "98"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Myria",
+              "Symbol": "MYRIA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "98"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "AIT Protocol",
+              "Symbol": "AIT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "98"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Astra Nova",
+              "Symbol": "ASTOVA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "97"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Baby Neiro",
+              "Symbol": "BABYNEIRO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "96"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Stonks",
+              "Symbol": "STONKS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "96"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "US Degen Index 6900",
+              "Symbol": "DXY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "95"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "PROTECTO SEED VAULT",
+              "Symbol": "PRTCT"
+            }
+          },
+          "tradesCountWithUniqueTraders": "95"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Froggy",
+              "Symbol": "\ud80c\udd8f"
+            }
+          },
+          "tradesCountWithUniqueTraders": "95"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Nasdaq420",
+              "Symbol": "NASDAQ420"
+            }
+          },
+          "tradesCountWithUniqueTraders": "95"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MAGATRUMP",
+              "Symbol": "MAGATRUMP"
+            }
+          },
+          "tradesCountWithUniqueTraders": "95"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "The Rock",
+              "Symbol": "ROCK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "95"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Ishi",
+              "Symbol": "ISHI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "94"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Dogeween",
+              "Symbol": "DOGEWEEN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "94"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Sentra",
+              "Symbol": "STRA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "94"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Mock Capital",
+              "Symbol": "MOCK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "93"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "KYRA",
+              "Symbol": "KYRA"
+            }
+          },
+          "tradesCountWithUniqueTraders": "93"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "lmeow",
+              "Symbol": "LMEOW"
+            }
+          },
+          "tradesCountWithUniqueTraders": "92"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Bridge Payments",
+              "Symbol": "BRIDGE"
+            }
+          },
+          "tradesCountWithUniqueTraders": "92"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Cok the Cat",
+              "Symbol": "$COK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "92"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "WallStreetDebts",
+              "Symbol": "WSD"
+            }
+          },
+          "tradesCountWithUniqueTraders": "92"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Curve DAO Token",
+              "Symbol": "CRV"
+            }
+          },
+          "tradesCountWithUniqueTraders": "92"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Goblinarinos",
+              "Symbol": "GOBLINS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "92"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Doggo Inu",
+              "Symbol": "DOGGO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "91"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Spectral Token",
+              "Symbol": "SPEC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "91"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Hom Daeng",
+              "Symbol": "HOMDAENG"
+            }
+          },
+          "tradesCountWithUniqueTraders": "91"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "GigaChad",
+              "Symbol": "GIGACHAD"
+            }
+          },
+          "tradesCountWithUniqueTraders": "91"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Rino",
+              "Symbol": "RINO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "91"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Groggo By Matt Furie",
+              "Symbol": "GROGGO"
+            }
+          },
+          "tradesCountWithUniqueTraders": "91"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Pond Coin",
+              "Symbol": "PNDC"
+            }
+          },
+          "tradesCountWithUniqueTraders": "90"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "rsETH",
+              "Symbol": "rsETH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "90"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Bill",
+              "Symbol": "BILL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "90"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Miffy",
+              "Symbol": "MIFFY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "90"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "FAIL Coin",
+              "Symbol": "FAIL"
+            }
+          },
+          "tradesCountWithUniqueTraders": "90"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "DANK on Eth",
+              "Symbol": "DANK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "90"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MANTRA DAO",
+              "Symbol": "OM"
+            }
+          },
+          "tradesCountWithUniqueTraders": "89"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "21e8",
+              "Symbol": "HASH"
+            }
+          },
+          "tradesCountWithUniqueTraders": "88"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Osaka Protocol",
+              "Symbol": "OSAK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "88"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Vitalik Tac Nayn",
+              "Symbol": "VTN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "88"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "WadzPay Token",
+              "Symbol": "WTK"
+            }
+          },
+          "tradesCountWithUniqueTraders": "87"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "CHWY",
+              "Symbol": "CHWY"
+            }
+          },
+          "tradesCountWithUniqueTraders": "87"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "RIP ETH _/_",
+              "Symbol": "RIP ETH _/_"
+            }
+          },
+          "tradesCountWithUniqueTraders": "87"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Shadow Node",
+              "Symbol": "SVPN"
+            }
+          },
+          "tradesCountWithUniqueTraders": "87"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Bellscoin",
+              "Symbol": "BELLS"
+            }
+          },
+          "tradesCountWithUniqueTraders": "86"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "Adonai",
+              "Symbol": "Adonai"
+            }
+          },
+          "tradesCountWithUniqueTraders": "86"
+        },
+        {
+          "Trade": {
+            "Currency": {
+              "Name": "MIRAI",
+              "Symbol": "MIRAI"
+            }
+          },
+          "tradesCountWithUniqueTraders": "86"
+        }
+      ]
+    }
+  }
+}
+

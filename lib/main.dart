@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+import 'find_unique_trades.dart';
+
+
+void main() async {
+  //WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp();
+
   runApp(const meme_hunter());
 }
 
@@ -30,8 +38,8 @@ class MemeHunterPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 20.0, right: 20.0),
+          const Padding(
+            padding: EdgeInsets.only(top: 20.0, right: 20.0),
             child: Align(
               alignment: Alignment.topRight,
               child: SelectableText(
@@ -53,14 +61,19 @@ class MemeHunterPage extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 25.0,right: 10, left: 10),
+          const Padding(
+            padding: EdgeInsets.only(top: 25.0,right: 10, left: 10),
             child:
               Text(
                 'Top 350 DEX coins across ETH, BSC and more chains, sorted by unique trades:',
                 style: TextStyle(fontSize: 18),
               ),
-
+          ),
+          ElevatedButton(
+            onPressed: () {
+              fetchUniqueTrades();
+            },
+            child: Text('testing'),
           ),
         ],
       ),
