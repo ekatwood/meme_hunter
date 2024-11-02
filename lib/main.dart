@@ -63,20 +63,67 @@ class MemeHunterPage extends StatelessWidget {
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(top: 25.0,right: 10, left: 10),
-            child:
-              Text(
-                'Top 350 DEX coins across ETH, BSC and more chains, sorted by unique trades:',
-                style: TextStyle(fontSize: 18),
-              ),
+            padding: EdgeInsets.only(top: 25.0, right: 10, left: 10),
+            child: Text(
+              'Top 350 DEX coins across ETH, BSC and more chains, sorted by unique trades:',
+              style: TextStyle(fontSize: 18),
+            ),
           ),
-          // LayoutBuilder(
-          //   builder: (context, constraints) {
-          //     // Use constraints.maxWidth and constraints.maxHeight
-          //
-          //     return TokensDataTable();
-          //   },
-          // ),
+          Padding(
+            padding:
+                EdgeInsets.only(top: 20.0, right: 10, left: 10, bottom: 15),
+            child: DataTable(
+              columns: const <DataColumn>[
+                DataColumn(
+                  label: Expanded(
+                    child: Text(
+                      'Name',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ),
+                DataColumn(
+                  label: Expanded(
+                    child: Text(
+                      'Symbol',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ),
+                DataColumn(
+                  label: Expanded(
+                    child: Text(
+                      'Unique Trades',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ),
+              ],
+              rows:  <DataRow>[
+                DataRow(
+                  cells: <DataCell>[
+                    DataCell(Text('Sarah')),
+                    DataCell(Text('19')),
+                    DataCell(Text('Student')),
+                  ],
+                ),
+                DataRow(
+                  cells: <DataCell>[
+                    DataCell(Text('Janine')),
+                    DataCell(Text('43')),
+                    DataCell(Text('Professor')),
+                  ],
+                ),
+                DataRow(
+                  cells: <DataCell>[
+                    DataCell(Text('William')),
+                    DataCell(Text('27')),
+                    DataCell(Text('Associate Professor')),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

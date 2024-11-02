@@ -17,11 +17,14 @@ Future<List<QueryDocumentSnapshot>> fetchDocumentsTESTING() async {
   // Step 2: Query documents with the latest timestamp, ordered by 'tradesCountWithUniqueTraders'
   final latestDocsQuery = await collectionRef
       .where('timestamp', isEqualTo: latestTimestamp)
-      .orderBy('tradesCountWithUniqueTraders', descending: true)
       .get();
 
   for (var doc in latestDocsQuery.docs) {
-    print(doc.data()); // This will print the document's data as a map
+    print(doc['Name']);
+    print(doc['Symbol']);
+    print(doc['tradesCountWithUniqueTraders']);
+    print(doc['timestamp']);
+    print('===');
   }
 
   return latestDocsQuery.docs;
