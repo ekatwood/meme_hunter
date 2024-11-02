@@ -9,12 +9,24 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await fetchDocumentsTESTING();
-  runApp(const meme_hunter());
+  final trades = await fetchDocuments();
+  // Get the first entry
+  var firstEntry = trades.entries.first;
+  // Access the value which is a Map and then get the 'timestamp'
+  String timestamp = firstEntry.value['timestamp'];
+
+  runApp(meme_hunter(trades: trades, timestamp: timestamp));
 }
 
 class meme_hunter extends StatelessWidget {
-  const meme_hunter({super.key});
+  const meme_hunter({
+    super.key,
+    required this.trades,
+    required this.timestamp
+  });
+
+  final Map<int, dynamic> trades;
+  final String timestamp;
 
   // This widget is the root of your application.
   @override
@@ -26,13 +38,20 @@ class meme_hunter extends StatelessWidget {
           //colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           //useMaterial3: true,
           ),
-      home: const MemeHunterPage(),
+      home: MemeHunterPage(trades: trades, timestamp: timestamp),
     );
   }
 }
 
 class MemeHunterPage extends StatelessWidget {
-  const MemeHunterPage({super.key});
+  const MemeHunterPage({
+    super.key,
+    required this.trades,
+    required this.timestamp
+  });
+
+  final Map<int, dynamic> trades;
+  final String timestamp;
 
   @override
   Widget build(BuildContext context) {
@@ -99,29 +118,13 @@ class MemeHunterPage extends StatelessWidget {
                   ),
                 ),
               ],
-              rows:  <DataRow>[
-                DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text('Sarah')),
-                    DataCell(Text('19')),
-                    DataCell(Text('Student')),
-                  ],
-                ),
-                DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text('Janine')),
-                    DataCell(Text('43')),
-                    DataCell(Text('Professor')),
-                  ],
-                ),
-                DataRow(
-                  cells: <DataCell>[
-                    DataCell(Text('William')),
-                    DataCell(Text('27')),
-                    DataCell(Text('Associate Professor')),
-                  ],
-                ),
-              ],
+              rows: trades.entries.map((entry) {
+                return DataRow(cells: [
+                  DataCell(Text(entry.value['Name'] ?? '')),
+                  DataCell(Text(entry.value['Symbol'] ?? '')),
+                  DataCell(Text(entry.value['tradesCountWithUniqueTraders'].toString()))
+                ]);
+              }).toList(),
             ),
           ),
         ],
