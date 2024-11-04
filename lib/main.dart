@@ -68,7 +68,7 @@ class MemeHunterPage extends StatelessWidget {
               child: Align(
                 alignment: Alignment.topRight,
                 child: SelectableText(
-                  'tip the dev: ETH 0xAe68f894965866b8Bc95f7603Ba7029884E1B6Be',
+                  'tip the dev: DOGE DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ),
