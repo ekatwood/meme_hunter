@@ -52,13 +52,22 @@ class MemeHunterPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
               child: Align(
                 alignment: Alignment.topRight,
-                child: SelectableText(
-                  'tip the dev (DOGE): \nDByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                child: TextField(
+                  readOnly: true,
+                  controller: TextEditingController(
+                      text:
+                          'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true, // Reduces padding to make it more compact
+                    contentPadding: EdgeInsets.zero, // Adjust padding as needed
+                  ),
                 ),
               ),
             ),
@@ -132,8 +141,44 @@ class MemeHunterPage extends StatelessWidget {
                             ],
                             rows: trades.entries.map((entry) {
                               return DataRow(cells: [
-                                DataCell(SelectableText(entry.value['Name'])),
-                                DataCell(SelectableText(entry.value['Symbol'])),
+                                DataCell(
+                                  Container(
+                                    width: 180,
+                                    // Set the maximum width for the first column
+                                    child: TextField(
+                                      readOnly: true,
+                                      controller: TextEditingController(
+                                          text: entry.value['Name']),
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                      decoration: const InputDecoration(
+                                        border: InputBorder.none,
+                                        isDense: true,
+                                        // Reduces padding to make it more compact
+                                        contentPadding: EdgeInsets
+                                            .zero, // Adjust padding as needed
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  TextField(
+                                    readOnly: true,
+                                    controller: TextEditingController(
+                                        text: entry.value['Symbol']),
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      // Reduces padding to make it more compact
+                                      contentPadding: EdgeInsets
+                                          .zero, // Adjust padding as needed
+                                    ),
+                                  ),
+                                ),
                               ]);
                             }).toList(),
                           ),
