@@ -53,11 +53,11 @@ class MemeHunterPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             const Padding(
-              padding: EdgeInsets.only(top: 20.0, right: 20.0),
+              padding: EdgeInsets.only(top: 20.0, right: 20.0,left: 20),
               child: Align(
                 alignment: Alignment.topRight,
                 child: SelectableText(
-                  'tip the dev: DOGE DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG',
+                  'tip the dev (DOGE): \nDByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG',
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -86,7 +86,9 @@ class MemeHunterPage extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
                     padding: EdgeInsets.only(top: 20.0),
-                    child: CircularProgressIndicator(),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent)
+                    )
                   );
                 } else if (snapshot.hasError) {
                   return Padding(
@@ -120,22 +122,11 @@ class MemeHunterPage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  'Unique Trades',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
-                                ),
-                              ),
-                            ),
                           ],
                           rows: trades.entries.map((entry) {
                             return DataRow(cells: [
-                              DataCell(Text(entry.value['Name'] ?? '')),
-                              DataCell(Text(entry.value['Symbol'] ?? '')),
-                              DataCell(Text(
-                                  entry.value['tradesCountWithUniqueTraders']
-                                      .toString()))
+                              DataCell(SelectableText(entry.value['Name'] ?? '')),
+                              DataCell(SelectableText(entry.value['Symbol'] ?? '')),
                             ]);
                           }).toList(),
                         ),
@@ -151,7 +142,7 @@ class MemeHunterPage extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 25),
+                        padding: const EdgeInsets.only(top: 15.0, bottom: 80),
                         child: RichText(
                           text: TextSpan(
                             style:
