@@ -11,42 +11,26 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final trades = await fetchDocuments();
-  // Get the first entry
-  var firstEntry = trades.entries.first;
-  // Access the value which is a Map and then get the 'timestamp'
-  String timestamp = firstEntry.value['timestamp'];
-
-  runApp(meme_hunter(trades: trades, timestamp: timestamp));
+  runApp(const MemeHunterApp());
 }
 
-class meme_hunter extends StatelessWidget {
-  const meme_hunter({super.key, required this.trades, required this.timestamp});
+class MemeHunterApp extends StatelessWidget {
+  const MemeHunterApp({super.key});
 
-  final Map<int, dynamic> trades;
-  final String timestamp;
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Meme Hunter',
       theme: ThemeData(
-
-          //colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          //useMaterial3: true,
-          ),
-      home: MemeHunterPage(trades: trades, timestamp: timestamp),
+        // Define theme settings here if needed
+      ),
+      home: const MemeHunterPage(),
     );
   }
 }
 
 class MemeHunterPage extends StatelessWidget {
-  const MemeHunterPage(
-      {super.key, required this.trades, required this.timestamp});
-
-  final Map<int, dynamic> trades;
-  final String timestamp;
+  const MemeHunterPage({super.key});
 
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
@@ -55,6 +39,11 @@ class MemeHunterPage extends StatelessWidget {
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  Future<Map<int, dynamic>> fetchTradesData() async {
+    final trades = await fetchDocuments();
+    return trades;
   }
 
   @override
@@ -77,12 +66,10 @@ class MemeHunterPage extends StatelessWidget {
               padding: const EdgeInsets.only(top: 30.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(14.0),
-                // Adjust the radius as needed
                 child: Image.asset(
-                  'assets/meme-hunter_logo1.png', // Path to your asset image
-                  height: 80, // Adjust height as needed
-                  fit: BoxFit
-                      .cover, // Ensures the image fits within the rounded rectangle
+                  'assets/meme-hunter_logo1.png',
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -93,74 +80,104 @@ class MemeHunterPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
             ),
-            Padding(
-              padding:
-                  EdgeInsets.only(top: 20.0, right: 10, left: 10, bottom: 15),
-              child: DataTable(
-                columns: const <DataColumn>[
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Name',
-                        style: TextStyle(fontStyle: FontStyle.italic),
+            FutureBuilder<Map<int, dynamic>>(
+              future: fetchTradesData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else if (snapshot.hasData) {
+                  final trades = snapshot.data!;
+                  final timestamp = trades.entries.first.value['timestamp'];
+
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            top: 20.0, right: 10, left: 10, bottom: 15),
+                        child: DataTable(
+                          columns: const <DataColumn>[
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  'Name',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  'Symbol',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                            ),
+                            DataColumn(
+                              label: Expanded(
+                                child: Text(
+                                  'Unique Trades',
+                                  style: TextStyle(fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                            ),
+                          ],
+                          rows: trades.entries.map((entry) {
+                            return DataRow(cells: [
+                              DataCell(Text(entry.value['Name'] ?? '')),
+                              DataCell(Text(entry.value['Symbol'] ?? '')),
+                              DataCell(Text(
+                                  entry.value['tradesCountWithUniqueTraders']
+                                      .toString()))
+                            ]);
+                          }).toList(),
+                        ),
                       ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Symbol',
-                        style: TextStyle(fontStyle: FontStyle.italic),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0, right: 15),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            timestamp,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Expanded(
-                      child: Text(
-                        'Unique Trades',
-                        style: TextStyle(fontStyle: FontStyle.italic),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15.0, bottom: 25),
+                        child: RichText(
+                          text: TextSpan(
+                            style:
+                            const TextStyle(fontSize: 16, color: Colors.black),
+                            children: [
+                              const TextSpan(text: 'Powered by '),
+                              TextSpan(
+                                text: 'Bitquery',
+                                style: const TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
+                                recognizer: TapGestureRecognizer()..onTap = _launchURL,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-                rows: trades.entries.map((entry) {
-                  return DataRow(cells: [
-                    DataCell(Text(entry.value['Name'] ?? '')),
-                    DataCell(Text(entry.value['Symbol'] ?? '')),
-                    DataCell(Text(
-                        entry.value['tradesCountWithUniqueTraders'].toString()))
-                  ]);
-                }).toList(),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10.0, right: 15),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Text(
-                  timestamp,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 15.0, bottom: 25),
-              child: RichText(
-                text: TextSpan(
-                  style: const TextStyle(fontSize: 16, color: Colors.black),
-                  children: [
-                    const TextSpan(text: 'Powered by '),
-                    TextSpan(
-                      text: 'Bitquery',
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        decoration: TextDecoration.underline,
-                      ),
-                      recognizer: TapGestureRecognizer()..onTap = _launchURL,
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  );
+                } else {
+                  return const Center(
+                    child: Text('No data available'),
+                  );
+                }
+              },
             ),
           ],
         ),
