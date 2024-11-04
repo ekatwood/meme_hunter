@@ -23,6 +23,12 @@ Future<Map<int, dynamic>> fetchDocuments() async {
   var counter = 1;
 
   for(var doc in latestDocsQuery.docs){
+    //strip out empty entries
+    if (doc['Name'] == null ||
+        doc['Symbol'] == null ||
+        doc['Name'].toString().trim().isEmpty ||
+        doc['Symbol'].toString().trim().isEmpty) continue;
+
     trades[counter] = {
       'Name': doc['Name'],
       'Symbol': doc['Symbol'],

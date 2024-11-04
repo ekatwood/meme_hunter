@@ -22,8 +22,8 @@ class MemeHunterApp extends StatelessWidget {
     return MaterialApp(
       title: 'Meme Hunter',
       theme: ThemeData(
-        // Define theme settings here if needed
-      ),
+          // Define theme settings here if needed
+          ),
       home: const MemeHunterPage(),
     );
   }
@@ -53,7 +53,7 @@ class MemeHunterPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             const Padding(
-              padding: EdgeInsets.only(top: 20.0, right: 20.0,left: 20),
+              padding: EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
               child: Align(
                 alignment: Alignment.topRight,
                 child: SelectableText(
@@ -75,9 +75,12 @@ class MemeHunterPage extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.only(top: 25.0, right: 10, left: 10),
-              child: Text(
-                'Top 350 DEX coins across ETH, BSC and more chains, sorted by unique trades:',
-                style: TextStyle(fontSize: 18),
+              child: Center(
+                child: Text(
+                  'Top 350 DEX coins across ETH, BSC and more chains, sorted by unique trades:',
+                  style: TextStyle(fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
             FutureBuilder<Map<int, dynamic>>(
@@ -85,11 +88,10 @@ class MemeHunterPage extends StatelessWidget {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent)
-                    )
-                  );
+                      padding: EdgeInsets.only(top: 20.0),
+                      child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.redAccent)));
                 } else if (snapshot.hasError) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 20.0),
@@ -103,32 +105,38 @@ class MemeHunterPage extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(
-                            top: 20.0, right: 10, left: 10, bottom: 15),
-                        child: DataTable(
-                          columns: const <DataColumn>[
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  'Name',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
+                            top: 20.0, right: 15, left: 15, bottom: 15),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          // Enable horizontal scrolling
+                          child: DataTable(
+                            columns: const <DataColumn>[
+                              DataColumn(
+                                label: Flexible(
+                                  child: Text(
+                                    'Name',
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic),
+                                  ),
                                 ),
                               ),
-                            ),
-                            DataColumn(
-                              label: Expanded(
-                                child: Text(
-                                  'Symbol',
-                                  style: TextStyle(fontStyle: FontStyle.italic),
+                              DataColumn(
+                                label: Flexible(
+                                  child: Text(
+                                    'Symbol',
+                                    style:
+                                        TextStyle(fontStyle: FontStyle.italic),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                          rows: trades.entries.map((entry) {
-                            return DataRow(cells: [
-                              DataCell(SelectableText(entry.value['Name'] ?? '')),
-                              DataCell(SelectableText(entry.value['Symbol'] ?? '')),
-                            ]);
-                          }).toList(),
+                            ],
+                            rows: trades.entries.map((entry) {
+                              return DataRow(cells: [
+                                DataCell(SelectableText(entry.value['Name'])),
+                                DataCell(SelectableText(entry.value['Symbol'])),
+                              ]);
+                            }).toList(),
+                          ),
                         ),
                       ),
                       Padding(
@@ -145,8 +153,8 @@ class MemeHunterPage extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 15.0, bottom: 80),
                         child: RichText(
                           text: TextSpan(
-                            style:
-                            const TextStyle(fontSize: 16, color: Colors.black),
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.black),
                             children: [
                               const TextSpan(text: 'Powered by '),
                               TextSpan(
@@ -155,7 +163,8 @@ class MemeHunterPage extends StatelessWidget {
                                   color: Colors.blue,
                                   decoration: TextDecoration.underline,
                                 ),
-                                recognizer: TapGestureRecognizer()..onTap = _launchURL,
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = _launchURL,
                               ),
                             ],
                           ),
