@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'find_unique_trades_SOL.dart';
 import 'firebase_options.dart';
 import 'find_unique_trades.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,16 +22,21 @@ class MemeHunterApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Meme Hunter',
-      theme: ThemeData(
-          // Define theme settings here if needed
-          ),
+      theme: ThemeData(),
       home: const MemeHunterPage(),
     );
   }
 }
 
-class MemeHunterPage extends StatelessWidget {
+class MemeHunterPage extends StatefulWidget {
   const MemeHunterPage({super.key});
+
+  @override
+  _MemeHunterPageState createState() => _MemeHunterPageState();
+}
+
+class _MemeHunterPageState extends State<MemeHunterPage> {
+  bool isSolana = false;
 
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
@@ -42,8 +48,11 @@ class MemeHunterPage extends StatelessWidget {
   }
 
   Future<Map<int, dynamic>> fetchTradesData() async {
-    final trades = await fetchDocuments();
-    return trades;
+    return await fetchDocuments();
+  }
+
+  Future<Map<int, dynamic>> fetchSOLTradesData() async {
+    return await fetchSOLDocuments();
   }
 
   @override
@@ -59,14 +68,13 @@ class MemeHunterPage extends StatelessWidget {
                 child: TextField(
                   readOnly: true,
                   controller: TextEditingController(
-                      text:
-                          'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
+                      text: 'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
                   style: const TextStyle(
                       fontSize: 14, fontWeight: FontWeight.bold),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
-                    isDense: true, // Reduces padding to make it more compact
-                    contentPadding: EdgeInsets.zero, // Adjust padding as needed
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
                   ),
                 ),
               ),
@@ -86,21 +94,44 @@ class MemeHunterPage extends StatelessWidget {
               padding: EdgeInsets.only(top: 25.0, right: 10, left: 10),
               child: Center(
                 child: Text(
-                  'Top 350 DEX coins across ETH, BSC and more chains, sorted by unique trades:',
-                  style: TextStyle(fontSize: 18),
+                  'Hottest #memecoins from Ethereum and Solana, updated every day!',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
+
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: ToggleButtons(
+                children: const <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('ETH'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('SOL'),
+                  ),
+                ],
+                isSelected: [!isSolana, isSolana],
+                onPressed: (int index) {
+                  setState(() {
+                    isSolana = index == 1;
+                  });
+                },
+              ),
+            ),
             FutureBuilder<Map<int, dynamic>>(
-              future: fetchTradesData(),
+              future: isSolana ? fetchSOLTradesData() : fetchTradesData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                      child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.redAccent)));
+                    padding: EdgeInsets.only(top: 20.0),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+                    ),
+                  );
                 } else if (snapshot.hasError) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 20.0),
@@ -117,15 +148,13 @@ class MemeHunterPage extends StatelessWidget {
                             top: 20.0, right: 15, left: 15, bottom: 15),
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          // Enable horizontal scrolling
                           child: DataTable(
                             columns: const <DataColumn>[
                               DataColumn(
                                 label: Flexible(
                                   child: Text(
                                     'Name',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic),
+                                    style: TextStyle(fontStyle: FontStyle.italic),
                                   ),
                                 ),
                               ),
@@ -133,8 +162,7 @@ class MemeHunterPage extends StatelessWidget {
                                 label: Flexible(
                                   child: Text(
                                     'Symbol',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic),
+                                    style: TextStyle(fontStyle: FontStyle.italic),
                                   ),
                                 ),
                               ),
@@ -144,21 +172,9 @@ class MemeHunterPage extends StatelessWidget {
                                 DataCell(
                                   Container(
                                     width: 180,
-                                    // Set the maximum width for the first column
-                                    child: TextField(
-                                      readOnly: true,
-                                      controller: TextEditingController(
-                                          text: entry.value['Name']),
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                        // Reduces padding to make it more compact
-                                        contentPadding: EdgeInsets
-                                            .zero, // Adjust padding as needed
-                                      ),
+                                    child: SelectableText(
+                                      entry.value['Name'],
+                                      style: const TextStyle(fontSize: 16),
                                     ),
                                   ),
                                 ),
@@ -167,15 +183,11 @@ class MemeHunterPage extends StatelessWidget {
                                     readOnly: true,
                                     controller: TextEditingController(
                                         text: entry.value['Symbol']),
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold),
+                                    style: const TextStyle(fontSize: 16),
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
                                       isDense: true,
-                                      // Reduces padding to make it more compact
-                                      contentPadding: EdgeInsets
-                                          .zero, // Adjust padding as needed
+                                      contentPadding: EdgeInsets.zero,
                                     ),
                                   ),
                                 ),
@@ -198,8 +210,7 @@ class MemeHunterPage extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 15.0, bottom: 80),
                         child: RichText(
                           text: TextSpan(
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.black),
+                            style: const TextStyle(fontSize: 16, color: Colors.black),
                             children: [
                               const TextSpan(text: 'Powered by '),
                               TextSpan(
