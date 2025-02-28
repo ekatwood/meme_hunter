@@ -1,16 +1,21 @@
 # meme_hunter
 
-A simple API to find the hottest meme coins
+A GraphQL query that searches for the most unique trades of a token recently, helping you find trending tokens without doing heavy research.
 
-## Getting Started
+TODO:
 
-This project is a starting point for a Flutter application.
+Buy a custom domain
 
-A few resources to get you started if this is your first Flutter project:
+Make the query every hour
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Remove Ethereum (until they fix transaction fees)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Add matplotlib charts
+
+Add a copy button for the token's mint address
+
+Design a smart wallet using Rust that auto-buys new trending tokens every hour, with 1% of the capital in the smart wallet. If it runs low, just send it more capital, since it is just a public wallet address as well.
+
+Re-issue the query apikey and web app apikey and store them in Firebase or Google Cloud so this project can remain open source.
+
+tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG
