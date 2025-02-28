@@ -5,6 +5,8 @@ import 'find_unique_trades_SOL.dart';
 import 'firebase_options.dart';
 import 'find_unique_trades.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'phantom_wallet.dart';
+import 'firestore_functions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,7 @@ class MemeHunterPage extends StatefulWidget {
 
 class _MemeHunterPageState extends State<MemeHunterPage> {
   bool isSolana = false;
+  String? _walletAddress; // Add wallet address state
 
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
@@ -63,20 +66,59 @@ class _MemeHunterPageState extends State<MemeHunterPage> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: TextField(
-                  readOnly: true,
-                  controller: TextEditingController(
-                      text: 'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
-                  style: const TextStyle(
-                      fontSize: 14, fontWeight: FontWeight.bold),
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      readOnly: true,
+                      controller: TextEditingController(
+                          text: 'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.bold),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                    ),
                   ),
-                ),
+                  // Add Phantom wallet logo
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: GestureDetector(
+                      onTap: () async {
+                        _walletAddress = await connectPhantom();
+                        setState(() {});
+
+                        if(_walletAddress == "Please make sure Phantom Wallet browser extension is installed."){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(_walletAddress.toString())),
+                          );
+                        }
+                        else if(_walletAddress == 'error'){
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error connecting to Phantom Wallet.')),
+                          );
+                        }
+                        else{
+                          //add public wallet address to database if not already there
+                          phantomWalletConnected(_walletAddress!);
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Image.asset(
+                          'assets/phantom-logo.png',
+                          height: 30,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -97,7 +139,6 @@ class _MemeHunterPageState extends State<MemeHunterPage> {
                   'Hottest #memecoins from Ethereum and Solana, updated every day!',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
-
                 ),
               ),
             ),
