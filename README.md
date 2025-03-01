@@ -14,7 +14,7 @@ Add matplotlib charts
 
 Add a copy button for the token's mint address
 
-Design a smart wallet using Rust that auto-buys new trending tokens every hour, with 1% of the capital in the smart wallet. If it runs low, just send it more capital, since it is just a public wallet address as well.
+Design a smart wallet using Rust that auto-buys new trending tokens every hour. It sends you an email if it runs out of capital, or you can just check it.
 
 Re-issue the query apikey and web app apikey and store them in Firebase or Google Cloud so this project can remain open source.
 
