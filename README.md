@@ -2,6 +2,8 @@
 
 A GraphQL query that searches for the most unique trades of a token recently, helping you find trending tokens without doing heavy research.
 
+Progress so far: https://meme-hunter-4f1c1.web.app/
+
 TODO:
 
 Buy a custom domain
@@ -18,4 +20,4 @@ Design a smart wallet using Rust that auto-buys new trending tokens every hour. 
 
 Re-issue the query apikey and web app apikey and store them in Firebase or Google Cloud so this project can remain open source.
 
-tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG
+Contribute to this project: DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG $DOGE
