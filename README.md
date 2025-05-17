@@ -1,4 +1,4 @@
-# meme-hunter
+# Token Quest
 
 A GraphQL query that searches for the most unique trades of a token recently, helping you find trending tokens without doing heavy research.
 
