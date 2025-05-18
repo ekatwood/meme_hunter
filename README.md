@@ -20,4 +20,4 @@ Design a smart wallet using Rust that auto-buys new trending tokens every hour. 
 
 Re-issue the query apikey and web app apikey and store them in Firebase or Google Cloud so this project can remain open source.
 
-Contribute to this project: DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG $DOGE
+To invest in this project for 50% equity, send 50,000 USDC on Solana to: HW6uUz4yxVpHsdqtdVyxFFMFYiVC3SR2ngZQ2CqBjem3
