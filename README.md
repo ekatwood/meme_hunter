@@ -10,7 +10,7 @@ Buy a custom domain
 
 Make the query every hour
 
-Remove Ethereum (until they fix transaction fees)
+Switch Ethereum to Arbitrum
 
 Add matplotlib charts
 
@@ -19,5 +19,3 @@ Add a copy button for the token's mint address
 Design a smart wallet using Rust that auto-buys new trending tokens every hour. It sends you an email if it runs out of capital, or you can just check it.
 
 Re-issue the query apikey and web app apikey and store them in Firebase or Google Cloud so this project can remain open source.
-
-To invest in this project for 50% equity, send 50,000 USDC on Solana to: HW6uUz4yxVpHsdqtdVyxFFMFYiVC3SR2ngZQ2CqBjem3
