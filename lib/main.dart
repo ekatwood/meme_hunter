@@ -1,12 +1,32 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'auth_provider.dart';
+import 'appbar.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'find_unique_trades_SOL.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'phantom_wallet.dart';
 import 'firestore_functions.dart';
 import 'package:flutter/services.dart';
+
+final _router = GoRouter(
+  routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const MemeHunterPage(),
+    ),
+    // GoRoute(
+    //   path: '/mint_token',
+    //   builder: (context, state) => const TokenFactory(), // Create this page
+    // ),
+    // GoRoute(
+    //   path: '/settings',
+    //   builder: (context, state) => SettingsPage(), // and this page
+    // ),
+  ],
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +34,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MemeHunterApp());
+  runApp(// Provide the AuthProvider to the entire application.
+    ChangeNotifierProvider(
+      create: (context) => AuthProvider(),
+      child: const MemeHunterApp(),
+    ),);
 }
 
 class MemeHunterApp extends StatelessWidget {
@@ -23,7 +47,7 @@ class MemeHunterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Meme Hunter',
+      title: 'Token Quest',
       theme: ThemeData(),
       home: const MemeHunterPage(),
       routes: {
@@ -77,63 +101,6 @@ class _MemeHunterPageState extends State<MemeHunterPage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      readOnly: true,
-                      controller: TextEditingController(
-                          text: 'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
-                      style: const TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.bold),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                  // Add Phantom wallet logo
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: GestureDetector(
-                      onTap: () async {
-                        _walletAddress = await connectPhantom();
-                        setState(() {});
-
-                        if(_walletAddress == "Please make sure Phantom Wallet browser extension is installed."){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(_walletAddress.toString())),
-                          );
-                        }
-                        else if(_walletAddress == 'error'){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Error connecting to Phantom Wallet.')),
-                          );
-                        }
-                        else{
-                          //add public wallet address to database if not already there
-                          phantomWalletConnected(_walletAddress!);
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.asset(
-                          'assets/phantom-logo.png',
-                          height: 30,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.only(top: 30.0),
               child: ClipRRect(
@@ -336,13 +303,7 @@ class ChartPage extends StatelessWidget {
     final args = ModalRoute.of(context)!.settings.arguments as ChartPageArguments;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Back'),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
