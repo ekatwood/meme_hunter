@@ -1,4 +1,4 @@
-# cd '' && '/usr/local/bin/python3'  'write_unique_trades.py'
+# cd '' && '/usr/local/bin/python3'  'write_unique_trades_SOL.py'
 
 import requests
 import json
@@ -8,25 +8,28 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 query = """
-query find_unique_trades {
-  EVM {
+{
+  Solana {
     DEXTradeByTokens(
-      limit: { count: 120 }
-      orderBy: { descendingByField: "tradesCountWithUniqueTraders" }
+      orderBy: {descendingByField: "buy"}
+      where: {Trade: {Currency: {MintAddress: {notIn: ["So11111111111111111111111111111111111111112", "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"]}}, Dex: {ProtocolFamily: {is: "Raydium"}}}, Transaction: {Result: {Success: true}}}
+      limit: {count: 120}
     ) {
       Trade {
         Currency {
-          Name
           Symbol
+          Name
+          MintAddress
         }
       }
-      tradesCountWithUniqueTraders: count(distinct: Transaction_From)
+      buy: sum(of: Trade_Side_AmountInUSD, if: {Trade: {Side: {Type: {is: buy}}}})
+      sell: sum(of: Trade_Side_AmountInUSD, if: {Trade: {Side: {Type: {is: sell}}}})
     }
   }
 }
 """
 
-url = 'https://streaming.bitquery.io/graphql'
+url = 'https://streaming.bitquery.io/eap'
 
 headers = {
    'Content-Type': 'application/json',
@@ -43,15 +46,20 @@ else:
     print(response.text)
 
 # Extracting the data
+counter = 1
 trades = []
-for item in data["data"]["EVM"]["DEXTradeByTokens"]:
+for item in data["data"]["Solana"]["DEXTradeByTokens"]:
+    if len(str(item["Trade"]["Currency"]["Name"])) == 0 or len(str(item["Trade"]["Currency"]["Symbol"])) == 0:
+        continue
+
     trade_info = {
+        "Counter": counter,
         "Name": item["Trade"]["Currency"]["Name"],
         "mintAddress": item["Trade"]["Currency"]["Address"],
-        "Symbol": item["Trade"]["Currency"]["Symbol"],
-        "tradesCountWithUniqueTraders": int(item["tradesCountWithUniqueTraders"])
+        "Symbol": item["Trade"]["Currency"]["Symbol"]
     }
     trades.append(trade_info)
+    counter += 1
 
 # Creating the new JSON structure
 new_json = {"trades": trades}
@@ -73,7 +81,7 @@ db = firestore.Client()
 # Write data to Firestore
 for trade in new_json['trades']:
     # Generate a unique ID for each document
-    doc_ref = db.collection('tokens_by_timestamp').document()  # Generate a unique ID
+    doc_ref = db.collection('tokens_by_timestamp_SOL').document()  # Generate a unique ID
     # Add timestamp field
     trade['timestamp'] = timestamp
     # Set the document in Firestore
