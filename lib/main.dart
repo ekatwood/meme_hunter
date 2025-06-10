@@ -15,7 +15,7 @@ final _router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const MemeHunterPage(),
+      builder: (context, state) => const TokenQuestPage(),
     ),
     // GoRoute(
     //   path: '/mint_token',
@@ -49,7 +49,7 @@ class MemeHunterApp extends StatelessWidget {
     return MaterialApp(
       title: 'Token Quest',
       theme: ThemeData(),
-      home: const MemeHunterPage(),
+      home: const TokenQuestPage(),
       routes: {
         '/chart': (context) => const ChartPage(),
       },
@@ -57,14 +57,14 @@ class MemeHunterApp extends StatelessWidget {
   }
 }
 
-class MemeHunterPage extends StatefulWidget {
-  const MemeHunterPage({super.key});
+class TokenQuestPage extends StatefulWidget {
+  const TokenQuestPage({super.key});
 
   @override
-  _MemeHunterPageState createState() => _MemeHunterPageState();
+  _TokenQuestPageState createState() => _TokenQuestPageState();
 }
 
-class _MemeHunterPageState extends State<MemeHunterPage> {
+class _TokenQuestPageState extends State<TokenQuestPage> {
   String? _walletAddress; // Add wallet address state
 
   void _launchURL() async {
@@ -83,15 +83,7 @@ class _MemeHunterPageState extends State<MemeHunterPage> {
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Contract address copied to clipboard')),
-    );
-  }
-
-  void _navigateToChart(String tokenName, String tokenCA) {
-    Navigator.pushNamed(
-      context,
-      '/chart',
-      arguments: ChartPageArguments(tokenName, tokenCA),
+      const SnackBar(content: Text('Mint address copied to clipboard.')),
     );
   }
 
