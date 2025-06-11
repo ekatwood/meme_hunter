@@ -1,3 +1,13 @@
+// Dependencies for Cargo.toml:
+
+//[dependencies]
+//solana-program = "1.18.15" # Or latest compatible with Jupiter's SDK
+//borsh = "0.10.3"
+//spl-token = "4.0.0" # Ensure this is compatible with your solana-program version
+//
+//# If you decide to use a Jupiter Rust CPI crate directly:
+//# jupiter-amm-v6 = { version = "0.1.0" } # Check for latest compatible version
+
 // Enhanced Solana smart wallet program with USDC-based token purchases
 use solana_program::{
     account_info::{next_account_info, AccountInfo},
@@ -12,7 +22,10 @@ use solana_program::{
     borsh::try_from_slice_unchecked, // For deserializing instruction data
     program_pack::{IsInitialized, Pack, Sealed}, // For account state management
 };
-use spl_token::state::{Account as TokenAccount, Mint as TokenMint}; // For SPL token account state
+use spl_token::{
+    state::{Account as TokenAccount, Mint as TokenMint},
+    instruction as spl_token_instruction,
+}; // For SPL token account state
 use borsh::{BorshDeserialize, BorshSerialize}; // For state and instruction serialization
 use std::convert::TryInto;
 
@@ -43,6 +56,10 @@ pub enum SmartWalletError {
     InvalidTokenMint,
     #[error("Invalid Associated Token Account")]
     InvalidAssociatedTokenAccount,
+    #[error("Account not rent-paying")] // Added for close
+    AccountNotRentPaying,
+    #[error("Remaining accounts not provided for Jupiter swap")]
+    MissingJupiterAccounts,
 }
 
 impl From<SmartWalletError> for ProgramError {
@@ -52,8 +69,6 @@ impl From<SmartWalletError> for ProgramError {
 }
 
 // Define our program's state struct
-// Added `#[derive(BorshSerialize, BorshDeserialize, Debug, PartialEq)]` for easy serialization
-// and comparison, useful for testing and Python interoperability.
 #[derive(BorshSerialize, BorshDeserialize, Debug, PartialEq)]
 pub struct SmartWallet {
     pub is_initialized: bool, // Flag to indicate if the account has been initialized
@@ -71,10 +86,8 @@ pub struct SmartWallet {
 }
 
 // Implement `Sealed` and `IsInitialized` for the SmartWallet struct
-// `Sealed` is a marker trait that ensures the type can be packed.
 impl Sealed for SmartWallet {}
 
-// `IsInitialized` trait indicates whether the account has been initialized.
 impl IsInitialized for SmartWallet {
     fn is_initialized(&self) -> bool {
         self.is_initialized
@@ -82,43 +95,16 @@ impl IsInitialized for SmartWallet {
 }
 
 // Implement `Pack` for the SmartWallet struct to manage account data.
-// This defines how the struct is serialized into and deserialized from a byte slice.
 impl Pack for SmartWallet {
-    // Defines the fixed size of the serialized SmartWallet struct.
-    // This size must be carefully calculated based on the types within the struct.
-    // bool (1) + Pubkey (32) + u8 (1) + Pubkey (32) + bool (1) + Option<Pubkey> (1 + 32) + Pubkey (32) + u64 (8) + u8 (1) + bool (1) + String (max 255 bytes + 4 bytes for length) + bool (1)
-    // For String, we need a fixed-size buffer or a length prefix + max size.
-    // Let's assume a max email length of 100 bytes for simplicity, plus 4 bytes for length prefix.
-    // Total: 1 + 32 + 1 + 32 + 1 + (1 + 32) + 32 + 8 + 1 + 1 + (4 + 100) + 1 = 246 bytes
-    // For Option<Pubkey>, it's 1 byte for the discriminant (Some/None) + 32 bytes for the Pubkey if Some.
-    // So, 1 + 32 + 1 + 32 + 1 + 33 + 32 + 8 + 1 + 1 + 104 + 1 = 247 bytes
-    // Let's round up to a safe size, e.g., 256 bytes, or define a precise max for String.
-    // For a fixed-size string, it's better to use an array like [u8; MAX_EMAIL_LEN] and store actual length.
-    // For simplicity and to match Borsh's dynamic string serialization, we'll use a larger fixed size
-    // and rely on the client to provide a reasonable email length.
-    // A more robust solution would be to use a fixed-size byte array for the email and track its length.
-    // For now, let's calculate based on the maximum possible size of the String (4 bytes length + max 255 content)
-    // Let's set a max email length to avoid dynamic sizing issues with Pack.
-    // If we use Borsh's default String serialization, it's a u32 length prefix + bytes.
-    // So, for Pack, we need to decide on a max length. Let's say max 100 chars for email.
-    // 1 (is_initialized) + 32 (owner) + 1 (bump) + 32 (authority) + 1 (is_active) + 33 (external_authority) + 32 (usdc_mint) + 8 (increment) + 1 (max_tokens) + 1 (email_notifications) + 4 (email_len) + 100 (email_data) + 1 (low_balance_notified)
-    // = 1 + 32 + 1 + 32 + 1 + 33 + 32 + 8 + 1 + 1 + 4 + 100 + 1 = 247 bytes.
-    // Let's make it 256 for alignment and safety for now.
     const LEN: usize = 256; // A sufficiently large size for the SmartWallet struct.
-                            // In a real app, calculate precisely or use a fixed-size string buffer.
 
-    // Packs the SmartWallet struct into a mutable byte slice.
     fn pack_into_slice(&self, dst: &mut [u8]) {
         let encoded = self.try_to_vec().expect("Failed to serialize SmartWallet");
         dst[..encoded.len()].copy_from_slice(&encoded);
-        // Pad the rest with zeros if necessary (Pack requires fixed size)
-        dst[encoded.len()..].fill(0);
+        dst[encoded.len()..].fill(0); // Pad with zeros for fixed size
     }
 
-    // Unpacks a SmartWallet struct from a byte slice.
     fn unpack_from_slice(src: &[u8]) -> Result<Self, ProgramError> {
-        // Use Borsh to deserialize from the slice.
-        // This assumes the entire slice contains the serialized data.
         SmartWallet::try_from_slice(src)
             .map_err(|_| ProgramError::InvalidAccountData)
     }
@@ -126,7 +112,6 @@ impl Pack for SmartWallet {
 
 
 // Define instruction types with updated functionality
-// #[derive(BorshSerialize, BorshDeserialize)] for easy instruction data handling
 #[derive(BorshSerialize, BorshDeserialize, Debug, PartialEq)]
 pub enum SmartWalletInstruction {
     /// Initialize a new smart wallet
@@ -135,6 +120,7 @@ pub enum SmartWalletInstruction {
     /// 1. `[writable]` New wallet account (PDA, owned by program)
     /// 2. `[]` USDC token mint (e.g., EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)
     /// 3. `[]` System Program
+    /// 4. `[]` Rent Sysvar
     Initialize {
         increment_amount: u64,
         max_tokens_per_run: u8,
@@ -148,6 +134,7 @@ pub enum SmartWalletInstruction {
     /// 1. `[writable]` Source USDC account (ATA of source owner)
     /// 2. `[writable]` Wallet USDC account (ATA of wallet PDA)
     /// 3. `[]` Token program (spl-token program ID)
+    /// 4. `[writable]` Wallet account (PDA, owned by program) - to update low_balance_notified
     DepositUSDC { amount: u64 },
 
     /// Withdraw USDC from wallet
@@ -177,22 +164,33 @@ pub enum SmartWalletInstruction {
     /// 2. `[]` New external authority Pubkey
     AuthorizeExternal,
 
-    /// Execute token purchases
+    /// Execute token purchases using Jupiter
     /// Accounts:
     /// 0. `[signer]` Authority (owner or external authority)
-    /// 1. `[writable]` Wallet account (PDA, owned by program)
+    /// 1. `[writable]` Wallet account (PDA, owned by program) - to update low_balance_notified
     /// 2. `[writable]` Wallet USDC account (ATA of wallet PDA)
-    /// 3. `[]` Token program (spl-token program ID)
-    /// 4. `[]` (Optional, if needed for Raydium simulation) Dummy account for Raydium program ID
-    /// 5+ `[writable]` (Optional, if needed for Raydium simulation) Dummy accounts for Raydium pools/mints/etc.
-    ///    Note: In a real Raydium integration, this list would be extensive and specific to the swap.
-    PurchaseTokens { token_mints: Vec<Pubkey> },
+    /// 3. `[]` SPL Token Program
+    /// 4. `[]` System Program
+    /// 5. `[]` Rent Sysvar
+    /// 6. `[]` Sysvar:Instructions (for CPI checks)
+    /// 7. `[optional]` All other accounts required by Jupiter's swap instruction (dynamic list)
+    PurchaseTokens { token_mints: Vec<Pubkey>, jupiter_swap_ix_data: Vec<u8> },
 
     /// Reset low balance notification flag
     /// Accounts:
     /// 0. `[signer]` Authority (owner or external authority)
     /// 1. `[writable]` Wallet account (PDA, owned by program)
     ResetLowBalanceFlag,
+
+    /// Cancel smart wallet and reclaim SOL/tokens
+    /// Accounts:
+    /// 0. `[signer]` Owner (must be the wallet owner)
+    /// 1. `[writable]` Wallet account (PDA, owned by program) - to be closed
+    /// 2. `[writable]` Wallet USDC account (ATA of wallet PDA) - to be closed (funds reclaimed)
+    /// 3. `[writable]` Owner's USDC account (ATA of owner) - where USDC goes
+    /// 4. `[]` SPL Token Program
+    /// 5. `[writable]` Owner's SOL account (system account) - where SOL rent exemption goes
+    CancelSmartWallet,
 }
 
 // Program entry point
@@ -230,13 +228,17 @@ fn process_instruction(
             msg!("Instruction: AuthorizeExternal");
             authorize_external(program_id, accounts)
         },
-        SmartWalletInstruction::PurchaseTokens { token_mints } => {
+        SmartWalletInstruction::PurchaseTokens { token_mints, jupiter_swap_ix_data } => {
             msg!("Instruction: PurchaseTokens");
-            purchase_tokens(program_id, accounts, token_mints)
+            purchase_tokens(program_id, accounts, token_mints, jupiter_swap_ix_data)
         },
         SmartWalletInstruction::ResetLowBalanceFlag => {
             msg!("Instruction: ResetLowBalanceFlag");
             reset_low_balance_flag(program_id, accounts)
+        },
+        SmartWalletInstruction::CancelSmartWallet => {
+            msg!("Instruction: CancelSmartWallet");
+            cancel_smart_wallet(program_id, accounts)
         },
     }
 }
@@ -270,6 +272,7 @@ fn initialize(
     let wallet_account = next_account_info(account_info_iter)?;
     let usdc_mint = next_account_info(account_info_iter)?;
     let system_program = next_account_info(account_info_iter)?; // System program for rent check
+    let rent_sysvar = next_account_info(account_info_iter)?; // Rent sysvar account
 
     // Verify the funder is a signer
     if !funder.is_signer {
@@ -277,6 +280,7 @@ fn initialize(
     }
 
     // Verify wallet account is not already initialized
+    // Check if the account is owned by the program and has data
     if wallet_account.owner == program_id && wallet_account.data_len() > 0 {
         let existing_wallet = SmartWallet::unpack_from_slice(&wallet_account.data.borrow())?;
         if existing_wallet.is_initialized() {
@@ -298,7 +302,7 @@ fn initialize(
     }
 
     // Ensure the wallet account has enough space and is rent-exempt
-    let rent = &Rent::from_account_info(next_account_info(account_info_iter)?)?; // Rent sysvar
+    let rent = &Rent::from_account_info(rent_sysvar)?; // Rent sysvar
     if !rent.is_exempt(wallet_account.lamports(), SmartWallet::LEN) {
         return Err(SmartWalletError::NotRentExempt.into());
     }
@@ -369,7 +373,7 @@ fn deposit_usdc(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> P
     }
 
     // Create the transfer instruction for SPL tokens
-    let transfer_ix = spl_token::instruction::transfer(
+    let transfer_ix = spl_token_instruction::transfer(
         token_program.key,
         source_usdc.key,
         wallet_usdc.key,
@@ -453,7 +457,7 @@ fn withdraw_usdc(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> 
     ];
 
     // Create the transfer instruction for SPL tokens
-    let transfer_ix = spl_token::instruction::transfer(
+    let transfer_ix = spl_token_instruction::transfer(
         token_program.key,
         wallet_usdc.key,
         destination_usdc.key,
@@ -510,6 +514,10 @@ fn update_settings(
         wallet_data.max_tokens_per_run = max_tokens;
     }
     if let Some(user_email) = email {
+        // Basic length check for email
+        if user_email.len() > 100 { // Max 100 chars for email
+            return Err(ProgramError::InvalidArgument);
+        }
         wallet_data.user_email = user_email;
     }
     if let Some(enable) = enable_notifications {
@@ -551,35 +559,22 @@ fn authorize_external(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramR
     Ok(())
 }
 
-// Purchase tokens with USDC (Raydium simulation)
-fn purchase_tokens(program_id: &Pubkey, accounts: &[AccountInfo], token_mints: Vec<Pubkey>) -> ProgramResult {
+// Purchase tokens using Jupiter
+fn purchase_tokens(program_id: &Pubkey, accounts: &[AccountInfo], token_mints: Vec<Pubkey>, jupiter_swap_ix_data: Vec<u8>) -> ProgramResult {
     let account_info_iter = &mut accounts.iter();
     let authority = next_account_info(account_info_iter)?; // Signer: owner or external authority
     let wallet_account = next_account_info(account_info_iter)?; // Smart wallet PDA account
     let wallet_usdc_account = next_account_info(account_info_iter)?; // Wallet's USDC ATA
     let token_program = next_account_info(account_info_iter)?; // SPL Token Program
+    let system_program = next_account_info(account_info_iter)?; // System Program
+    let rent_sysvar = next_account_info(account_info_iter)?; // Rent Sysvar
+    let sysvar_instructions = next_account_info(account_info_iter)?; // Sysvar:Instructions for CPI
 
-    // For Raydium simulation, we might need additional dummy accounts to satisfy `next_account_info` calls
-    // in a real Raydium swap instruction. Let's consume some dummy accounts for now.
-    // In a real scenario, these would be specific Raydium pool, market, and token accounts.
-    let _dummy_raydium_program = next_account_info(account_info_iter)?;
-    let _dummy_pool_account = next_account_info(account_info_iter)?;
-    let _dummy_open_orders = next_account_info(account_info_iter)?;
-    let _dummy_target_orders = next_account_info(account_info_iter)?;
-    let _dummy_withdraw_queue = next_account_info(account_info_iter)?;
-    let _dummy_lp_mint = next_account_info(account_info_iter)?;
-    let _dummy_amm_authority = next_account_info(account_info_iter)?;
-    let _dummy_coin_vault = next_account_info(account_info_iter)?;
-    let _dummy_pc_vault = next_account_info(account_info_iter)?;
-    let _dummy_market_program = next_account_info(account_info_iter)?;
-    let _dummy_market_account = next_account_info(account_info_iter)?;
-    let _dummy_market_bids = next_account_info(account_info_iter)?;
-    let _dummy_market_asks = next_account_info(account_info_iter)?;
-    let _dummy_market_event_queue = next_account_info(account_info_iter)?;
-    let _dummy_market_base_vault = next_account_info(account_info_iter)?;
-    let _dummy_market_quote_vault = next_account_info(account_info_iter)?;
-    let _dummy_serum_authority = next_account_info(account_info_iter)?;
-    // This list can grow significantly for a real swap.
+    // The rest of the accounts are for Jupiter. We consume them all as remaining accounts.
+    let mut jupiter_cpi_accounts_infos = vec![];
+    while let Ok(account) = next_account_info(account_info_iter) {
+        jupiter_cpi_accounts_infos.push(account.clone());
+    }
 
     // Verify authority is a signer
     if !authority.is_signer {
@@ -620,63 +615,79 @@ fn purchase_tokens(program_id: &Pubkey, accounts: &[AccountInfo], token_mints: V
     }
 
     // Determine how many tokens we can buy with our available balance
+    // This is a simple count; Jupiter will handle actual swap logic based on jupiter_swap_ix_data
     let num_tokens_to_buy = std::cmp::min(
         (usdc_balance / wallet_data.increment_amount) as usize,
         std::cmp::min(token_mints.len(), wallet_data.max_tokens_per_run as usize)
     );
 
-    if num_tokens_to_buy == 0 {
-        msg!("No tokens to purchase based on current balance or max_tokens_per_run.");
+    if num_tokens_to_buy == 0 || jupiter_swap_ix_data.is_empty() {
+        msg!("No tokens to purchase or Jupiter swap data provided.");
         return Ok(()); // Nothing to do
     }
 
-    msg!("Purchasing {} tokens with {} USDC (scaled) each", num_tokens_to_buy, wallet_data.increment_amount);
+    msg!("Executing Jupiter swap for {} USDC (scaled) from wallet {} to buy tokens.",
+         wallet_data.increment_amount, wallet_account.key);
 
-    // --- Raydium Swap Simulation ---
-    // In a real implementation, you'd iterate through selected token_mints and:
-    // 1. Find the appropriate Raydium pool for USDC -> token_mint.
-    // 2. Construct the Raydium swap instruction using the pool's specific accounts.
-    // 3. Create the necessary associated token accounts for the new tokens if they don't exist.
-    // 4. Invoke the Raydium program with `invoke_signed`, using the wallet's PDA as the signer.
-    //
-    // For this simulation, we'll just log the intended action and deduct the balance.
-    // The actual token transfer would happen via the Raydium CPI.
+    // --- Jupiter Swap CPI ---
+    // The `jupiter_swap_ix_data` contains the serialized instruction data for Jupiter's swap.
+    // The `jupiter_cpi_accounts_infos` contains the AccountInfo for all accounts required by Jupiter.
 
-    let total_cost = (num_tokens_to_buy as u64) * wallet_data.increment_amount;
+    // Verify Jupiter accounts are provided (at least Jupiter Program ID and necessary token accounts)
+    if jupiter_cpi_accounts_infos.is_empty() {
+        return Err(SmartWalletError::MissingJupiterAccounts.into());
+    }
 
-    // Simulate transfer of USDC from wallet_usdc_account to a dummy Raydium vault
-    // This is a placeholder for the actual swap logic that would involve Raydium's program.
-    // In a real scenario, the USDC would be transferred to Raydium's pool vault.
-    // Here, we just ensure the wallet has enough funds and simulate the deduction.
+    // Construct the Jupiter Instruction from the provided data and accounts.
+    // The first account in jupiter_cpi_accounts_infos is expected to be Jupiter's Program ID.
+    let jupiter_program_id = jupiter_cpi_accounts_infos[0].key;
 
-    // A real swap would involve:
-    // spl_token::instruction::transfer(
-    //     token_program.key,
-    //     wallet_usdc_account.key,
-    //     raydium_usdc_vault_account.key, // Raydium's USDC vault
-    //     &wallet_data.authority_pubkey,
-    //     &[],
-    //     total_cost,
-    // )?;
-    // invoke_signed(
-    //     &transfer_to_raydium_ix,
-    //     &[wallet_usdc_account.clone(), raydium_usdc_vault_account.clone(), wallet_account.clone(), token_program.clone()],
-    //     &[&[b"wallet", wallet_data.owner.as_ref(), &[wallet_data.authority_bump_seed]]]
-    // )?;
-    //
-    // Then, invoke the Raydium swap instruction.
-    //
-    // For now, we only check the balance and update the flag.
-    // The actual USDC deduction from `wallet_usdc_account` would happen via the Raydium CPI.
-    // Since we're not doing the actual CPI, the balance on `wallet_usdc_account` won't change here.
-    // This means the GCF will need to re-fetch the balance to get the updated amount.
+    // Create AccountMeta vector from AccountInfo vector
+    let jupiter_accounts_meta: Vec<solana_program::instruction::AccountMeta> =
+        jupiter_cpi_accounts_infos.iter().map(|acc_info| {
+            solana_program::instruction::AccountMeta {
+                pubkey: *acc_info.key,
+                is_signer: acc_info.is_signer,
+                is_writable: acc_info.is_writable,
+            }
+        }).collect();
 
-    let remaining_balance_after_simulated_purchase = usdc_balance - total_cost;
+    let jupiter_swap_ix = solana_program::instruction::Instruction {
+        program_id: *jupiter_program_id,
+        accounts: jupiter_accounts_meta,
+        data: jupiter_swap_ix_data,
+    };
+
+    // Prepare signers seeds for the wallet PDA
+    let wallet_seed = b"wallet";
+    let authority_seeds = &[
+        wallet_seed,
+        wallet_data.owner.as_ref(),
+        &[wallet_data.authority_bump_seed],
+    ];
+
+    // Invoke Jupiter swap with PDA signing
+    // All accounts listed in `jupiter_swap_ix.accounts` must be passed to `invoke_signed`.
+    // The mutable accounts must be writable clones.
+    invoke_signed(
+        &jupiter_swap_ix,
+        &jupiter_cpi_accounts_infos, // Pass the same AccountInfos that Jupiter expects
+        &[authority_seeds],
+    )?;
+
+    msg!("Jupiter swap executed successfully!");
 
     // Check if the remaining balance is below the increment amount
-    if remaining_balance_after_simulated_purchase < wallet_data.increment_amount {
+    // After a Jupiter swap, the balance of wallet_usdc_account will be updated.
+    // We would re-fetch the balance to make an accurate assessment for the flag.
+    // For simplicity, we'll assume it might be low and set the flag if needed.
+    // A more robust solution would re-read `wallet_usdc_account.data` here.
+    let updated_wallet_usdc_token_account_data = TokenAccount::unpack(&wallet_usdc_account.data.borrow())?;
+    let remaining_balance = updated_wallet_usdc_token_account_data.amount;
+
+    if remaining_balance < wallet_data.increment_amount {
         wallet_data.low_balance_notified = true; // Set flag
-        msg!("Remaining balance ({} USDC scaled) is below the increment amount. Low balance flag set.", remaining_balance_after_simulated_purchase);
+        msg!("Remaining balance ({} USDC scaled) is below the increment amount. Low balance flag set.", remaining_balance);
     } else {
         wallet_data.low_balance_notified = false; // Ensure flag is false if balance is sufficient
     }
@@ -684,7 +695,7 @@ fn purchase_tokens(program_id: &Pubkey, accounts: &[AccountInfo], token_mints: V
     // Pack the updated wallet data back to the account
     SmartWallet::pack(wallet_data, &mut wallet_account.data.borrow_mut())?;
 
-    msg!("Simulated token purchases completed for {} tokens. Total cost: {} USDC (scaled).", num_tokens_to_buy, total_cost);
+    msg!("Smart wallet state updated after Jupiter swap.");
     Ok(())
 }
 
@@ -716,5 +727,131 @@ fn reset_low_balance_flag(program_id: &Pubkey, accounts: &[AccountInfo]) -> Prog
     SmartWallet::pack(wallet_data, &mut wallet_account.data.borrow_mut())?;
 
     msg!("Low balance notification flag reset for wallet {}", wallet_account.key);
+    Ok(())
+}
+
+// Cancel smart wallet and reclaim SOL/tokens
+fn cancel_smart_wallet(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult {
+    let account_info_iter = &mut accounts.iter();
+    let owner = next_account_info(account_info_iter)?; // Owner (signer)
+    let wallet_account = next_account_info(account_info_iter)?; // Wallet PDA account
+    let wallet_usdc_account = next_account_info(account_info_iter)?; // Wallet's USDC ATA
+    let owner_usdc_account = next_account_info(account_info_iter)?; // Owner's USDC ATA
+    let token_program = next_account_info(account_info_iter)?; // SPL Token Program
+    let owner_sol_account = next_account_info(account_info_iter)?; // Owner's SOL account (system account)
+
+    // Verify owner is a signer
+    if !owner.is_signer {
+        return Err(SmartWalletError::MissingRequiredSignature.into());
+    }
+
+    // Deserialize wallet account and verify ownership
+    let wallet_data = get_and_validate_wallet_account(program_id, wallet_account)?;
+    if wallet_data.owner != *owner.key {
+        return Err(SmartWalletError::OwnerMismatch.into());
+    }
+
+    // Verify token program
+    if token_program.key != &spl_token::id() {
+        return Err(SmartWalletError::InvalidTokenProgram.into());
+    }
+
+    // Close Wallet USDC ATA first: transfer all remaining USDC to owner's USDC ATA
+    let wallet_usdc_token_data = TokenAccount::unpack(&wallet_usdc_account.data.borrow())?;
+    if wallet_usdc_token_data.owner != wallet_data.authority_pubkey {
+        return Err(SmartWalletError::InvalidAssociatedTokenAccount.into());
+    }
+    if wallet_usdc_token_data.mint != wallet_data.usdc_token_mint {
+        return Err(SmartWalletError::InvalidTokenMint.into());
+    }
+
+    let usdc_balance = wallet_usdc_token_data.amount;
+    if usdc_balance > 0 {
+        msg!("Transferring {} USDC from wallet ATA to owner's ATA.", usdc_balance);
+        let wallet_seed = b"wallet";
+        let authority_seeds = &[
+            wallet_seed,
+            owner.key.as_ref(),
+            &[wallet_data.authority_bump_seed],
+        ];
+
+        let transfer_usdc_ix = spl_token_instruction::transfer(
+            token_program.key,
+            wallet_usdc_account.key,
+            owner_usdc_account.key,
+            &wallet_data.authority_pubkey, // PDA as authority
+            &[],
+            usdc_balance,
+        )?;
+
+        invoke_signed(
+            &transfer_usdc_ix,
+            &[
+                wallet_usdc_account.clone(),
+                owner_usdc_account.clone(),
+                wallet_account.clone(), // PDA account needed for signing
+                token_program.clone(),
+            ],
+            &[authority_seeds],
+        )?;
+    }
+
+    // Close the wallet's USDC ATA, reclaiming its rent exemption to owner's SOL account
+    msg!("Closing wallet USDC ATA.");
+    let close_usdc_ix = spl_token_instruction::close_account(
+        token_program.key,
+        wallet_usdc_account.key,
+        owner_sol_account.key, // Destination for SOL rent
+        &wallet_data.authority_pubkey, // Authority to close
+        &[],
+    )?;
+
+    let wallet_seed = b"wallet";
+    let authority_seeds = &[
+        wallet_seed,
+        owner.key.as_ref(),
+        &[wallet_data.authority_bump_seed],
+    ];
+
+    invoke_signed(
+        &close_usdc_ix,
+        &[
+            wallet_usdc_account.clone(),
+            owner_sol_account.clone(),
+            wallet_account.clone(), // PDA account needed for signing
+            token_program.clone(),
+        ],
+        &[authority_seeds],
+    )?;
+
+    // Close the main Smart Wallet PDA account, reclaiming its SOL rent to owner's SOL account
+    msg!("Closing main smart wallet PDA account.");
+    let transfer_sol_ix = system_instruction::transfer(
+        wallet_account.key,
+        owner_sol_account.key,
+        wallet_account.lamports(),
+    );
+
+    let wallet_seed = b"wallet";
+    let authority_seeds = &[
+        wallet_seed,
+        owner.key.as_ref(),
+        &[wallet_data.authority_bump_seed],
+    ];
+
+    invoke_signed(
+        &transfer_sol_ix,
+        &[
+            wallet_account.clone(),
+            owner_sol_account.clone(),
+            system_program::id().to_account_info().clone(), // System program
+        ],
+        &[authority_seeds],
+    )?;
+
+    // At this point, the wallet_account should effectively be closed and its lamports transferred.
+    // The runtime will zero out the data and reset the owner for closed accounts.
+    msg!("Smart wallet {} cancelled. All funds reclaimed.", wallet_account.key);
+
     Ok(())
 }
