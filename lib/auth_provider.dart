@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 // import 'package:firestore_functions.dart'; // Keep if you use this elsewhere
-import 'package:smart_wallet_service.dart'; // Import your SmartWalletService
+import 'smart_wallet_service.dart'; // Import your SmartWalletService
 import 'package:solana/solana.dart'; // For Pubkey
 
 class AuthProvider extends ChangeNotifier {
@@ -23,6 +23,7 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider() {
     // Initialize SmartWalletService here.
     // IMPORTANT: Replace with your actual deployed program ID and GCF URL
+
     final programId = Pubkey.fromBase58('YOUR_DEPLOYED_PROGRAM_ID_HERE'); // <<< REPLACE THIS
     final gcfTriggerUrl = 'https://<YOUR_REGION>-<YOUR_PROJECT_ID>.cloudfunctions.net/trigger_smart_wallet_processing'; // <<< REPLACE THIS
 
