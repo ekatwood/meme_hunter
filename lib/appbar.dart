@@ -30,7 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: const Padding(
             padding: EdgeInsets.all(8.0),
             child: Text(
-              'MOONROCKET',
+              'Token Quest',
               style: TextStyle(
                 fontFamily: 'SourceCodePro',
                 fontSize: 20.0,
@@ -55,18 +55,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return PopupMenuButton<String>(
       itemBuilder: (BuildContext context) {
         return [
-          const PopupMenuItem<String>(
-            value: 'mint_token',
-            child: Text('Mint Token'),
-          ),
-          const PopupMenuItem<String>(
-            value: 'my_projects',
-            child: Text('My Projects'),
-          ),
-          const PopupMenuItem<String>(
-            value: 'settings',
-            child: Text('Settings'),
-          ),
           PopupMenuItem<String>(
             value: 'log_out',
             child: Text('Log Out'),
@@ -75,15 +63,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       },
       onSelected: (String value) async {
         switch (value) {
-          case 'mint_token':
-            context.go('/mint_token');
-            break;
-          case 'my_projects':
-            context.go('/my_projects');
-            break;
-          case 'settings':
-            context.go('/settings');
-            break;
           case 'log_out':
             authProvider.logout();
             break;

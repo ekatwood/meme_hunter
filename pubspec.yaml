@@ -39,6 +39,7 @@ dependencies:
   go_router: ^15.1.2
   provider: ^6.1.5
   flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.1 # For better image loading and caching
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -17,14 +17,6 @@ final _router = GoRouter(
       path: '/',
       builder: (context, state) => const TokenQuestPage(),
     ),
-    // GoRoute(
-    //   path: '/mint_token',
-    //   builder: (context, state) => const TokenFactory(), // Create this page
-    // ),
-    // GoRoute(
-    //   path: '/settings',
-    //   builder: (context, state) => SettingsPage(), // and this page
-    // ),
   ],
 );
 
