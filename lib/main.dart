@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'auth_provider.dart';
 import 'appbar.dart';
+import 'find_unique_trades_SOL.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'find_unique_trades_SOL.dart';
+import 'find_unique_trades.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'firestore_functions.dart';
-import 'package:flutter/services.dart';
 
 final _router = GoRouter(
   routes: [
@@ -42,9 +41,6 @@ class MemeHunterApp extends StatelessWidget {
       title: 'Token Quest',
       theme: ThemeData(),
       home: const TokenQuestPage(),
-      routes: {
-        '/chart': (context) => const ChartPage(),
-      },
     );
   }
 }
@@ -57,7 +53,7 @@ class TokenQuestPage extends StatefulWidget {
 }
 
 class _TokenQuestPageState extends State<TokenQuestPage> {
-  String? _walletAddress; // Add wallet address state
+  bool isSolana = false;
 
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
@@ -68,23 +64,39 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     }
   }
 
-  Future<Map<int, dynamic>> fetchSOLTradesData() async {
-    return await fetchSOLDocuments();
+  Future<Map<int, dynamic>> fetchTradesData() async {
+    return await fetchDocuments();
   }
 
-  void _copyToClipboard(String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Mint address copied to clipboard.')),
-    );
+  Future<Map<int, dynamic>> fetchSOLTradesData() async {
+    return await fetchSOLDocuments();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: TextField(
+                  readOnly: true,
+                  controller: TextEditingController(
+                      text: 'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.bold),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(top: 30.0),
               child: ClipRRect(
@@ -100,14 +112,36 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
               padding: EdgeInsets.only(top: 25.0, right: 10, left: 10),
               child: Center(
                 child: Text(
-                  'Hottest 🔥📈 Solana Tokens',
+                  'Hottest #memecoins from Ethereum and Solana, updated every day!',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
+
                 ),
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: ToggleButtons(
+                children: const <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('ETH'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text('SOL'),
+                  ),
+                ],
+                isSelected: [!isSolana, isSolana],
+                onPressed: (int index) {
+                  setState(() {
+                    isSolana = index == 1;
+                  });
+                },
+              ),
+            ),
             FutureBuilder<Map<int, dynamic>>(
-              future: fetchSOLTradesData(),
+              future: isSolana ? fetchSOLTradesData() : fetchTradesData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
@@ -128,16 +162,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   return Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 10.0, right: 15),
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            timestamp,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      Padding(
                         padding: const EdgeInsets.only(
                             top: 20.0, right: 15, left: 15, bottom: 15),
                         child: SingleChildScrollView(
@@ -156,22 +180,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 label: Flexible(
                                   child: Text(
                                     'Symbol',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: Flexible(
-                                  child: Text(
-                                    'CA',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
-                              ),
-                              DataColumn(
-                                label: Flexible(
-                                  child: Text(
-                                    '📈',
                                     style: TextStyle(fontStyle: FontStyle.italic),
                                   ),
                                 ),
@@ -201,37 +209,18 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                     ),
                                   ),
                                 ),
-                                DataCell(
-                                  GestureDetector(
-                                    onTap: () {
-                                      _copyToClipboard(entry.value['CA'] ?? 'No CA available');
-                                    },
-                                    child: const Text(
-                                      'copy',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        decoration: TextDecoration.underline,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  GestureDetector(
-                                    onTap: () {
-                                      _navigateToChart(
-                                        entry.value['Name'],
-                                        entry.value['CA'] ?? '',
-                                      );
-                                    },
-                                    child: const Icon(
-                                      Icons.bar_chart,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                ),
                               ]);
                             }).toList(),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0, right: 15),
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: Text(
+                            timestamp,
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
                       ),
@@ -263,65 +252,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   );
                 }
               },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// New ChartPage class
-class ChartPageArguments {
-  final String tokenName;
-  final String tokenCA;
-
-  ChartPageArguments(this.tokenName, this.tokenCA);
-}
-
-class ChartPage extends StatelessWidget {
-  const ChartPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ChartPageArguments;
-
-    return Scaffold(
-      appBar: CustomAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 25.0, right: 10, left: 10),
-              child: Center(
-                child: Text(
-                  'Chart For "${args.tokenName}"',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Center(
-                child: Text(
-                  'Contract Address: ${args.tokenCA}',
-                  style: const TextStyle(fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            // Placeholder for chart content
-            Container(
-              height: 400,
-              margin: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Center(
-                child: Text('Chart data loading...'),
-              ),
             ),
           ],
         ),
