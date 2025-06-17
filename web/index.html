@@ -6,7 +6,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A simple API to find the hottest meme coins">
+  <meta name="description" content="A GraphQL query to find trending blockchain tokens.">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,8 +17,14 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>meme_hunter</title>
+  <title>Token Quest</title>
   <link rel="manifest" href="manifest.json">
+
+  <script src="https://unpkg.com/@solflare-wallet/sdk@latest/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/ethers@6.11.1/dist/ethers.umd.min.js"></script>
+
+  <script src="javascript/solflare_connect.js"></script>
+  <script src="javascript/metamask_connect.js"></script>
 
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js"></script>
