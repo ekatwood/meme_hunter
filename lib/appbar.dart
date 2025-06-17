@@ -19,7 +19,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final isLoggedIn = authProvider.isLoggedIn;
 
     return AppBar(
-      backgroundColor: Colors.tealAccent,
+      backgroundColor: const Color(0xFF800020),
       leadingWidth: 200,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -35,7 +35,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 fontFamily: 'SourceCodePro',
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Colors.white,
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -124,7 +124,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 height: 24,
               ),
               const SizedBox(width: 8),
-              const Text('Solflare'),
+              const Text('Solflare',style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -138,7 +138,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 height: 24,
               ),
               const SizedBox(width: 8),
-              const Text('MetaMask'),
+              const Text('MetaMask',style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
         ),
