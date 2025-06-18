@@ -72,11 +72,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            const Icon(Icons.arrow_drop_down),
+            const Icon(Icons.arrow_drop_down,color: Colors.grey,),
             const SizedBox(width: 8),
             Text(
               _truncateWalletAddress(authProvider.walletAddress),
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12,color: Colors.white),
             ),
           ],
         ),
