@@ -111,7 +111,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Mint address copied to clipboard.")),
+      const SnackBar(content: Text("Address copied to clipboard.")),
     );
   }
 
@@ -119,6 +119,8 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   Widget build(BuildContext context) {
     // NEW: Access AuthProvider for theme toggle
     final authProvider = Provider.of<AuthProvider>(context);
+    final String _tipAddress = 'MFxBxp8ysZVXezAADWBt6tgDf2iqfq6LbY';
+    final String _fontFamily = 'SourceCodePro';
 
     return Scaffold(
       appBar: CustomAppBar(),
@@ -132,33 +134,52 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Expanded( // Allows TextField to take remaining space
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: TextField(
-                        readOnly: true,
-                        controller: TextEditingController(
-                            text: 'tip the dev (DOGE): DByzcUdmZbfVGww2z4LcuWGjsV4aWubKVG'),
-                        style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
+                    child:
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: _fontFamily,
+                            color: Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
+                          children: [
+                          const TextSpan(
+                          text: 'Tip the dev (LTC): ', // Static text
+                        ),
+                        TextSpan(
+                          text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}', // Truncate
+                          style: const TextStyle(
+                            fontSize: 14,
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue, // Clickable part color
+                            fontWeight: FontWeight.normal, // Ensure address is not bold if parent is
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              _copyToClipboard(_tipAddress); // Pass the full address to copy
+                            },
+                        ),
+                        ]
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10), // Space between text and switch
-                  // Lightmode / Darkmode Toggle Switch
+                  const SizedBox(width: 10),
+                  // Lightmode / Darkmode Toggle
                   Tooltip( // Provides a hint on hover
                     message: authProvider.themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode',
-                    child: Switch(
-                      value: authProvider.themeMode == ThemeMode.dark, // true if current theme is dark
-                      onChanged: (bool value) {
-                        authProvider.toggleThemeMode(); // Call the AuthProvider method
-                      },
-                      activeColor: Theme.of(context).primaryColor, // Use primary color for active state
-                      inactiveTrackColor: Colors.grey, // Grey for inactive state
+                    child: IconButton(
+                      icon: Icon(
+                        authProvider.themeMode == ThemeMode.light
+                            ? Icons.dark_mode_outlined // Icon for light mode to switch to dark
+                            : Icons.light_mode_outlined, // Icon for dark mode to switch to light
+                        size: 28,
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey[800] : Colors.amber, // Icon color based on theme
+                      ),
+                      onPressed: authProvider.toggleThemeMode,
                     ),
                   ),
                 ],
@@ -173,16 +194,18 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      fontFamily: _fontFamily,
                       color: Theme.of(context).textTheme.bodyMedium?.color, // Inherit color from theme
                     ),
                     children: [
-                      const TextSpan(
+                      TextSpan(
                         text: 'A GraphQL query to find trending blockchain tokens ',
                       ),
                       TextSpan(
                         text: '📈💸✅', // The emojis
                         style: const TextStyle(
                           fontFamily: 'NotoColorEmoji', // Apply the emoji font family
+                          fontWeight: FontWeight.normal,
                         ),
                       ),
                     ],
@@ -218,7 +241,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   return const Padding(
                     padding: EdgeInsets.only(top: 20.0),
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.redAccent),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF800020)),
                     ),
                   );
                 } else if (snapshot.hasError) {
@@ -228,14 +251,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   );
                 } else if (snapshot.hasData) {
                   final trades = snapshot.data!;
-                  // Assuming 'timestamp' key exists directly in the top-level map
-                  final String timestamp = trades['timestamp']?.toString() ?? 'N/A';
-
-                  // Filter out the timestamp entry to only process actual trade data rows
-                  final List<Map<String, dynamic>> tradeEntries = trades.entries
-                      .where((entry) => entry.key is int) // Filter out non-integer keys like 'timestamp'
-                      .map((entry) => entry.value as Map<String, dynamic>)
-                      .toList();
+                  final timestamp = trades.entries.first.value['timestamp'];
 
                   return Column(
                     children: [
@@ -272,7 +288,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                               ),
                             ],
-                            rows: tradeEntries.map((trade) {
+                            rows: trades.entries.map((entry) {
                               // NEW: Stubbed Mint Address for ETH and SOL
                               // In a real app, this would come from `trade['MintAddress']`
                               final String stubMintAddress = isSolana
@@ -282,7 +298,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                               return DataRow(cells: [
                                 DataCell(
                                   Container(
-                                    width: 150, // Maintain original width
+                                    width: (MediaQuery.of(context).size.width - 20) * 0.4, // Approx 40% of screen width (adjust 20 for padding), // Maintain original width
                                     child: SelectableText(
                                       trade['Name'] ?? 'N/A', // Use trade['Name']
                                       style: const TextStyle(fontSize: 16),
@@ -309,7 +325,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                   GestureDetector( // Make the cell clickable
                                     onTap: () => _copyToClipboard(stubMintAddress),
                                     child: Container(
-                                      width: 180, // Adjust width for address
+                                      width: 150, // Adjust width for address
                                       child: Text(
                                         '${stubMintAddress.substring(0, 6)}...${stubMintAddress.substring(stubMintAddress.length - 4)}', // Truncate
                                         style: const TextStyle(
@@ -318,7 +334,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                           color: Colors.blue,
                                           fontWeight: FontWeight.normal,
                                         ),
-                                        overflow: TextOverflow.ellipsis, // Handle long addresses
                                       ),
                                     ),
                                   ),
