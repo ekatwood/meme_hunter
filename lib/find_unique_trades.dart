@@ -31,7 +31,7 @@ Future<Map<int, dynamic>> fetchDocuments() async {
 
     trades[counter] = {
       'Name': doc['Name'],
-      'mintAddress': '0x12309842fdggf90823jkf9834240a',
+      'mintAddress': doc['mintAddress'],
       'Symbol': doc['Symbol'],
       'tradesCountWithUniqueTraders': doc['tradesCountWithUniqueTraders'],
       'timestamp': doc['timestamp']

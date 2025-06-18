@@ -30,13 +30,13 @@ void main() async {
     // Provide the AuthProvider to the entire application.
     ChangeNotifierProvider(
       create: (context) => AuthProvider(),
-      child: const MemeHunterApp(),
+      child: const TokenQuestApp(),
     ),
   );
 }
 
-class MemeHunterApp extends StatelessWidget {
-  const MemeHunterApp({super.key});
+class TokenQuestApp extends StatelessWidget {
+  const TokenQuestApp({super.key});
 
   final String _fontFamily = 'SourceCodePro';
   final double _fontSize = 16.0;
@@ -253,6 +253,12 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   final trades = snapshot.data!;
                   final timestamp = trades.entries.first.value['timestamp'];
 
+                  // Filter out the timestamp entry to only process actual trade data rowsMore actions
+                  final List<Map<String, dynamic>> tradeEntries = trades.entries
+                      .where((entry) => entry.key is int) // Filter out non-integer keys like 'timestamp'
+                      .map((entry) => entry.value as Map<String, dynamic>)
+                      .toList();
+
                   return Column(
                     children: [
                       Padding(
@@ -288,12 +294,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                               ),
                             ],
-                            rows: trades.entries.map((entry) {
-                              // NEW: Stubbed Mint Address for ETH and SOL
-                              // In a real app, this would come from `trade['MintAddress']`
-                              final String stubMintAddress = isSolana
-                                  ? 'So11111111111111111111111111111111111111112' // Solana stub
-                                  : '0x1234567890abcdef1234567890abcdef12345678'; // Ethereum stub
+                            rows: tradeEntries.map((trade) {
 
                               return DataRow(cells: [
                                 DataCell(
@@ -323,11 +324,11 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 // NEW: Mint Address DataCell
                                 DataCell(
                                   GestureDetector( // Make the cell clickable
-                                    onTap: () => _copyToClipboard(stubMintAddress),
+                                    onTap: () => _copyToClipboard(trade['mintAddress']),
                                     child: Container(
                                       width: 150, // Adjust width for address
                                       child: Text(
-                                        '${stubMintAddress.substring(0, 6)}...${stubMintAddress.substring(stubMintAddress.length - 4)}', // Truncate
+                                        '${trade['mintAddress'].substring(0, 6)}...${trade['mintAddress'].substring(trade['mintAddress'].length - 4)}', // Truncate
                                         style: const TextStyle(
                                           fontSize: 14,
                                           decoration: TextDecoration.underline,
