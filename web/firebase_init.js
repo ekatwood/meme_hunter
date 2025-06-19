@@ -13,7 +13,7 @@ const firebaseConfig = {
   storageBucket: "meme-hunter-4f1c1.firebasestorage.app",
   messagingSenderId: "194957573763",
   appId: "1:194957573763:web:e37d34fc282d546a6c25b6",
-  measurementId: "G-P5JJPQXTGK"
+  measurementId: "G-P5JJPQXTGK"e
 };
 
 // Initialize Firebase

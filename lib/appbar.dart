@@ -105,6 +105,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   void _showWalletOptions(BuildContext context, AuthProvider authProvider) {
+    String solflareInsignia;
+    if(authProvider.themeMode == ThemeMode.light)
+      solflareInsignia = 'Solflare_INSIGNIA_Obsidian_Noir.png';
+    else
+      solflareInsignia = 'Solflare_INSIGNIA_SOL_Yellow.png';
+
     showMenu(
       context: context,
       position: const RelativeRect.fromLTRB(
@@ -119,7 +125,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             children: [
               Image.asset(
-                'assets/Solflare_INSIGNIA_Obsidian_Noir.png', //  Solflare logo
+                'assets/' + solflareInsignia, //  Solflare logo
                 width: 24,
                 height: 24,
               ),
