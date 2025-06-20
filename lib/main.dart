@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:meme_hunter/token_page.dart';
 import 'auth_provider.dart';
 import 'appbar.dart';
 import 'find_unique_trades_SOL.dart';
@@ -16,6 +17,10 @@ final _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const TokenQuestPage(),
+    ),
+    GoRoute(
+      path: '/token/:blockchainNetwork/:mintAddress',
+      builder: (context, state) => TokenPage(blockchainNetwork: state.pathParameters['blockchainNetwork']!, mintAddress: state.pathParameters['mintAddress']!),
     ),
   ],
 );
@@ -46,7 +51,7 @@ class TokenQuestApp extends StatelessWidget {
 
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'Token Quest',
           themeMode: authProvider.themeMode,
           theme: ThemeData(
@@ -71,7 +76,7 @@ class TokenQuestApp extends StatelessWidget {
               ),
             ),
           ),
-          home: const TokenQuestPage(),
+          routerConfig: _router,
         );
       },
     );
@@ -300,9 +305,16 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 DataCell(
                                   Container(
                                     width: (MediaQuery.of(context).size.width - 20) * 0.4, // Approx 40% of screen width (adjust 20 for padding), // Maintain original width
-                                    child: SelectableText(
-                                      trade['Name'] ?? 'N/A', // Use trade['Name']
-                                      style: const TextStyle(fontSize: 16),
+                                    child:GestureDetector(
+                                      onTap: () {
+                                        print('tapped');
+                                        // Navigate to TokenPage with blockchain and mintAddress
+                                        _router.go('/token/${isSolana ? 'Solana' : 'Ethereum'}/${trade['mintAddress']}');
+                                      },
+                                      child: Text(
+                                        trade['Name'] ?? 'N/A',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
                                     ),
                                   ),
                                 ),
