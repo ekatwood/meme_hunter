@@ -12,4 +12,4 @@ Make the query every hour
 
 Add token page, displaying metadata, charts, and a swap widget
 
-Swap widget implemented with Jupiter API for Solana and 1inch API for Ethereum
+Swap widget implemented with Jupiter API for Solana tokens and 1inch API for ERC-20 tokens
