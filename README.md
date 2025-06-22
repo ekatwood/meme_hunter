@@ -10,8 +10,6 @@ Buy a custom domain
 
 Make the query every hour
 
-Switch Ethereum to Arbitrum
-
 Add token page, displaying metadata, charts, and a swap widget
 
-Swap widget implemented with Jupiter API for Solana and 1inch API for Arbitrum
+Swap widget implemented with Jupiter API for Solana and 1inch API for Ethereum
