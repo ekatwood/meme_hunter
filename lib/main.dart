@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -305,16 +306,51 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 DataCell(
                                   Container(
                                     width: (MediaQuery.of(context).size.width - 20) * 0.4, // Approx 40% of screen width (adjust 20 for padding), // Maintain original width
-                                    child:GestureDetector(
-                                      onTap: () {
-                                        print('tapped');
-                                        // Navigate to TokenPage with blockchain and mintAddress
-                                        _router.go('/token/${isSolana ? 'Solana' : 'Ethereum'}/${trade['mintAddress']}');
-                                      },
-                                      child: Text(
-                                        trade['Name'] ?? 'N/A',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min, // Use minimum space
+                                      children: [
+                                        // Conditional logic for displaying the logo
+                                        if (trade['Logo'] != null && trade['Logo'].isNotEmpty)
+                                          ClipOval(
+                                            child: CachedNetworkImage(
+                                              imageUrl: trade['Logo'],
+                                              width: 25,
+                                              height: 25,
+                                              fit: BoxFit.cover,
+                                              placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
+                                              errorWidget: (context, url, error) => const Icon(Icons.error, size: 25),
+                                            ),
+                                          )
+                                        else
+                                          ClipOval(
+                                            child: SizedBox(
+                                              width: 25,
+                                              height: 25,
+                                              child: isSolana
+                                                  ? Image.asset(
+                                                'assets/solana-sol-logo.png',
+                                                fit: BoxFit.cover,
+                                              )
+                                                  : Image.asset(
+                                                'assets/ethereum-logo.png',
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              // Navigate to TokenPage with blockchain and mintAddress
+                                              _router.go('/token/${isSolana ? 'Solana' : 'Ethereum'}/${trade['mintAddress']}');
+                                            },
+                                            child: Text(
+                                              trade['Name'] ?? 'N/A',
+                                              style: const TextStyle(fontSize: 16),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
