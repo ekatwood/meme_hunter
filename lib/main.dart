@@ -128,6 +128,28 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     final String _tipAddress = 'MFxBxp8ysZVXezAADWBt6tgDf2iqfq6LbY';
     final String _fontFamily = 'SourceCodePro';
 
+    // Define colors for the ToggleButtons based on the current theme's brightness
+    // You can customize these colors directly.
+    final Color selectedFillColor = Theme.of(context).brightness == Brightness.light
+        ? const Color(0xFFA8415B) // Light burgundy for light mode selected
+        : const Color(0xFF800020); // Darker burgundy for dark mode selected
+
+    final Color unselectedTextColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.black87 // Dark text for unselected in light mode
+        : Colors.white70; // Light text for unselected in dark mode
+
+    final Color selectedTextColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.white // White text for selected in light mode
+        : Colors.white; // White text for selected in dark mode (or a contrasting dark color if needed)
+
+    final Color unselectedBorderColor = Theme.of(context).brightness == Brightness.light
+        ? Colors.grey // Grey border for unselected in light mode
+        : Colors.grey[700]!; // Dark grey border for unselected in dark mode
+
+    final Color selectedBorderColor = Theme.of(context).brightness == Brightness.light
+        ? const Color(0xFFA8415B) // Light burgundy border for selected in light mode
+        : const Color(0xFF800020); // Darker burgundy border for selected in dark mode
+
     return Scaffold(
       appBar: CustomAppBar(),
       body: SingleChildScrollView(
@@ -222,6 +244,16 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: ToggleButtons(
+                // Directly apply your custom colors here
+                color: unselectedTextColor, // Color of text/icons in unselected buttons
+                selectedColor: selectedTextColor, // Color of text/icons in selected buttons
+                fillColor: selectedFillColor, // Background color of selected button
+                borderColor: unselectedBorderColor, // Border color of unselected buttons
+                selectedBorderColor: selectedBorderColor, // Border color of selected button
+                // These typically come from the theme, so keeping them simple for direct control
+                splashColor: Colors.grey.withOpacity(0.2),
+                hoverColor: Colors.grey.withOpacity(0.1),
+
                 children: const <Widget>[
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
