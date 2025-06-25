@@ -1,3 +1,4 @@
+// main.dart:
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -92,7 +93,8 @@ class TokenQuestPage extends StatefulWidget {
 }
 
 class _TokenQuestPageState extends State<TokenQuestPage> {
-  bool isSolana = false;
+  // Remove the local `isSolana` state here, it will be managed by AuthProvider
+  // bool isSolana = false; // REMOVE THIS LINE
 
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
@@ -123,7 +125,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
 
   @override
   Widget build(BuildContext context) {
-    // NEW: Access AuthProvider for theme toggle
+    // Access AuthProvider for theme toggle and blockchain preference
     final authProvider = Provider.of<AuthProvider>(context);
     final String _tipAddress = 'MFxBxp8ysZVXezAADWBt6tgDf2iqfq6LbY';
     final String _fontFamily = 'SourceCodePro';
@@ -167,30 +169,30 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                       alignment: Alignment.topLeft,
                       child: RichText(
                         text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: _fontFamily,
-                            color: Theme.of(context).textTheme.bodyMedium?.color,
-                          ),
-                          children: [
-                          const TextSpan(
-                          text: 'Tip the dev (LTC): ', // Static text
-                        ),
-                        TextSpan(
-                          text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}', // Truncate
-                          style: const TextStyle(
-                            fontSize: 14,
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue, // Clickable part color
-                            fontWeight: FontWeight.normal, // Ensure address is not bold if parent is
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              _copyToClipboard(_tipAddress); // Pass the full address to copy
-                            },
-                        ),
-                        ]
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: _fontFamily,
+                              color: Theme.of(context).textTheme.bodyMedium?.color,
+                            ),
+                            children: [
+                              const TextSpan(
+                                text: 'Tip the dev (LTC): ', // Static text
+                              ),
+                              TextSpan(
+                                text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}', // Truncate
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.blue, // Clickable part color
+                                  fontWeight: FontWeight.normal, // Ensure address is not bold if parent is
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    _copyToClipboard(_tipAddress); // Pass the full address to copy
+                                  },
+                              ),
+                            ]
                         ),
                       ),
                     ),
@@ -264,16 +266,17 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     child: Text('Solana'),
                   ),
                 ],
-                isSelected: [!isSolana, isSolana],
+                // Use authProvider.isSolana to determine selected state
+                isSelected: [!authProvider.isSolana, authProvider.isSolana],
                 onPressed: (int index) {
-                  setState(() {
-                    isSolana = index == 1;
-                  });
+                  // Update the blockchain preference via AuthProvider
+                  authProvider.setBlockchainPreference(index == 1);
                 },
               ),
             ),
             FutureBuilder<Map<int, dynamic>>(
-              future: isSolana ? fetchSOLTradesData() : fetchTradesData(),
+              // Use authProvider.isSolana for the future selection
+              future: authProvider.isSolana ? fetchSOLTradesData() : fetchTradesData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
@@ -358,7 +361,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                             child: SizedBox(
                                               width: 25,
                                               height: 25,
-                                              child: isSolana
+                                              child: authProvider.isSolana // Use authProvider.isSolana
                                                   ? Image.asset(
                                                 'assets/solana-sol-logo.png',
                                                 fit: BoxFit.cover,
@@ -374,7 +377,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                           child: GestureDetector(
                                             onTap: () {
                                               // Navigate to TokenPage with blockchain and mintAddress
-                                              _router.go('/token/${isSolana ? 'Solana' : 'Ethereum'}/${trade['mintAddress']}');
+                                              _router.go('/token/${authProvider.isSolana ? 'Solana' : 'Ethereum'}/${trade['mintAddress']}'); // Use authProvider.isSolana
                                             },
                                             child: Text(
                                               trade['Name'] ?? 'N/A',
@@ -443,7 +446,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             children: [
                               const TextSpan(
                                   text: 'Powered by ',
-                                style: const TextStyle(fontWeight: FontWeight.normal,)
+                                  style: const TextStyle(fontWeight: FontWeight.normal,)
                               ),
                               TextSpan(
                                 text: 'Bitquery',
