@@ -1,4 +1,3 @@
-// main.dart:
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -407,11 +406,28 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 // NEW: Mint Address DataCell
                                 DataCell(
                                   GestureDetector( // Make the cell clickable
-                                    onTap: () => _copyToClipboard(trade['mintAddress']),
+                                    onTap: () => _copyToClipboard(trade['SmartContract']),
                                     child: Container(
                                       width: 150, // Adjust width for address
                                       child: Text(
-                                        '${trade['mintAddress'].substring(0, 6)}...${trade['mintAddress'].substring(trade['mintAddress'].length - 4)}', // Truncate
+                                            () {
+                                          final smartContract = trade['SmartContract'] as String?; // Cast to String? for null safety
+                                          if (smartContract == null || smartContract.isEmpty) {
+                                            return 'N/A'; // Handle null or empty string
+                                          }
+
+                                          if (smartContract == '0x') {
+                                            return '0x';
+                                          }
+                                          final int minLengthForTruncation = 10;
+
+                                          if (smartContract.length <= minLengthForTruncation) {
+                                            return smartContract; // Display full address if too short for meaningful truncation
+                                          } else {
+                                            // Truncate as planned
+                                            return '${smartContract.substring(0, 6)}...${smartContract.substring(smartContract.length - 4)}';
+                                          }
+                                        }(),
                                         style: const TextStyle(
                                           fontSize: 14,
                                           decoration: TextDecoration.underline,
