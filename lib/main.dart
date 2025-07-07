@@ -126,7 +126,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   Widget build(BuildContext context) {
     // Access AuthProvider for theme toggle and blockchain preference
     final authProvider = Provider.of<AuthProvider>(context);
-    final String _tipAddress = 'MFxBxp8ysZVXezAADWBt6tgDf2iqfq6LbY';
+    final String _tipAddress = '3m4NqSsisHtCtCpA7jSAj6jNxNEgGL1uGbkpb36yBNq4';
     final String _fontFamily = 'SourceCodePro';
 
     // Define colors for the ToggleButtons based on the current theme's brightness
@@ -176,7 +176,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             ),
                             children: [
                               const TextSpan(
-                                text: 'Tip the dev (LTC): ', // Static text
+                                text: 'Tip the dev (SOL): ', // Static text
                               ),
                               TextSpan(
                                 text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}', // Truncate
@@ -390,7 +390,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                                 DataCell(
                                   Container( // Use Container to apply width directly
-                                    width: 80, // Adjust width as needed for symbol
+                                    width: 110, // Adjust width as needed for symbol
                                     child: TextField(
                                       readOnly: true,
                                       controller: TextEditingController(text: trade['Symbol'] ?? 'N/A'),

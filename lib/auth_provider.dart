@@ -26,7 +26,7 @@ class AuthProvider extends ChangeNotifier {
   void _setThemeCookie(bool isDarkMode) {
     if (kIsWeb) {
       final String themeValue = isDarkMode ? 'dark' : 'light';
-      final DateTime expirationDate = DateTime.now().add(const Duration(days: 36500));
+      final DateTime expirationDate = DateTime.now().add(const Duration(days: 365));
       html.document.cookie = 'themePreference=$themeValue; expires=${expirationDate.toUtc().toIso8601String()}; path=/';
     }
   }
@@ -51,7 +51,7 @@ class AuthProvider extends ChangeNotifier {
   void _setBlockchainCookie(bool isSolana) {
     if (kIsWeb) {
       final String blockchainValue = isSolana ? 'solana' : 'ethereum';
-      final DateTime expirationDate = DateTime.now().add(const Duration(days: 36500));
+      final DateTime expirationDate = DateTime.now().add(const Duration(days: 365));
       html.document.cookie = 'blockchainPreference=$blockchainValue; expires=${expirationDate.toUtc().toIso8601String()}; path=/';
     }
   }
