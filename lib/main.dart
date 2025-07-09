@@ -344,15 +344,32 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                       mainAxisSize: MainAxisSize.min, // Use minimum space
                                       children: [
                                         // Conditional logic for displaying the logo
-                                        if (trade['Logo'] != null && trade['Logo'].isNotEmpty)
+                                        if (trade['firebase_logo_url'] != null && trade['firebase_logo_url'].isNotEmpty)
                                           ClipOval(
-                                            child: CachedNetworkImage(
-                                              imageUrl: trade['Logo'],
+                                            child: Image.network(
+                                              trade['firebase_logo_url'],
                                               width: 25,
                                               height: 25,
                                               fit: BoxFit.cover,
-                                              placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
-                                              errorWidget: (context, url, error) => const Icon(Icons.error, size: 25),
+                                              // You'll need to handle loading and error states manually
+                                              // or use a wrapper that does it for you, like FadeInImage.assetNetwork
+                                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                                if (loadingProgress == null) {
+                                                  return child; // Image finished loading
+                                                }
+                                                return Center(
+                                                  child: CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              },
+                                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                                print('Image.network Error: $error' + 'url: '+ trade['firebase_logo_url']); // You can print the error here
+                                                return const Icon(Icons.error, size: 25);
+                                              },
                                             ),
                                           )
                                         else

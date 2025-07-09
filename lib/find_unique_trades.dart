@@ -33,6 +33,7 @@ Future<Map<int, dynamic>> fetchDocuments() async {
       'Name': doc['Name'],
       'SmartContract': doc['SmartContract'],
       'Symbol': doc['Symbol'],
+      'firebase_logo_url': doc['firebase_logo_url'],
       'tradesCountWithUniqueTraders': doc['tradesCountWithUniqueTraders'],
       'timestamp': doc['timestamp']
     };
