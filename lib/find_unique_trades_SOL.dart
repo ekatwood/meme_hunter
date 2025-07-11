@@ -25,8 +25,9 @@ Future<Map<int, dynamic>> fetchSOLDocuments() async {
   for(var doc in latestDocsQuery.docs){
     trades[counter] = {
       'Name': doc['Name'],
-      'SmartContract': doc['SmartContract'],
+      'SmartContract': doc['MintAddress'],
       'Symbol': doc['Symbol'],
+      'firebase_logo_url': doc['firebase_logo_url'],
       'timestamp': doc['timestamp']
     };
     counter += 1;
