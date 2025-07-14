@@ -117,6 +117,12 @@ for trade in new_json['trades']:
     trade['circulating_supply'] = token_metadata.get('circulating_supply', "")
     trade['market_cap'] = token_metadata.get('market_cap', "")
 
+    # Extracting twitter, website, and description
+    links = token_metadata.get('links', {})
+    trade['twitter_link'] = links.get('twitter', "")
+    trade['website_link'] = links.get('website', "")
+    trade['description'] = token_metadata.get('description', "")
+
 # --- Firebase Initialization (ensure it's initialized only once) ---
 try:
     cred = credentials.Certificate('meme-hunter-4f1c1-firebase-adminsdk-8if09-b0eff4234b.json')

@@ -136,8 +136,8 @@ class _TokenPageState extends State<TokenPage> {
               ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: _tokenData.logoUri,
-                  width: 250,
-                  height: 250,
+                  width: 180,
+                  height: 180,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const CircularProgressIndicator(),
                   errorWidget: (context, url, error) => const Icon(Icons.error_outline, size: 250),
