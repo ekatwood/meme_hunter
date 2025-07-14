@@ -22,12 +22,28 @@ class AuthProvider extends ChangeNotifier {
     _loadBlockchainPreference(); // Load blockchain preference when AuthProvider is created
   }
 
+  String _formatHttpDate(DateTime dateTime) {
+    const List<String> weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const List<String> months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    final DateTime utcTime = dateTime.toUtc();
+    final String weekday = weekdays[utcTime.weekday - 1];
+    final String day = utcTime.day.toString().padLeft(2, '0');
+    final String month = months[utcTime.month - 1];
+    final String year = utcTime.year.toString();
+    final String hour = utcTime.hour.toString().padLeft(2, '0');
+    final String minute = utcTime.minute.toString().padLeft(2, '0');
+    final String second = utcTime.second.toString().padLeft(2, '0');
+
+    return '$weekday, $day $month $year $hour:$minute:$second GMT';
+  }
+
   // --- Cookie Management Functions (Web Only) ---
   void _setThemeCookie(bool isDarkMode) {
     if (kIsWeb) {
       final String themeValue = isDarkMode ? 'dark' : 'light';
       final DateTime expirationDate = DateTime.now().add(const Duration(days: 365));
-      html.document.cookie = 'themePreference=$themeValue; expires=${expirationDate.toUtc().toIso8601String()}; path=/';
+      html.document.cookie = 'themePreference=$themeValue; expires=${_formatHttpDate(expirationDate)}; path=/';
     }
   }
 
@@ -52,7 +68,7 @@ class AuthProvider extends ChangeNotifier {
     if (kIsWeb) {
       final String blockchainValue = isSolana ? 'solana' : 'ethereum';
       final DateTime expirationDate = DateTime.now().add(const Duration(days: 365));
-      html.document.cookie = 'blockchainPreference=$blockchainValue; expires=${expirationDate.toUtc().toIso8601String()}; path=/';
+      html.document.cookie = 'blockchainPreference=$blockchainValue; expires=${_formatHttpDate(expirationDate)}; path=/';
     }
   }
 
