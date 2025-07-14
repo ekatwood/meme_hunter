@@ -1,4 +1,4 @@
-// lib/token_page.dart
+// lib/token_details.dart
 
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // For network image loading
@@ -6,115 +6,29 @@ import 'package:provider/provider.dart'; // For AuthProvider
 import 'swap_token.dart'; // Import the new SwapToken widget
 import 'auth_provider.dart'; // For accessing connected wallet info
 
-/// Represents the data structure for a Token to be displayed.
-/// In a real app, this would come from your backend/database.
-class TokenData {
-  final String name;
-  final String symbol;
-  final String mintAddress;
-  final String blockchainNetwork;
-  final String logoUri;
-  final Map<String, String> metadata;
-  final List<Map<String, dynamic>> priceHistory; // List of {'x': timestamp, 'y': price}
+final List<Map<String, dynamic>> priceHistory; // List of {'x': timestamp, 'y': price}
 
-  TokenData({
-    required this.name,
-    required this.symbol,
-    required this.mintAddress,
-    required this.blockchainNetwork,
-    required this.logoUri,
-    this.metadata = const {},
-    this.priceHistory = const [],
-  });
-
-  // Factory constructor for stub data
-  static TokenData getStubTokenData() {
-    return TokenData(
-      name: 'MemeCoin',
-      symbol: 'MEME',
-      mintAddress: 'Gk7v1c8cQpA7sF8fW6eB2x9YdZ3eH0fG1aB4c5D6e7F8', // Solana-like address
-      blockchainNetwork: 'Solana',
-      logoUri: 'https://placehold.co/250x250/FF8C00/FFFFFF?text=MEME', // Placeholder image
-      metadata: {
-        'Market Cap': '\$1,234,567,890',
-        '24h Volume': '\$50,000,000',
-        'Total Supply': '1,000,000,000 MEME',
-        'Circulating Supply': '750,000,000 MEME',
-        'Contract Type': 'SPL Token',
-        'Website': 'https://memecoin.xyz',
-        'Twitter': '@MemeCoinOfficial',
-      },
-      priceHistory: [
-        {'x': DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch.toDouble(), 'y': 0.0001},
-        {'x': DateTime.now().subtract(const Duration(days: 6)).millisecondsSinceEpoch.toDouble(), 'y': 0.00015},
-        {'x': DateTime.now().subtract(const Duration(days: 5)).millisecondsSinceEpoch.toDouble(), 'y': 0.00012},
-        {'x': DateTime.now().subtract(const Duration(days: 4)).millisecondsSinceEpoch.toDouble(), 'y': 0.00018},
-        {'x': DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch.toDouble(), 'y': 0.00016},
-        {'x': DateTime.now().subtract(const Duration(days: 2)).millisecondsSinceEpoch.toDouble(), 'y': 0.0002},
-        {'x': DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch.toDouble(), 'y': 0.00019},
-        {'x': DateTime.now().millisecondsSinceEpoch.toDouble(), 'y': 0.00021},
-      ],
-    );
-  }
-
-  static TokenData getArbitrumStubTokenData() {
-    return TokenData(
-      name: 'Arbitrum ETH Token',
-      symbol: 'AET',
-      mintAddress: '0x1234567890abcdef1234567890abcdef12345678', // Arbitrum-like address
-      blockchainNetwork: 'Arbitrum',
-      logoUri: 'https://placehold.co/250x250/0000FF/FFFFFF?text=AET', // Placeholder image
-      metadata: {
-        'Market Cap': '\$987,654,321',
-        '24h Volume': '\$30,000,000',
-        'Total Supply': '500,000,000 AET',
-        'Circulating Supply': '400,000,000 AET',
-        'Contract Type': 'ERC-20',
-        'Website': 'https://aetoken.xyz',
-        'Twitter': '@AETokenOfficial',
-      },
-      priceHistory: [
-        {'x': DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch.toDouble(), 'y': 100.50},
-        {'x': DateTime.now().subtract(const Duration(days: 6)).millisecondsSinceEpoch.toDouble(), 'y': 101.20},
-        {'x': DateTime.now().subtract(const Duration(days: 5)).millisecondsSinceEpoch.toDouble(), 'y': 99.80},
-        {'x': DateTime.now().subtract(const Duration(days: 4)).millisecondsSinceEpoch.toDouble(), 'y': 102.50},
-        {'x': DateTime.now().subtract(const Duration(days: 3)).millisecondsSinceEpoch.toDouble(), 'y': 101.90},
-        {'x': DateTime.now().subtract(const Duration(days: 2)).millisecondsSinceEpoch.toDouble(), 'y': 103.10},
-        {'x': DateTime.now().subtract(const Duration(days: 1)).millisecondsSinceEpoch.toDouble(), 'y': 102.80},
-        {'x': DateTime.now().millisecondsSinceEpoch.toDouble(), 'y': 104.00},
-      ],
-    );
-  }
-}
-
-class TokenPage extends StatefulWidget {
+class TokenDetails extends StatefulWidget {
   final String blockchainNetwork;
   final String mintAddress;
 
-  const TokenPage({
+  const TokenDetails({
     super.key,
     required this.blockchainNetwork,
     required this.mintAddress,
   });
 
   @override
-  State<TokenPage> createState() => _TokenPageState();
+  State<TokenDetails> createState() => _TokenDetailsState();
 }
 
-class _TokenPageState extends State<TokenPage> {
-  late TokenData _tokenData;
-  List<bool> _selectedTimeFilter = [true, false, false, false, false, false]; // 1 hour, 12 hours, 1 day, 1 week, 3 months, All time
+class _TokenDetailsState extends State<TokenDetails> {
+
+  List<bool> _selectedTimeFilter = [false, true, false, false, false, false];
 
   @override
   void initState() {
     super.initState();
-    // Stub out token information based on network.
-    // In a real app, you would fetch this from your database or an API.
-    if (widget.blockchainNetwork == 'Arbitrum') {
-      _tokenData = TokenData.getArbitrumStubTokenData();
-    } else { // Default to Solana stub
-      _tokenData = TokenData.getStubTokenData();
-    }
   }
 
   @override
@@ -194,11 +108,11 @@ class _TokenPageState extends State<TokenPage> {
                 selectedBorderColor: Theme.of(context).primaryColor,
                 children: const <Widget>[
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1H')),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('6H')),
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('12H')),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1D')),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1W')),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1M')),
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('3M')),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('24H')),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('3D')),
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('5D')),
                 ],
               ),
               const SizedBox(height: 16),

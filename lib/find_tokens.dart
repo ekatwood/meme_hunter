@@ -19,7 +19,7 @@ Future<Map<int, dynamic>> fetchDocuments() async {
       .orderBy('tradesCountWithUniqueTraders', descending: true)
       .get();
 
-  Map<int, dynamic> trades = {};
+  Map<int, dynamic> tokens = {};
   var counter = 1;
 
   for(var doc in latestDocsQuery.docs){
@@ -29,15 +29,20 @@ Future<Map<int, dynamic>> fetchDocuments() async {
         doc['Name'].toString().trim().isEmpty ||
         doc['Symbol'].toString().trim().isEmpty) continue;
 
-    trades[counter] = {
+    tokens[counter] = {
       'Name': doc['Name'],
       'SmartContract': doc['SmartContract'],
       'Symbol': doc['Symbol'],
+      'circulating_supply': doc['circulating_supply'],
+      'market_cap': doc['market_cap'],
+      'description': doc['description'],
+      'website_link': doc['website_link'],
+      'twitter_link': doc['twitter_link'],
       'firebase_logo_url': doc['firebase_logo_url'],
       'tradesCountWithUniqueTraders': doc['tradesCountWithUniqueTraders'],
       'timestamp': doc['timestamp']
     };
     counter += 1;
   }
-  return trades;
+  return tokens;
 }

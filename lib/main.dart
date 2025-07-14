@@ -2,14 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:meme_hunter/token_page.dart';
+import 'package:meme_hunter/token_details.dart';
 import 'auth_provider.dart';
 import 'appbar.dart';
-import 'find_unique_trades_SOL.dart';
+import 'find_tokens_SOL.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'find_unique_trades.dart';
+import 'find_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 
@@ -18,10 +18,6 @@ final _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const TokenQuestPage(),
-    ),
-    GoRoute(
-      path: '/token/:blockchainNetwork/:mintAddress',
-      builder: (context, state) => TokenPage(blockchainNetwork: state.pathParameters['blockchainNetwork']!, mintAddress: state.pathParameters['mintAddress']!),
     ),
   ],
 );
@@ -105,12 +101,12 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   }
 
   // Existing `fetchTradesData` (untouched)
-  Future<Map<int, dynamic>> fetchTradesData() async {
+  Future<Map<int, dynamic>> fetchTokens() async {
     return await fetchDocuments();
   }
 
   // Existing `fetchSOLTradesData` (untouched)
-  Future<Map<int, dynamic>> fetchSOLTradesData() async {
+  Future<Map<int, dynamic>> fetchSOLTokens() async {
     return await fetchSOLDocuments();
   }
 
@@ -275,7 +271,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
             ),
             FutureBuilder<Map<int, dynamic>>(
               // Use authProvider.isSolana for the future selection
-              future: authProvider.isSolana ? fetchSOLTradesData() : fetchTradesData(),
+              future: authProvider.isSolana ? fetchSOLTokens() : fetchTokens(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
@@ -290,12 +286,12 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     child: Text('Error: ${snapshot.error}'),
                   );
                 } else if (snapshot.hasData) {
-                  final trades = snapshot.data!;
-                  final timestamp = trades.entries.first.value['timestamp'];
+                  final tokens = snapshot.data!;
+                  final timestamp = tokens.entries.first.value['timestamp'];
 
-                  // Filter out the timestamp entry to only process actual trade data rowsMore actions
-                  final List<Map<String, dynamic>> tradeEntries = trades.entries
-                      .where((entry) => entry.key is int) // Filter out non-integer keys like 'timestamp'
+                  // Filter out the timestamp entry by its name to only process actual token data rows
+                  final List<Map<String, dynamic>> tokenEntries = tokens.entries
+                      .where((entry) => entry.key != 'timestamp') // Filter out the 'timestamp' key
                       .map((entry) => entry.value as Map<String, dynamic>)
                       .toList();
 
@@ -334,7 +330,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                               ),
                             ],
-                            rows: tradeEntries.map((trade) {
+                            rows: tokenEntries.map((token) {
 
                               return DataRow(cells: [
                                 DataCell(
@@ -344,10 +340,10 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                       mainAxisSize: MainAxisSize.min, // Use minimum space
                                       children: [
                                         // Conditional logic for displaying the logo
-                                        if (trade['firebase_logo_url'] != null && trade['firebase_logo_url'].isNotEmpty)
+                                        if (token['firebase_logo_url'] != null && token['firebase_logo_url'].isNotEmpty)
                                           ClipOval(
                                             child: Image.network(
-                                              trade['firebase_logo_url'],
+                                              token['firebase_logo_url'],
                                               width: 25,
                                               height: 25,
                                               fit: BoxFit.cover,
@@ -367,7 +363,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                                 );
                                               },
                                               errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                                print('Image.network Error: $error' + 'url: '+ trade['firebase_logo_url']); // You can print the error here
+                                                print('Image.network Error: $error' + 'url: '+ token['firebase_logo_url']); // You can print the error here
                                                 return const Icon(Icons.error, size: 25);
                                               },
                                             ),
@@ -392,11 +388,10 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                         Expanded(
                                           child: GestureDetector(
                                             onTap: () {
-                                              // Navigate to TokenPage with blockchain and mintAddress
-                                              _router.go('/token/${authProvider.isSolana ? 'Solana' : 'Ethereum'}/${trade['mintAddress']}'); // Use authProvider.isSolana
+                                              // TODO: load expanded view of token details
                                             },
                                             child: Text(
-                                              trade['Name'] ?? 'N/A',
+                                              token['Name'] ?? 'N/A',
                                               style: const TextStyle(fontSize: 16),
                                             ),
                                           ),
@@ -410,7 +405,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                     width: 110, // Adjust width as needed for symbol
                                     child: TextField(
                                       readOnly: true,
-                                      controller: TextEditingController(text: trade['Symbol'] ?? 'N/A'),
+                                      controller: TextEditingController(text: token['Symbol'] ?? 'N/A'),
                                       style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
@@ -423,12 +418,12 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 // NEW: Mint Address DataCell
                                 DataCell(
                                   GestureDetector( // Make the cell clickable
-                                    onTap: () => _copyToClipboard(trade['SmartContract']),
+                                    onTap: () => _copyToClipboard(token['SmartContract']),
                                     child: Container(
                                       width: 150, // Adjust width for address
                                       child: Text(
                                             () {
-                                          final smartContract = trade['SmartContract'] as String?; // Cast to String? for null safety
+                                          final smartContract = token['SmartContract'] as String?; // Cast to String? for null safety
                                           if (smartContract == null || smartContract.isEmpty) {
                                             return 'N/A'; // Handle null or empty string
                                           }

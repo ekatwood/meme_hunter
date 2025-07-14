@@ -19,18 +19,23 @@ Future<Map<int, dynamic>> fetchSOLDocuments() async {
       .orderBy('Counter')
       .get();
 
-  Map<int, dynamic> trades = {};
+  Map<int, dynamic> tokens = {};
   var counter = 1;
 
   for(var doc in latestDocsQuery.docs){
-    trades[counter] = {
+    tokens[counter] = {
       'Name': doc['Name'],
       'SmartContract': doc['MintAddress'],
       'Symbol': doc['Symbol'],
+      'circulating_supply': doc['totalSupplyFormatted'],
+      'market_cap': doc['fullyDilutedValue'],
+      'description': doc['description'],
+      'website_link': doc['website_link'],
+      'twitter_link': doc['twitter_link'],
       'firebase_logo_url': doc['firebase_logo_url'],
       'timestamp': doc['timestamp']
     };
     counter += 1;
   }
-  return trades;
+  return tokens;
 }
