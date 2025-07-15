@@ -2,14 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firestore_functions.dart';
 import 'package:meme_hunter/token_details.dart';
 import 'auth_provider.dart';
 import 'appbar.dart';
-import 'find_tokens_SOL.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'find_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 
