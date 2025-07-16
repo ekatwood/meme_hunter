@@ -393,7 +393,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                                 useRootNavigator: true, // Ensures the modal covers the entire screen
                                                 builder: (BuildContext context) {
                                                   return FractionallySizedBox( // Use FractionallySizedBox to control height
-                                                    heightFactor: 0.9, // Adjust height as needed, e.g., 90% of screen height
+                                                    heightFactor: 0.98,
                                                     child: TokenDetails(
                                                       tokenData: token, // Pass the entire token map
                                                     ),
