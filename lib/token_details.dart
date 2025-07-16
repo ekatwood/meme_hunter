@@ -174,236 +174,251 @@ class _TokenDetailsState extends State<TokenDetails> {
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(color: Theme.of(context).dividerColor),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Logo Image
-          ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: logoUrl ?? '',
-              width: 100, // Smaller logo for expanded view
-              height: 100,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => const CircularProgressIndicator(),
-              errorWidget: (context, url, error) => const Icon(Icons.error_outline, size: 100),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Token Name and Symbol
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      // Wrap the content with SingleChildScrollView and SafeArea
+      child: SafeArea( //
+        child: SingleChildScrollView( //
+          child: Column( //
+            crossAxisAlignment: CrossAxisAlignment.center, //
             children: [
-              Text(
-                tokenName,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              // Add a close button at the top right of the modal
+              Align( //
+                alignment: Alignment.topRight, //
+                child: IconButton( //
+                  icon: const Icon(Icons.close), //
+                  onPressed: () => Navigator.of(context).pop(), // Close the modal
+                ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                '(${tokenSymbol})',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[700]),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
+              const SizedBox(height: 16), //
 
-          // Contract Address
-          GestureDetector(
-            onTap: () => _copyToClipboard(mintAddress),
-            child: RichText(
-              text: TextSpan(
-                style: Theme.of(context).textTheme.bodyMedium, // Base style
-                children: [
-                  const TextSpan(text: 'Contract Address: '),
-                  TextSpan(
-                    text: _abbreviateAddress(mintAddress),
-                    style: const TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
+              // Logo Image
+              ClipOval( //
+                child: CachedNetworkImage( //
+                  imageUrl: logoUrl ?? '', //
+                  width: 100, // Smaller logo for expanded view
+                  height: 100, //
+                  fit: BoxFit.cover, //
+                  placeholder: (context, url) => const CircularProgressIndicator(), //
+                  errorWidget: (context, url, error) => const Icon(Icons.error_outline, size: 100), //
+                ),
+              ),
+              const SizedBox(height: 16), //
+
+              // Token Name and Symbol
+              Row( //
+                mainAxisAlignment: MainAxisAlignment.center, //
+                children: [ //
+                  Text( //
+                    tokenName, //
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold), //
+                  ),
+                  const SizedBox(width: 8), //
+                  Text( //
+                    '(${tokenSymbol})', //
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[700]), //
                   ),
                 ],
               ),
-            ),
-          ),
-          const SizedBox(height: 16),
+              const SizedBox(height: 8), //
 
-          // Total Supply
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Total Supply: ${totalSupply}',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-          const SizedBox(height: 4),
-
-          // Market Cap
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Market Cap: ${marketCap}',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Description (if available)
-          if (description != null && description.isNotEmpty) ...[
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Description:',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              description,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.left,
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Website Link (if available)
-          if (websiteLink != null && websiteLink.isNotEmpty) ...[
-            GestureDetector(
-              onTap: () => _launchURL(websiteLink),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Website: ${websiteLink}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
+              // Contract Address
+              GestureDetector( //
+                onTap: () => _copyToClipboard(mintAddress), //
+                child: RichText( //
+                  text: TextSpan( //
+                    style: Theme.of(context).textTheme.bodyMedium, // Base style
+                    children: [ //
+                      const TextSpan(text: 'Contract Address: '), //
+                      TextSpan( //
+                        text: _abbreviateAddress(mintAddress), //
+                        style: const TextStyle( //
+                          color: Colors.blue, //
+                          decoration: TextDecoration.underline, //
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 4),
-          ],
+              const SizedBox(height: 16), //
 
-          // Twitter Link (if available)
-          if (twitterLink != null && twitterLink.isNotEmpty) ...[
-            GestureDetector(
-              onTap: () => _launchURL(twitterLink),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Twitter: ${twitterLink}',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.blue,
-                    decoration: TextDecoration.underline,
-                  ),
+              // Total Supply
+              Align( //
+                alignment: Alignment.centerLeft, //
+                child: Text( //
+                  'Total Supply: ${totalSupply}', //
+                  style: Theme.of(context).textTheme.bodyLarge, //
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 4), //
 
-          // Price History Chart
-          Text(
-            'Price History',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          // Time Filter ToggleButtons
-          ToggleButtons(
-            isSelected: _selectedTimeFilter,
-            onPressed: (int index) {
-              setState(() {
-                for (int i = 0; i < _selectedTimeFilter.length; i++) {
-                  _selectedTimeFilter[i] = i == index;
-                }
-                _applyTimeFilterAndChartData(); // Re-apply filter
-              });
-            },
-            borderRadius: BorderRadius.circular(8.0),
-            selectedColor: Colors.white,
-            fillColor: Theme.of(context).primaryColor,
-            color: Theme.of(context).primaryColor,
-            borderColor: Theme.of(context).primaryColor,
-            selectedBorderColor: Theme.of(context).primaryColor,
-            children: const <Widget>[
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1H')),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('6H')),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('12H')),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1D')),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1W')),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('3M')),
-            ],
-          ),
-          const SizedBox(height: 16),
-          // Chart Type ToggleButtons
-          ToggleButtons(
-            isSelected: _selectedChartType,
-            onPressed: (int index) {
-              setState(() {
-                for (int i = 0; i < _selectedChartType.length; i++) {
-                  _selectedChartType[i] = i == index;
-                }
-              });
-            },
-            borderRadius: BorderRadius.circular(8.0),
-            selectedColor: Colors.white,
-            fillColor: Theme.of(context).primaryColor,
-            color: Theme.of(context).primaryColor,
-            borderColor: Theme.of(context).primaryColor,
-            selectedBorderColor: Theme.of(context).primaryColor,
-            children: const <Widget>[
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Line')),
-              Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Spline')),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _isLoadingChartData
-              ? const CircularProgressIndicator()
-              : _filteredChartData.isEmpty
-              ? const SizedBox(
-            height: 200,
-            child: Center(child: Text('No chart data available for this period.')),
-          )
-              : SizedBox(
-            height: 300,
-            child: SfCartesianChart(
-              primaryXAxis: DateTimeAxis(),
-              series: <CartesianSeries<ChartData, DateTime>>[
-                _selectedChartType[0] // If Line chart is selected
-                    ? LineSeries<ChartData, DateTime>(
-                  dataSource: _filteredChartData,
-                  xValueMapper: (ChartData data, _) => data.time,
-                  yValueMapper: (ChartData data, _) => data.value,
-                  name: 'Price',
-                  enableTooltip: true,
-                )
-                    : SplineSeries<ChartData, DateTime>( // If Spline chart is selected
-                  dataSource: _filteredChartData,
-                  xValueMapper: (ChartData data, _) => data.time,
-                  yValueMapper: (ChartData data, _) => data.value,
-                  name: 'Price',
-                  enableTooltip: true,
+              // Market Cap
+              Align( //
+                alignment: Alignment.centerLeft, //
+                child: Text( //
+                  'Market Cap: ${marketCap}', //
+                  style: Theme.of(context).textTheme.bodyLarge, //
                 ),
+              ),
+              const SizedBox(height: 16), //
+
+              // Description (if available)
+              if (description != null && description.isNotEmpty) ...[ //
+                Align( //
+                  alignment: Alignment.centerLeft, //
+                  child: Text( //
+                    'Description:', //
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold), //
+                  ),
+                ),
+                const SizedBox(height: 8), //
+                Text( //
+                  description, //
+                  style: Theme.of(context).textTheme.bodyMedium, //
+                  textAlign: TextAlign.left, //
+                ),
+                const SizedBox(height: 16), //
               ],
-              tooltipBehavior: TooltipBehavior(enable: true),
-            ),
-          ),
-          const SizedBox(height: 24),
 
-          // Swap Token Widget (Stubbed)
-          Text(
-            'Swap ${tokenSymbol}',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              // Website Link (if available)
+              if (websiteLink != null && websiteLink.isNotEmpty) ...[ //
+                GestureDetector( //
+                  onTap: () => _launchURL(websiteLink), //
+                  child: Align( //
+                    alignment: Alignment.centerLeft, //
+                    child: Text( //
+                      'Website: ${websiteLink}', //
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith( //
+                        color: Colors.blue, //
+                        decoration: TextDecoration.underline, //
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4), //
+              ],
+
+              // Twitter Link (if available)
+              if (twitterLink != null && twitterLink.isNotEmpty) ...[ //
+                GestureDetector( //
+                  onTap: () => _launchURL(twitterLink), //
+                  child: Align( //
+                    alignment: Alignment.centerLeft, //
+                    child: Text( //
+                      'Twitter: ${twitterLink}', //
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith( //
+                        color: Colors.blue, //
+                        decoration: TextDecoration.underline, //
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16), //
+              ],
+
+              // Price History Chart
+              Text( //
+                'Price History', //
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), //
+              ),
+              const SizedBox(height: 16), //
+              // Time Filter ToggleButtons
+              ToggleButtons( //
+                isSelected: _selectedTimeFilter, //
+                onPressed: (int index) { //
+                  setState(() { //
+                    for (int i = 0; i < _selectedTimeFilter.length; i++) { //
+                      _selectedTimeFilter[i] = i == index; //
+                    }
+                    _applyTimeFilterAndChartData(); // Re-apply filter
+                  });
+                },
+                borderRadius: BorderRadius.circular(8.0), //
+                selectedColor: Colors.white, //
+                fillColor: Theme.of(context).primaryColor, //
+                color: Theme.of(context).primaryColor, //
+                borderColor: Theme.of(context).primaryColor, //
+                selectedBorderColor: Theme.of(context).primaryColor, //
+                children: const <Widget>[ //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1H')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('6H')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('12H')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1D')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1W')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('3M')), //
+                ],
+              ),
+              const SizedBox(height: 16), //
+              // Chart Type ToggleButtons
+              ToggleButtons( //
+                isSelected: _selectedChartType, //
+                onPressed: (int index) { //
+                  setState(() { //
+                    for (int i = 0; i < _selectedChartType.length; i++) { //
+                      _selectedChartType[i] = i == index; //
+                    }
+                  });
+                },
+                borderRadius: BorderRadius.circular(8.0), //
+                selectedColor: Colors.white, //
+                fillColor: Theme.of(context).primaryColor, //
+                color: Theme.of(context).primaryColor, //
+                borderColor: Theme.of(context).primaryColor, //
+                selectedBorderColor: Theme.of(context).primaryColor, //
+                children: const <Widget>[ //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Line')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Spline')), //
+                ],
+              ),
+              const SizedBox(height: 16), //
+              _isLoadingChartData //
+                  ? const CircularProgressIndicator() //
+                  : _filteredChartData.isEmpty //
+                  ? const SizedBox( //
+                height: 200, //
+                child: Center(child: Text('No chart data available for this period.')), //
+              )
+                  : SizedBox( //
+                height: 300, //
+                child: SfCartesianChart( //
+                  primaryXAxis: DateTimeAxis(), //
+                  series: <CartesianSeries<ChartData, DateTime>>[ //
+                    _selectedChartType[0] // If Line chart is selected
+                        ? LineSeries<ChartData, DateTime>( //
+                      dataSource: _filteredChartData, //
+                      xValueMapper: (ChartData data, _) => data.time, //
+                      yValueMapper: (ChartData data, _) => data.value, //
+                      name: 'Price', //
+                      enableTooltip: true, //
+                    )
+                        : SplineSeries<ChartData, DateTime>( // If Spline chart is selected
+                      dataSource: _filteredChartData, //
+                      xValueMapper: (ChartData data, _) => data.time, //
+                      yValueMapper: (ChartData data, _) => data.value, //
+                      name: 'Price', //
+                      enableTooltip: true, //
+                    ),
+                  ],
+                  tooltipBehavior: TooltipBehavior(enable: true), //
+                ),
+              ),
+              const SizedBox(height: 24), //
+
+              // Swap Token Widget (Stubbed)
+              Text( //
+                'Swap ${tokenSymbol}', //
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), //
+              ),
+              const SizedBox(height: 16), //
+              SwapToken( //
+                tokenBlockchainNetwork: widget.tokenData['blockchainNetwork'] ?? 'N/A', // TODO: Verify actual key for blockchainNetwork
+                tokenMintAddress: mintAddress, //
+                tokenSymbol: tokenSymbol, //
+                userBlockchainNetwork: userBlockchainNetwork, //
+              ),
+              const SizedBox(height: 48), //
+            ],
           ),
-          const SizedBox(height: 16),
-          SwapToken(
-            tokenBlockchainNetwork: widget.tokenData['blockchainNetwork'] ?? 'N/A', // TODO: Verify actual key for blockchainNetwork
-            tokenMintAddress: mintAddress,
-            tokenSymbol: tokenSymbol,
-            userBlockchainNetwork: userBlockchainNetwork,
-          ),
-          const SizedBox(height: 48),
-        ],
+        ),
       ),
     );
   }
