@@ -387,7 +387,19 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                         Expanded(
                                           child: GestureDetector(
                                             onTap: () {
-                                              // TODO: load expanded view of token details
+                                              showModalBottomSheet(
+                                                context: context,
+                                                isScrollControlled: true, // Allows the modal to take full height
+                                                useRootNavigator: true, // Ensures the modal covers the entire screen
+                                                builder: (BuildContext context) {
+                                                  return FractionallySizedBox( // Use FractionallySizedBox to control height
+                                                    heightFactor: 0.9, // Adjust height as needed, e.g., 90% of screen height
+                                                    child: TokenDetails(
+                                                      tokenData: token, // Pass the entire token map
+                                                    ),
+                                                  );
+                                                },
+                                              );
                                             },
                                             child: Text(
                                               token['Name'] ?? 'N/A',

@@ -9,25 +9,6 @@ import 'auth_provider.dart'; // For accessing connected wallet info
 import 'package:meme_hunter/swap_token.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp type
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: Text(
-          'Swap Token Widget Placeholder for ${tokenSymbol}',
-          style: Theme.of(context).textTheme.bodyLarge,
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
-
 // Chart Data Model for Syncfusion Chart
 class ChartData {
   ChartData(this.time, this.value);
@@ -387,7 +368,7 @@ class _TokenDetailsState extends State<TokenDetails> {
             height: 300,
             child: SfCartesianChart(
               primaryXAxis: DateTimeAxis(),
-              series: <ChartSeries>[
+              series: <CartesianSeries<ChartData, DateTime>>[
                 _selectedChartType[0] // If Line chart is selected
                     ? LineSeries<ChartData, DateTime>(
                   dataSource: _filteredChartData,
