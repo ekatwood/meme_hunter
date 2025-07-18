@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'token_data.dart'; // NEW: Import the TokenData class
 
 final _router = GoRouter(
   routes: [
@@ -87,9 +88,6 @@ class TokenQuestPage extends StatefulWidget {
 }
 
 class _TokenQuestPageState extends State<TokenQuestPage> {
-  // Remove the local `isSolana` state here, it will be managed by AuthProvider
-  // bool isSolana = false; // REMOVE THIS LINE
-
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
     if (await canLaunchUrl(url)) {
@@ -99,13 +97,13 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     }
   }
 
-  // Existing `fetchTradesData` (untouched)
-  Future<Map<int, dynamic>> fetchTokens() async {
+  // MODIFIED: Return type changed to List<TokenData>
+  Future<List<TokenData>> fetchTokensData() async {
     return await fetchDocuments();
   }
 
-  // Existing `fetchSOLTradesData` (untouched)
-  Future<Map<int, dynamic>> fetchSOLTokens() async {
+  // MODIFIED: Return type changed to List<TokenData>
+  Future<List<TokenData>> fetchSOLTokensData() async {
     return await fetchSOLDocuments();
   }
 
@@ -119,32 +117,29 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Access AuthProvider for theme toggle and blockchain preference
     final authProvider = Provider.of<AuthProvider>(context);
     final String _tipAddress = '3m4NqSsisHtCtCpA7jSAj6jNxNEgGL1uGbkpb36yBNq4';
     final String _fontFamily = 'SourceCodePro';
 
-    // Define colors for the ToggleButtons based on the current theme's brightness
-    // You can customize these colors directly.
     final Color selectedFillColor = Theme.of(context).brightness == Brightness.light
-        ? const Color(0xFFA8415B) // Light burgundy for light mode selected
-        : const Color(0xFF800020); // Darker burgundy for dark mode selected
+        ? const Color(0xFFA8415B)
+        : const Color(0xFF800020);
 
     final Color unselectedTextColor = Theme.of(context).brightness == Brightness.light
-        ? Colors.black87 // Dark text for unselected in light mode
-        : Colors.white70; // Light text for unselected in dark mode
+        ? Colors.black87
+        : Colors.white70;
 
     final Color selectedTextColor = Theme.of(context).brightness == Brightness.light
-        ? Colors.white // White text for selected in light mode
-        : Colors.white; // White text for selected in dark mode (or a contrasting dark color if needed)
+        ? Colors.white
+        : Colors.white;
 
     final Color unselectedBorderColor = Theme.of(context).brightness == Brightness.light
-        ? Colors.grey // Grey border for unselected in light mode
-        : Colors.grey[700]!; // Dark grey border for unselected in dark mode
+        ? Colors.grey
+        : Colors.grey[700]!;
 
     final Color selectedBorderColor = Theme.of(context).brightness == Brightness.light
-        ? const Color(0xFFA8415B) // Light burgundy border for selected in light mode
-        : const Color(0xFF800020); // Darker burgundy border for selected in dark mode
+        ? const Color(0xFFA8415B)
+        : const Color(0xFF800020);
 
     return Scaffold(
       appBar: CustomAppBar(),
@@ -153,11 +148,10 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(top: 10.0, right: 10.0, left: 10),
-              // NEW: Use a Row to place items on the same line, aligned to the end
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded( // Allows TextField to take remaining space
+                  Expanded(
                     child:
                     Align(
                       alignment: Alignment.topLeft,
@@ -171,19 +165,19 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             ),
                             children: [
                               const TextSpan(
-                                text: 'Tip the dev (SOL): ', // Static text
+                                text: 'Tip the dev (SOL): ',
                               ),
                               TextSpan(
-                                text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}', // Truncate
+                                text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}',
                                 style: const TextStyle(
                                   fontSize: 14,
                                   decoration: TextDecoration.underline,
-                                  color: Colors.blue, // Clickable part color
-                                  fontWeight: FontWeight.normal, // Ensure address is not bold if parent is
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.normal,
                                 ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    _copyToClipboard(_tipAddress); // Pass the full address to copy
+                                    _copyToClipboard(_tipAddress);
                                   },
                               ),
                             ]
@@ -192,16 +186,15 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Lightmode / Darkmode Toggle
-                  Tooltip( // Provides a hint on hover
+                  Tooltip(
                     message: authProvider.themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode',
                     child: IconButton(
                       icon: Icon(
                         authProvider.themeMode == ThemeMode.light
-                            ? Icons.dark_mode_outlined // Icon for light mode to switch to dark
-                            : Icons.light_mode_outlined, // Icon for dark mode to switch to light
+                            ? Icons.dark_mode_outlined
+                            : Icons.light_mode_outlined,
                         size: 28,
-                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey[800] : Colors.amber, // Icon color based on theme
+                        color: Theme.of(context).brightness == Brightness.light ? Colors.grey[800] : Colors.amber,
                       ),
                       onPressed: authProvider.toggleThemeMode,
                     ),
@@ -219,16 +212,16 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       fontFamily: _fontFamily,
-                      color: Theme.of(context).textTheme.bodyMedium?.color, // Inherit color from theme
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                     ),
                     children: [
                       TextSpan(
                         text: 'A GraphQL query to find trending blockchain tokens ',
                       ),
                       TextSpan(
-                        text: '📈💸✅', // The emojis
+                        text: '📈💸✅',
                         style: const TextStyle(
-                          fontFamily: 'NotoColorEmoji', // Apply the emoji font family
+                          fontFamily: 'NotoColorEmoji',
                           fontWeight: FontWeight.normal,
                         ),
                       ),
@@ -240,16 +233,13 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: ToggleButtons(
-                // Directly apply your custom colors here
-                color: unselectedTextColor, // Color of text/icons in unselected buttons
-                selectedColor: selectedTextColor, // Color of text/icons in selected buttons
-                fillColor: selectedFillColor, // Background color of selected button
-                borderColor: unselectedBorderColor, // Border color of unselected buttons
-                selectedBorderColor: selectedBorderColor, // Border color of selected button
-                // These typically come from the theme, so keeping them simple for direct control
+                color: unselectedTextColor,
+                selectedColor: selectedTextColor,
+                fillColor: selectedFillColor,
+                borderColor: unselectedBorderColor,
+                selectedBorderColor: selectedBorderColor,
                 splashColor: Colors.grey.withOpacity(0.2),
                 hoverColor: Colors.grey.withOpacity(0.1),
-
                 children: const <Widget>[
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
@@ -260,17 +250,16 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     child: Text('Solana'),
                   ),
                 ],
-                // Use authProvider.isSolana to determine selected state
                 isSelected: [!authProvider.isSolana, authProvider.isSolana],
                 onPressed: (int index) {
-                  // Update the blockchain preference via AuthProvider
                   authProvider.setBlockchainPreference(index == 1);
                 },
               ),
             ),
-            FutureBuilder<Map<int, dynamic>>(
+            // MODIFIED: FutureBuilder now expects List<TokenData>
+            FutureBuilder<List<TokenData>>(
               // Use authProvider.isSolana for the future selection
-              future: authProvider.isSolana ? fetchSOLTokens() : fetchTokens(),
+              future: authProvider.isSolana ? fetchSOLTokensData() : fetchTokensData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
@@ -284,15 +273,15 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Text('Error: ${snapshot.error}'),
                   );
-                } else if (snapshot.hasData) {
+                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                   final tokens = snapshot.data!;
-                  final timestamp = tokens.entries.first.value['timestamp'];
+                  // The timestamp is now part of the first token, or derived.
+                  // If you specifically need the latest timestamp from the query,
+                  // you might need to adjust fetchDocuments to return it separately
+                  // or assume it's consistent across all returned tokens.
+                  // For now, let's take it from the first token for display.
+                  final String? displayTimestamp = tokens.isNotEmpty ? tokens.first.timestamp : 'N/A';
 
-                  // Filter out the timestamp entry by its name to only process actual token data rows
-                  final List<Map<String, dynamic>> tokenEntries = tokens.entries
-                      .where((entry) => entry.key != 'timestamp') // Filter out the 'timestamp' key
-                      .map((entry) => entry.value as Map<String, dynamic>)
-                      .toList();
 
                   return Column(
                     children: [
@@ -319,7 +308,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                   ),
                                 ),
                               ),
-                              // Mint Address DataColumn
                               DataColumn(
                                 label: Flexible(
                                   child: Text(
@@ -329,28 +317,26 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                               ),
                             ],
-                            rows: tokenEntries.map((token) {
-
+                            // MODIFIED: Use the List<TokenData> directly
+                            rows: tokens.map((token) {
                               return DataRow(cells: [
                                 DataCell(
                                   Container(
-                                    width: (MediaQuery.of(context).size.width - 20) * 0.4, // Approx 40% of screen width (adjust 20 for padding), // Maintain original width
+                                    width: (MediaQuery.of(context).size.width - 20) * 0.4,
                                     child: Row(
-                                      mainAxisSize: MainAxisSize.min, // Use minimum space
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
                                         // Conditional logic for displaying the logo
-                                        if (token['firebase_logo_url'] != null && token['firebase_logo_url'].isNotEmpty)
+                                        if (token.firebaseLogoUrl != null && token.firebaseLogoUrl!.isNotEmpty)
                                           ClipOval(
                                             child: Image.network(
-                                              token['firebase_logo_url'],
+                                              token.firebaseLogoUrl!, // Access directly
                                               width: 25,
                                               height: 25,
                                               fit: BoxFit.cover,
-                                              // You'll need to handle loading and error states manually
-                                              // or use a wrapper that does it for you, like FadeInImage.assetNetwork
                                               loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                                                 if (loadingProgress == null) {
-                                                  return child; // Image finished loading
+                                                  return child;
                                                 }
                                                 return Center(
                                                   child: CircularProgressIndicator(
@@ -362,7 +348,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                                 );
                                               },
                                               errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                                print('Image.network Error: $error' + 'url: '+ token['firebase_logo_url']); // You can print the error here
+                                                print('Image.network Error: $error' + 'url: ${token.firebaseLogoUrl}'); // Access directly
                                                 return const Icon(Icons.error, size: 25);
                                               },
                                             ),
@@ -372,7 +358,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                             child: SizedBox(
                                               width: 25,
                                               height: 25,
-                                              child: authProvider.isSolana // Use authProvider.isSolana
+                                              child: authProvider.isSolana
                                                   ? Image.asset(
                                                 'assets/solana-sol-logo.png',
                                                 fit: BoxFit.cover,
@@ -389,20 +375,32 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                             onTap: () {
                                               showModalBottomSheet(
                                                 context: context,
-                                                isScrollControlled: true, // Allows the modal to take full height
-                                                useRootNavigator: true, // Ensures the modal covers the entire screen
+                                                isScrollControlled: true,
+                                                useRootNavigator: true,
                                                 builder: (BuildContext context) {
-                                                  return FractionallySizedBox( // Use FractionallySizedBox to control height
+                                                  return FractionallySizedBox(
                                                     heightFactor: 0.98,
                                                     child: TokenDetails(
-                                                      tokenData: token, // Pass the entire token map
+                                                      tokenData: {
+                                                        'Name': token.name,
+                                                        'SmartContract': token.smartContract,
+                                                        'Symbol': token.symbol,
+                                                        'circulating_supply': token.circulatingSupply,
+                                                        'market_cap': token.marketCap,
+                                                        'description': token.description,
+                                                        'website_link': token.websiteLink,
+                                                        'twitter_link': token.twitterLink,
+                                                        'firebase_logo_url': token.firebaseLogoUrl,
+                                                        'tradesCountWithUniqueTraders': token.tradesCountWithUniqueTraders,
+                                                        'timestamp': token.timestamp,
+                                                      }, // Pass as Map for now, refactor TokenDetails next
                                                     ),
                                                   );
                                                 },
                                               );
                                             },
                                             child: Text(
-                                              token['Name'] ?? 'N/A',
+                                              token.name, // Access directly
                                               style: const TextStyle(fontSize: 16),
                                             ),
                                           ),
@@ -412,11 +410,11 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                   ),
                                 ),
                                 DataCell(
-                                  Container( // Use Container to apply width directly
-                                    width: 110, // Adjust width as needed for symbol
+                                  Container(
+                                    width: 110,
                                     child: TextField(
                                       readOnly: true,
-                                      controller: TextEditingController(text: token['Symbol'] ?? 'N/A'),
+                                      controller: TextEditingController(text: token.symbol), // Access directly
                                       style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),
                                       decoration: const InputDecoration(
                                         border: InputBorder.none,
@@ -426,28 +424,24 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                     ),
                                   ),
                                 ),
-                                // NEW: Mint Address DataCell
                                 DataCell(
-                                  GestureDetector( // Make the cell clickable
-                                    onTap: () => _copyToClipboard(token['SmartContract']),
+                                  GestureDetector(
+                                    onTap: () => _copyToClipboard(token.smartContract), // Access directly
                                     child: Container(
-                                      width: 150, // Adjust width for address
+                                      width: 150,
                                       child: Text(
                                             () {
-                                          final smartContract = token['SmartContract'] as String?; // Cast to String? for null safety
-                                          if (smartContract == null || smartContract.isEmpty) {
-                                            return 'N/A'; // Handle null or empty string
+                                          final smartContract = token.smartContract; // Access directly
+                                          if (smartContract.isEmpty || smartContract == 'N/A') {
+                                            return 'N/A';
                                           }
-
                                           if (smartContract == '0x') {
                                             return '0x';
                                           }
                                           final int minLengthForTruncation = 10;
-
                                           if (smartContract.length <= minLengthForTruncation) {
-                                            return smartContract; // Display full address if too short for meaningful truncation
+                                            return smartContract;
                                           } else {
-                                            // Truncate as planned
                                             return '${smartContract.substring(0, 6)}...${smartContract.substring(smartContract.length - 4)}';
                                           }
                                         }(),
@@ -471,7 +465,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                         child: Align(
                           alignment: Alignment.topRight,
                           child: Text(
-                            timestamp,
+                            displayTimestamp ?? 'N/A', // Display timestamp from the first token
                             style: const TextStyle(fontSize: 16),
                           ),
                         ),
@@ -480,7 +474,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                         padding: const EdgeInsets.only(top: 15.0, bottom: 80),
                         child: RichText(
                           text: TextSpan(
-                            // NEW: Ensure RichText style adapts to theme
                             style: Theme.of(context).textTheme.bodyMedium,
                             children: [
                               const TextSpan(
