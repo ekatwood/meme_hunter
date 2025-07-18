@@ -40,6 +40,7 @@ dependencies:
   provider: ^6.1.5
   flutter_svg: ^2.0.9
   cached_network_image: ^3.3.1 # For better image loading and caching
+  intl: ^0.19.0
   syncfusion_flutter_charts: ^29.1.38
 
   # The following adds the Cupertino Icons font to your application.
