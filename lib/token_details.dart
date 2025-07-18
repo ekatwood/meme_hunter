@@ -1,3 +1,4 @@
+// token_details.dart
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // For network image loading
 import 'package:provider/provider.dart'; // For AuthProvider
@@ -8,6 +9,7 @@ import 'firestore_functions.dart'; // For fetchChartData
 import 'auth_provider.dart'; // For accessing connected wallet info
 import 'package:meme_hunter/swap_token.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp type
+import 'token_data.dart'; // NEW: Import the TokenData class
 
 // Chart Data Model for Syncfusion Chart
 class ChartData {
@@ -17,7 +19,8 @@ class ChartData {
 }
 
 class TokenDetails extends StatefulWidget {
-  final Map<String, dynamic> tokenData; // Changed to accept the full token map
+  // MODIFIED: tokenData type changed to TokenData
+  final TokenData tokenData;
 
   const TokenDetails({
     super.key,
@@ -83,8 +86,9 @@ class _TokenDetailsState extends State<TokenDetails> {
       _isLoadingChartData = true;
     });
 
-    final String? contractAddress = widget.tokenData['SmartContract'];
-    if (contractAddress != null && contractAddress.isNotEmpty) {
+    // MODIFIED: Access SmartContract directly from tokenData object
+    final String? contractAddress = widget.tokenData.smartContract;
+    if (contractAddress != null && contractAddress.isNotEmpty && contractAddress != 'N/A') {
       _rawChartData = await fetchChartData(contractAddress);
       _applyTimeFilterAndChartData(); // Apply filter after fetching
     } else {
@@ -157,15 +161,31 @@ class _TokenDetailsState extends State<TokenDetails> {
     final authProvider = Provider.of<AuthProvider>(context);
     final userBlockchainNetwork = authProvider.blockchainNetwork;
 
-    final tokenName = widget.tokenData['Name'] ?? 'N/A';
-    final tokenSymbol = widget.tokenData['Symbol'] ?? 'N/A';
-    final mintAddress = widget.tokenData['SmartContract'] ?? 'N/A';
-    final logoUrl = widget.tokenData['firebase_logo_url'];
-    final totalSupply = widget.tokenData['circulating_supply'] ?? 'N/A'; // Check mapping for total vs circulating
-    final marketCap = widget.tokenData['market_cap'] ?? 'N/A';
-    final description = widget.tokenData['description'];
-    final websiteLink = widget.tokenData['website_link'];
-    final twitterLink = widget.tokenData['twitter_link'];
+    // MODIFIED: Access properties directly from widget.tokenData
+    final tokenName = widget.tokenData.name;
+    final tokenSymbol = widget.tokenData.symbol;
+    final mintAddress = widget.tokenData.smartContract;
+    final logoUrl = widget.tokenData.firebaseLogoUrl;
+    final formattedCirculatingSupply = widget.tokenData.formattedCirculatingSupply; // Use the new getter
+    final formattedMarketCap = widget.tokenData.formattedMarketCap; // This is a double now, might need formatting
+    final description = widget.tokenData.description;
+    final websiteLink = widget.tokenData.websiteLink;
+    final twitterLink = widget.tokenData.twitterLink;
+
+    // Helper for formatting market cap if it's a double
+    String _formatMarketCap(double? value) {
+      if (value == null) return 'N/A';
+      if (value < 1000) {
+        return '\$${value.toStringAsFixed(2)}';
+      } else if (value < 1000000) {
+        return '\$${(value / 1000).toStringAsFixed(2)}K';
+      } else if (value < 1000000000) {
+        return '\$${(value / 1000000).toStringAsFixed(2)}M';
+      } else {
+        return '\$${(value / 1000000000).toStringAsFixed(2)}B';
+      }
+    }
+
 
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -193,7 +213,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               // Logo Image
               ClipOval( //
                 child: CachedNetworkImage( //
-                  imageUrl: logoUrl ?? '', //
+                  imageUrl: logoUrl ?? '', // Use logoUrl directly
                   width: 100, // Smaller logo for expanded view
                   height: 100, //
                   fit: BoxFit.cover, //
@@ -208,12 +228,12 @@ class _TokenDetailsState extends State<TokenDetails> {
                 mainAxisAlignment: MainAxisAlignment.center, //
                 children: [ //
                   Text( //
-                    tokenName, //
+                    tokenName, // Use tokenName directly
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold), //
                   ),
                   const SizedBox(width: 8), //
                   Text( //
-                    '(${tokenSymbol})', //
+                    '(${tokenSymbol})', // Use tokenSymbol directly
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[700]), //
                   ),
                 ],
@@ -222,14 +242,14 @@ class _TokenDetailsState extends State<TokenDetails> {
 
               // Contract Address
               GestureDetector( //
-                onTap: () => _copyToClipboard(mintAddress), //
+                onTap: () => _copyToClipboard(mintAddress), // Use mintAddress directly
                 child: RichText( //
                   text: TextSpan( //
                     style: Theme.of(context).textTheme.bodyMedium, // Base style
                     children: [ //
                       const TextSpan(text: 'Contract Address: '), //
                       TextSpan( //
-                        text: _abbreviateAddress(mintAddress), //
+                        text: _abbreviateAddress(mintAddress), // Use mintAddress directly
                         style: const TextStyle( //
                           color: Colors.blue, //
                           decoration: TextDecoration.underline, //
@@ -245,7 +265,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               Align( //
                 alignment: Alignment.centerLeft, //
                 child: Text( //
-                  'Total Supply: ${totalSupply}', //
+                  'Total Supply: ${formattedCirculatingSupply}', // Use the formatted circulating supply
                   style: Theme.of(context).textTheme.bodyLarge, //
                 ),
               ),
@@ -255,7 +275,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               Align( //
                 alignment: Alignment.centerLeft, //
                 child: Text( //
-                  'Market Cap: ${marketCap}', //
+                  'Market Cap: ${formattedMarketCap}', // Use formatted market cap
                   style: Theme.of(context).textTheme.bodyLarge, //
                 ),
               ),
@@ -272,7 +292,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                 ),
                 const SizedBox(height: 8), //
                 Text( //
-                  description, //
+                  description, // Use description directly
                   style: Theme.of(context).textTheme.bodyMedium, //
                   textAlign: TextAlign.left, //
                 ),
@@ -282,11 +302,11 @@ class _TokenDetailsState extends State<TokenDetails> {
               // Website Link (if available)
               if (websiteLink != null && websiteLink.isNotEmpty) ...[ //
                 GestureDetector( //
-                  onTap: () => _launchURL(websiteLink), //
+                  onTap: () => _launchURL(websiteLink), // Use websiteLink directly
                   child: Align( //
                     alignment: Alignment.centerLeft, //
                     child: Text( //
-                      'Website: ${websiteLink}', //
+                      'Website: ${websiteLink}', // Use websiteLink directly
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith( //
                         color: Colors.blue, //
                         decoration: TextDecoration.underline, //
@@ -300,11 +320,11 @@ class _TokenDetailsState extends State<TokenDetails> {
               // Twitter Link (if available)
               if (twitterLink != null && twitterLink.isNotEmpty) ...[ //
                 GestureDetector( //
-                  onTap: () => _launchURL(twitterLink), //
+                  onTap: () => _launchURL(twitterLink), // Use twitterLink directly
                   child: Align( //
                     alignment: Alignment.centerLeft, //
                     child: Text( //
-                      'Twitter: ${twitterLink}', //
+                      'Twitter: ${twitterLink}', // Use twitterLink directly
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith( //
                         color: Colors.blue, //
                         decoration: TextDecoration.underline, //
@@ -405,14 +425,14 @@ class _TokenDetailsState extends State<TokenDetails> {
 
               // Swap Token Widget (Stubbed)
               Text( //
-                'Swap ${tokenSymbol}', //
+                'Swap ${tokenSymbol}', // Use tokenSymbol directly
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), //
               ),
               const SizedBox(height: 16), //
               SwapToken( //
-                tokenBlockchainNetwork: widget.tokenData['blockchainNetwork'] ?? 'N/A', // TODO: Verify actual key for blockchainNetwork
-                tokenMintAddress: mintAddress, //
-                tokenSymbol: tokenSymbol, //
+                tokenBlockchainNetwork: widget.tokenData.blockchainNetwork, // Assuming you add blockchainNetwork to TokenData
+                tokenMintAddress: mintAddress, // Use mintAddress directly
+                tokenSymbol: tokenSymbol, // Use tokenSymbol directly
                 userBlockchainNetwork: userBlockchainNetwork, //
               ),
               const SizedBox(height: 48), //

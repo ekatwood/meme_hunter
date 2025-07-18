@@ -381,19 +381,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                                   return FractionallySizedBox(
                                                     heightFactor: 0.98,
                                                     child: TokenDetails(
-                                                      tokenData: {
-                                                        'Name': token.name,
-                                                        'SmartContract': token.smartContract,
-                                                        'Symbol': token.symbol,
-                                                        'circulating_supply': token.circulatingSupply,
-                                                        'market_cap': token.marketCap,
-                                                        'description': token.description,
-                                                        'website_link': token.websiteLink,
-                                                        'twitter_link': token.twitterLink,
-                                                        'firebase_logo_url': token.firebaseLogoUrl,
-                                                        'tradesCountWithUniqueTraders': token.tradesCountWithUniqueTraders,
-                                                        'timestamp': token.timestamp,
-                                                      }, // Pass as Map for now, refactor TokenDetails next
+                                                      tokenData: token,
                                                     ),
                                                   );
                                                 },

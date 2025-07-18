@@ -14,6 +14,8 @@ class TokenData {
   final int? tradesCountWithUniqueTraders;
   final String? timestamp; // Changed to String? to match your Firestore data type
 
+  final String blockchainNetwork = "ETH";
+
   TokenData({
     required this.name,
     required this.smartContract,
@@ -77,7 +79,7 @@ class TokenData {
     }
   }
 
-  String get formattedmarketCap {
+  String get formattedMarketCap {
     if (marketCap == null || marketCap!.isEmpty) {
       return 'N/A';
     }
