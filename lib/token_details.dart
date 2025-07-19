@@ -166,8 +166,8 @@ class _TokenDetailsState extends State<TokenDetails> {
     final tokenSymbol = widget.tokenData.symbol;
     final mintAddress = widget.tokenData.smartContract;
     final logoUrl = widget.tokenData.firebaseLogoUrl;
-    final formattedCirculatingSupply = widget.tokenData.formattedCirculatingSupply; // Use the new getter
-    final formattedMarketCap = widget.tokenData.formattedMarketCap; // This is a double now, might need formatting
+    final circulatingSupply = widget.tokenData.circulatingSupply;
+    final marketCap = widget.tokenData.marketCap;
     final description = widget.tokenData.description;
     final websiteLink = widget.tokenData.websiteLink;
     final twitterLink = widget.tokenData.twitterLink;
@@ -265,7 +265,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               Align( //
                 alignment: Alignment.centerLeft, //
                 child: Text( //
-                  'Total Supply: ${formattedCirculatingSupply}', // Use the formatted circulating supply
+                  'Total Supply: ${circulatingSupply}', // Use the formatted circulating supply
                   style: Theme.of(context).textTheme.bodyLarge, //
                 ),
               ),
@@ -275,7 +275,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               Align( //
                 alignment: Alignment.centerLeft, //
                 child: Text( //
-                  'Market Cap: ${formattedMarketCap}', // Use formatted market cap
+                  'Market Cap: \$''${marketCap}', // Use formatted market cap
                   style: Theme.of(context).textTheme.bodyLarge, //
                 ),
               ),
