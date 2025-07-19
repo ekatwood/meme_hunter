@@ -10,7 +10,6 @@ class TokenData {
   final String? websiteLink;
   final String? twitterLink;
   final String? firebaseLogoUrl;
-  final int? tradesCountWithUniqueTraders;
   final String? timestamp; // Changed to String? to match your Firestore data type
 
   final String blockchainNetwork = "ETH";
@@ -25,7 +24,6 @@ class TokenData {
     this.websiteLink,
     this.twitterLink,
     this.firebaseLogoUrl,
-    this.tradesCountWithUniqueTraders,
     this.timestamp,
   });
 
@@ -41,7 +39,6 @@ class TokenData {
       websiteLink: doc['website_link'] as String?,
       twitterLink: doc['twitter_link'] as String?,
       firebaseLogoUrl: doc['firebase_logo_url'] as String?,
-      tradesCountWithUniqueTraders: doc['tradesCountWithUniqueTraders'] as int?,
       timestamp: doc['timestamp'] as String?, // Ensure this matches Firestore type
     );
   }

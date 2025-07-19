@@ -48,7 +48,7 @@ Future<List<TokenData>> fetchDocuments() async {
 
 Future<List<TokenData>> fetchSOLDocuments() async {
   // Reference to the collection
-  final collectionRef = FirebaseFirestore.instance.collection('tokens_by_timestamp');
+  final collectionRef = FirebaseFirestore.instance.collection('tokens_by_timestamp_SOL');
 
   // Step 1: Find the latest timestamp by querying the first document in descending order of 'timestamp'
   final latestTimestampSnapshot = await collectionRef
@@ -56,18 +56,13 @@ Future<List<TokenData>> fetchSOLDocuments() async {
       .limit(1)
       .get();
 
-  if (latestTimestampSnapshot.docs.isEmpty) {
-    return []; // No documents found, return an empty list
-  }
-
   // Retrieve the latest timestamp value
-  // Assuming 'timestamp' in Firestore is a String, adjust if it's an int or Timestamp
   final latestTimestamp = latestTimestampSnapshot.docs.first.get('timestamp');
 
   // Step 2: Query documents with the latest timestamp, ordered by 'tradesCountWithUniqueTraders'
   final latestDocsQuery = await collectionRef
       .where('timestamp', isEqualTo: latestTimestamp)
-      .orderBy('tradesCountWithUniqueTraders', descending: true)
+      .orderBy('Counter')
       .get();
 
   List<TokenData> tokens = [];
@@ -90,46 +85,6 @@ Future<List<TokenData>> fetchSOLDocuments() async {
 
   return tokens;
 }
-
-// Future<Map<int, dynamic>> fetchSOLDocuments() async {
-//   // Reference to the collection
-//   final collectionRef = FirebaseFirestore.instance.collection('tokens_by_timestamp_SOL');
-//
-//   // Step 1: Find the latest timestamp by querying the first document in descending order of 'timestamp'
-//   final latestTimestampSnapshot = await collectionRef
-//       .orderBy('timestamp', descending: true)
-//       .limit(1)
-//       .get();
-//
-//   // Retrieve the latest timestamp value
-//   final latestTimestamp = latestTimestampSnapshot.docs.first.get('timestamp');
-//
-//   // Step 2: Query documents with the latest timestamp, ordered by 'tradesCountWithUniqueTraders'
-//   final latestDocsQuery = await collectionRef
-//       .where('timestamp', isEqualTo: latestTimestamp)
-//       .orderBy('Counter')
-//       .get();
-//
-//   Map<int, dynamic> tokens = {};
-//   var counter = 1;
-//
-//   for(var doc in latestDocsQuery.docs){
-//     tokens[counter] = {
-//       'Name': doc['Name'],
-//       'SmartContract': doc['MintAddress'],
-//       'Symbol': doc['Symbol'],
-//       'circulating_supply': doc['totalSupplyFormatted'],
-//       'market_cap': doc['fullyDilutedValue'],
-//       'description': doc['description'],
-//       'website_link': doc['website_link'],
-//       'twitter_link': doc['twitter_link'],
-//       'firebase_logo_url': doc['firebase_logo_url'],
-//       'timestamp': doc['timestamp']
-//     };
-//     counter += 1;
-//   }
-//   return tokens;
-// }
 
 /// Fetches the minute_data array for a given contract address from the 'charts' collection.
 ///

@@ -1,3 +1,4 @@
+// main.dart
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
-import 'token_data.dart'; // NEW: Import the TokenData class
+import 'token_data.dart'; // Import the TokenData class
 
 final _router = GoRouter(
   routes: [
@@ -88,6 +89,18 @@ class TokenQuestPage extends StatefulWidget {
 }
 
 class _TokenQuestPageState extends State<TokenQuestPage> {
+  // NEW: Store the Futures here so they are only initialized once
+  late Future<List<TokenData>> _ethereumTokensFuture;
+  late Future<List<TokenData>> _solanaTokensFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the futures here
+    _ethereumTokensFuture = _fetchEthereumTokensData();
+    _solanaTokensFuture = _fetchSolanaTokensData();
+  }
+
   void _launchURL() async {
     final url = Uri.parse("https://bitquery.io/");
     if (await canLaunchUrl(url)) {
@@ -97,13 +110,13 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     }
   }
 
-  // MODIFIED: Return type changed to List<TokenData>
-  Future<List<TokenData>> fetchTokensData() async {
+  // RENAMED & MADE PRIVATE: fetchTokensData -> _fetchEthereumTokensData
+  Future<List<TokenData>> _fetchEthereumTokensData() async {
     return await fetchDocuments();
   }
 
-  // MODIFIED: Return type changed to List<TokenData>
-  Future<List<TokenData>> fetchSOLTokensData() async {
+  // RENAMED & MADE PRIVATE: fetchSOLTokensData -> _fetchSolanaTokensData
+  Future<List<TokenData>> _fetchSolanaTokensData() async {
     return await fetchSOLDocuments();
   }
 
@@ -253,13 +266,17 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                 isSelected: [!authProvider.isSolana, authProvider.isSolana],
                 onPressed: (int index) {
                   authProvider.setBlockchainPreference(index == 1);
+                  // When the preference changes, we need to re-fetch if we haven't already
+                  // or trigger a rebuild that uses the correct future.
+                  // Since the Future is already stored in state, changing `isSolana`
+                  // in AuthProvider will cause a rebuild of the Consumer,
+                  // and the FutureBuilder will pick the correct one.
                 },
               ),
             ),
-            // MODIFIED: FutureBuilder now expects List<TokenData>
+            // FutureBuilder now uses the stored Futures
             FutureBuilder<List<TokenData>>(
-              // Use authProvider.isSolana for the future selection
-              future: authProvider.isSolana ? fetchSOLTokensData() : fetchTokensData(),
+              future: authProvider.isSolana ? _solanaTokensFuture : _ethereumTokensFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
@@ -317,7 +334,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                               ),
                             ],
-                            // MODIFIED: Use the List<TokenData> directly
                             rows: tokens.map((token) {
                               return DataRow(cells: [
                                 DataCell(
