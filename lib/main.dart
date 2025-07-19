@@ -229,7 +229,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     ),
                     children: [
                       TextSpan(
-                        text: 'A GraphQL query to find trending blockchain tokens ',
+                        text: 'Trending Blockchain Tokens ',
                       ),
                       TextSpan(
                         text: '📈💸✅',

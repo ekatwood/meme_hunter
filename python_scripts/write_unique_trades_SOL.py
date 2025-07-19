@@ -18,7 +18,7 @@ query = """
     DEXTradeByTokens(
       orderBy: {descendingByField: "buy"}
       where: {Trade: {Currency: {MintAddress: {notIn: ["So11111111111111111111111111111111111111112", "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"]}}, Dex: {ProtocolFamily: {is: "Raydium"}}}, Transaction: {Result: {Success: true}}}
-      limit: {count: 120}
+      limit: {count: 150}
     ) {
       Trade {
         Currency {
@@ -62,7 +62,7 @@ for item in data["data"]["Solana"]["DEXTradeByTokens"]:
     trade_info = {
         "Counter": counter,
         "Name": item["Trade"]["Currency"]["Name"],
-        "MintAddress": item["Trade"]["Currency"]["MintAddress"],
+        "SmartContract": item["Trade"]["Currency"]["MintAddress"],
         "Symbol": item["Trade"]["Currency"]["Symbol"]
     }
     trades.append(trade_info)
@@ -96,12 +96,12 @@ for address in token_addresses:
 
 # Enrich trades with Moralis metadata
 for trade in new_json['trades']:
-    address = trade["MintAddress"].lower()
+    address = trade["SmartContract"].lower()
     token_metadata = moralis_token_metadata.get(address, {})
 
     trade['logo'] = token_metadata.get('logo', "")
-    trade['totalSupplyFormatted'] = token_metadata.get('totalSupplyFormatted', "")
-    trade['fullyDilutedValue'] = token_metadata.get('fullyDilutedValue', "")
+    trade['circulating_supply'] = token_metadata.get('totalSupplyFormatted', "")
+    trade['market_cap'] = token_metadata.get('fullyDilutedValue', "")
 
     # Extracting twitter, website, and description
     links = token_metadata.get('links', {})
@@ -129,6 +129,11 @@ bucket = storage.bucket() # Get the default storage bucket
 uploaded_image_urls = {}
 
 for trade in new_json['trades']:
+    # Skip low market cap tokens
+    if(len(trade['market_cap']) < 4 or float(trade['market_cap']) < 5000):
+        print('skipping ' + trade['Name'] + ' low market cap: ' + trade['market_cap'])
+        continue
+
     original_logo_url = trade['logo']
 
     if original_logo_url and original_logo_url.startswith('http'): # Ensure it's a valid URL
@@ -154,7 +159,7 @@ for trade in new_json['trades']:
                 # 2. Upload to Firebase Storage
                 # Create a unique filename (e.g., smart_contract_address.webp)
                 # You might want to sanitize the address for filenames
-                filename = f"logos_SOL/{trade['MintAddress']}.{file_extension}"
+                filename = f"logos_SOL/{trade['SmartContract']}.{file_extension}"
                 blob = bucket.blob(filename)
 
                 # Set content type based on what was detected or expected
@@ -190,6 +195,11 @@ db = firestore.Client(project='meme-hunter-4f1c1') # Hardcoded project ID
 
 # Write data to Firestore
 for trade in new_json['trades']:
+    # Skip low market cap tokens
+    if(len(trade['market_cap']) < 4 or float(trade['market_cap']) < 5000):
+        print('skipping ' + trade['Name'] + ' low market cap: ' + trade['market_cap'])
+        continue
+
     # Generate a unique ID for each document
     doc_ref = db.collection('tokens_by_timestamp_SOL').document()  # Generate a unique ID
     # Add timestamp field

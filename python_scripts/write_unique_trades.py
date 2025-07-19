@@ -16,7 +16,7 @@ query = """
 query find_unique_trades {
   EVM {
     DEXTradeByTokens(
-      limit: { count: 120 }
+      limit: { count: 150 }
       orderBy: { descendingByField: "tradesCountWithUniqueTraders" }
     ) {
       Trade {
@@ -143,6 +143,11 @@ bucket = storage.bucket() # Get the default storage bucket
 uploaded_image_urls = {}
 
 for trade in new_json['trades']:
+    # Skip low market cap tokens
+    if(len(trade['market_cap']) < 4 or float(trade['market_cap']) < 5000):
+        print('skipping ' + trade['Name'] + ' low market cap: ' + trade['market_cap'])
+        continue
+
     original_logo_url = trade['logo']
 
     if original_logo_url and original_logo_url.startswith('http'): # Ensure it's a valid URL
@@ -204,6 +209,11 @@ timestamp = current_time.isoformat()
 
 # Write data to Firestore
 for trade in new_json['trades']:
+    # Skip low market cap tokens
+    if(len(trade['market_cap']) < 4 or float(trade['market_cap']) < 5000):
+        print('skipping ' + trade['Name'] + ' low market cap: ' + trade['market_cap'])
+        continue
+
     doc_ref = db.collection('tokens_by_timestamp').document()
     trade['timestamp'] = timestamp
     doc_ref.set(trade)
