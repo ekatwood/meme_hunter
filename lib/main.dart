@@ -1,4 +1,5 @@
 // main.dart
+import 'dart:convert'; // Import for JSON encoding/decoding
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'token_data.dart'; // Import the TokenData class
+import 'package:shared_preferences/shared_preferences.dart'; // Import shared_preferences
 
 final _router = GoRouter(
   routes: [
@@ -89,16 +91,32 @@ class TokenQuestPage extends StatefulWidget {
 }
 
 class _TokenQuestPageState extends State<TokenQuestPage> {
-  // NEW: Store the Futures here so they are only initialized once
-  late Future<List<TokenData>> _ethereumTokensFuture;
-  late Future<List<TokenData>> _solanaTokensFuture;
+  // State variables to hold the token data and loading status for each blockchain
+  List<TokenData>? _ethereumTokens;
+  List<TokenData>? _solanaTokens;
+  bool _isLoadingEthereum = false;
+  bool _isLoadingSolana = false;
+
+  // Timestamps to track when the data was last fetched/cached for each blockchain
+  String? _ethereumFetchTimestamp;
+  String? _solanaFetchTimestamp;
+
+  // Cache duration in hours
+  static const int _cacheDurationHours = 12;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the futures here
-    _ethereumTokensFuture = _fetchEthereumTokensData();
-    _solanaTokensFuture = _fetchSolanaTokensData();
+    // Fetch initial data based on the current preference
+    // Using addPostFrameCallback to ensure context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      if (authProvider.isSolana) {
+        _fetchSolanaTokensData(forceRefresh: false);
+      } else {
+        _fetchEthereumTokensData(forceRefresh: false);
+      }
+    });
   }
 
   void _launchURL() async {
@@ -106,18 +124,112 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
-      throw 'Could not launch $url';
+      // Consider logging this error or showing a SnackBar
+      print('Could not launch $url');
     }
   }
 
-  // RENAMED & MADE PRIVATE: fetchTokensData -> _fetchEthereumTokensData
-  Future<List<TokenData>> _fetchEthereumTokensData() async {
-    return await fetchDocuments();
+  // Helper function to check if cached data is stale
+  bool _isDataStale(String? timestampString) {
+    if (timestampString == null) return true;
+    try {
+      final cachedTime = DateTime.parse(timestampString);
+      final now = DateTime.now();
+      return now.difference(cachedTime).inHours >= _cacheDurationHours;
+    } catch (e) {
+      print('Error parsing timestamp: $e');
+      return true; // If parsing fails, treat as stale
+    }
   }
 
-  // RENAMED & MADE PRIVATE: fetchSOLTokensData -> _fetchSolanaTokensData
-  Future<List<TokenData>> _fetchSolanaTokensData() async {
-    return await fetchSOLDocuments();
+  // Fetches Ethereum token data from cache or Firestore
+  Future<void> _fetchEthereumTokensData({bool forceRefresh = false}) async {
+    if (_isLoadingEthereum && !forceRefresh) return; // Prevent multiple simultaneous fetches
+    setState(() {
+      _isLoadingEthereum = true;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    final cachedDataString = prefs.getString('ethereum_tokens_cache');
+    final cachedTimestampString = prefs.getString('ethereum_timestamp_cache');
+
+    if (!forceRefresh && cachedDataString != null && !_isDataStale(cachedTimestampString)) {
+      try {
+        final List<dynamic> decodedData = json.decode(cachedDataString);
+        _ethereumTokens = decodedData.map((e) => TokenData.fromJson(e as Map<String, dynamic>)).toList();
+        _ethereumFetchTimestamp = cachedTimestampString;
+        print('Loaded Ethereum data from cache. Timestamp: $_ethereumFetchTimestamp');
+      } catch (e) {
+        print('Error decoding cached Ethereum data: $e');
+        // If decoding fails, force a fetch from Firestore
+        await _fetchEthereumTokensData(forceRefresh: true);
+      }
+    } else {
+      print('Fetching Ethereum data from Firestore...');
+      try {
+        final fetchedTokens = await fetchDocuments();
+        _ethereumTokens = fetchedTokens;
+        _ethereumFetchTimestamp = DateTime.now().toIso8601String(); // Store current time as fetch timestamp
+
+        // Cache the fetched data
+        final String encodedData = json.encode(fetchedTokens.map((e) => e.toJson()).toList());
+        await prefs.setString('ethereum_tokens_cache', encodedData);
+        await prefs.setString('ethereum_timestamp_cache', _ethereumFetchTimestamp!);
+        print('Fetched and cached Ethereum data. Timestamp: $_ethereumFetchTimestamp');
+      } catch (e) {
+        print('Error fetching Ethereum data: $e');
+        // Optionally, show an error message to the user
+      }
+    }
+
+    setState(() {
+      _isLoadingEthereum = false;
+    });
+  }
+
+  // Fetches Solana token data from cache or Firestore
+  Future<void> _fetchSolanaTokensData({bool forceRefresh = false}) async {
+    if (_isLoadingSolana && !forceRefresh) return; // Prevent multiple simultaneous fetches
+    setState(() {
+      _isLoadingSolana = true;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    final cachedDataString = prefs.getString('solana_tokens_cache');
+    final cachedTimestampString = prefs.getString('solana_timestamp_cache');
+
+    if (!forceRefresh && cachedDataString != null && !_isDataStale(cachedTimestampString)) {
+      try {
+        final List<dynamic> decodedData = json.decode(cachedDataString);
+        _solanaTokens = decodedData.map((e) => TokenData.fromJson(e as Map<String, dynamic>)).toList();
+        _solanaFetchTimestamp = cachedTimestampString;
+        print('Loaded Solana data from cache. Timestamp: $_solanaFetchTimestamp');
+      } catch (e) {
+        print('Error decoding cached Solana data: $e');
+        // If decoding fails, force a fetch from Firestore
+        await _fetchSolanaTokensData(forceRefresh: true);
+      }
+    } else {
+      print('Fetching Solana data from Firestore...');
+      try {
+        final fetchedTokens = await fetchSOLDocuments();
+        _solanaTokens = fetchedTokens;
+        _solanaFetchTimestamp = DateTime.now().toIso8601String(); // Store current time as fetch timestamp
+
+        // Cache the fetched data
+        final String encodedData = json.encode(fetchedTokens.map((e) => e.toJson()).toList());
+        await prefs.setString('solana_tokens_cache', encodedData);
+        await prefs.setString('solana_timestamp_cache', _solanaFetchTimestamp!);
+        print('Fetched and cached Solana data. Timestamp: $_solanaFetchTimestamp');
+      } catch (e) {
+        print('Error fetching Solana data: $e');
+        // Optionally, show an error message to the user
+      }
+    }
+
+    setState(() {
+      _isLoadingSolana = false;
+    });
   }
 
   // Function to copy text to clipboard and show SnackBar
@@ -153,6 +265,21 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     final Color selectedBorderColor = Theme.of(context).brightness == Brightness.light
         ? const Color(0xFFA8415B)
         : const Color(0xFF800020);
+
+    // Determine which list and loading state to use based on AuthProvider
+    List<TokenData>? currentTokens;
+    bool isLoadingCurrent;
+    String? currentDisplayTimestamp;
+
+    if (authProvider.isSolana) {
+      currentTokens = _solanaTokens;
+      isLoadingCurrent = _isLoadingSolana;
+      currentDisplayTimestamp = _solanaFetchTimestamp;
+    } else {
+      currentTokens = _ethereumTokens;
+      isLoadingCurrent = _isLoadingEthereum;
+      currentDisplayTimestamp = _ethereumFetchTimestamp;
+    }
 
     return Scaffold(
       appBar: CustomAppBar(),
@@ -266,247 +393,222 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                 isSelected: [!authProvider.isSolana, authProvider.isSolana],
                 onPressed: (int index) {
                   authProvider.setBlockchainPreference(index == 1);
-                  // When the preference changes, we need to re-fetch if we haven't already
-                  // or trigger a rebuild that uses the correct future.
-                  // Since the Future is already stored in state, changing `isSolana`
-                  // in AuthProvider will cause a rebuild of the Consumer,
-                  // and the FutureBuilder will pick the correct one.
+                  // Fetch data only if not already loaded or if it's stale
+                  if (index == 0) { // Ethereum selected
+                    if (_ethereumTokens == null || _isDataStale(_ethereumFetchTimestamp)) {
+                      _fetchEthereumTokensData();
+                    }
+                  } else { // Solana selected
+                    if (_solanaTokens == null || _isDataStale(_solanaFetchTimestamp)) {
+                      _fetchSolanaTokensData();
+                    }
+                  }
                 },
               ),
             ),
-            // FutureBuilder now uses the stored Futures
-            FutureBuilder<List<TokenData>>(
-              future: authProvider.isSolana ? _solanaTokensFuture : _ethereumTokensFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 20.0),
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF800020)),
-                    ),
-                  );
-                } else if (snapshot.hasError) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                  final tokens = snapshot.data!;
-                  // The timestamp is now part of the first token, or derived.
-                  // If you specifically need the latest timestamp from the query,
-                  // you might need to adjust fetchDocuments to return it separately
-                  // or assume it's consistent across all returned tokens.
-                  // For now, let's take it from the first token for display.
-                  final String? displayTimestamp = tokens.isNotEmpty ? tokens.first.timestamp : 'N/A';
-
-
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 20.0, right: 15, left: 15, bottom: 15),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            columns: const <DataColumn>[
-                              DataColumn(
-                                label: Flexible(
-                                  child: Text(
-                                    'Name',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
+            // Conditional rendering based on loading state and data availability
+            if (isLoadingCurrent)
+              const Padding(
+                padding: EdgeInsets.only(top: 20.0),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF800020)),
+                ),
+              )
+            else if (currentTokens == null || currentTokens.isEmpty)
+              const Center(
+                child: Text('No data available'),
+              )
+            else
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 20.0, right: 15, left: 15, bottom: 15),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columns: const <DataColumn>[
+                          DataColumn(
+                            label: Flexible(
+                              child: Text(
+                                'Name',
+                                style: TextStyle(fontStyle: FontStyle.italic),
                               ),
-                              DataColumn(
-                                label: Flexible(
-                                  child: Text(
-                                    'Symbol',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Flexible(
+                              child: Text(
+                                'Symbol',
+                                style: TextStyle(fontStyle: FontStyle.italic),
                               ),
-                              DataColumn(
-                                label: Flexible(
-                                  child: Text(
-                                    'Mint Address',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Flexible(
+                              child: Text(
+                                'Mint Address',
+                                style: TextStyle(fontStyle: FontStyle.italic),
                               ),
-                            ],
-                            rows: tokens.map((token) {
-                              return DataRow(cells: [
-                                DataCell(
-                                  Container(
-                                    width: (MediaQuery.of(context).size.width - 20) * 0.4,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        // Conditional logic for displaying the logo
-                                        if (token.firebaseLogoUrl != null && token.firebaseLogoUrl!.isNotEmpty)
-                                          ClipOval(
-                                            child: Image.network(
-                                              token.firebaseLogoUrl!, // Access directly
-                                              width: 25,
-                                              height: 25,
-                                              fit: BoxFit.cover,
-                                              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                                                if (loadingProgress == null) {
-                                                  return child;
-                                                }
-                                                return Center(
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    value: loadingProgress.expectedTotalBytes != null
-                                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                                        : null,
-                                                  ),
-                                                );
-                                              },
-                                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                                                print('Image.network Error: $error' + 'url: ${token.firebaseLogoUrl}'); // Access directly
-                                                return const Icon(Icons.error, size: 25);
-                                              },
-                                            ),
+                            ),
+                          ),
+                        ],
+                        rows: currentTokens!.map((token) {
+                          return DataRow(cells: [
+                            DataCell(
+                              Container(
+                                width: (MediaQuery.of(context).size.width - 20) * 0.4,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // Conditional logic for displaying the logo
+                                    if (token.firebaseLogoUrl != null && token.firebaseLogoUrl!.isNotEmpty)
+                                      ClipOval(
+                                        child: CachedNetworkImage( // Changed to CachedNetworkImage
+                                          imageUrl: token.firebaseLogoUrl!, // Access directly
+                                          width: 25,
+                                          height: 25,
+                                          fit: BoxFit.cover,
+                                          placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2,),
+                                          errorWidget: (context, url, error) {
+                                            print('CachedNetworkImage Error: $error, URL: $url');
+                                            return const Icon(Icons.error, size: 25);
+                                          },
+                                        ),
+                                      )
+                                    else
+                                      ClipOval(
+                                        child: SizedBox(
+                                          width: 25,
+                                          height: 25,
+                                          child: authProvider.isSolana
+                                              ? Image.asset(
+                                            'assets/solana-sol-logo.png',
+                                            fit: BoxFit.cover,
                                           )
-                                        else
-                                          ClipOval(
-                                            child: SizedBox(
-                                              width: 25,
-                                              height: 25,
-                                              child: authProvider.isSolana
-                                                  ? Image.asset(
-                                                'assets/solana-sol-logo.png',
-                                                fit: BoxFit.cover,
-                                              )
-                                                  : Image.asset(
-                                                'assets/ethereum-logo.png',
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
+                                              : Image.asset(
+                                            'assets/ethereum-logo.png',
+                                            fit: BoxFit.cover,
                                           ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              showModalBottomSheet(
-                                                context: context,
-                                                isScrollControlled: true,
-                                                useRootNavigator: true,
-                                                builder: (BuildContext context) {
-                                                  return FractionallySizedBox(
-                                                    heightFactor: 0.98,
-                                                    child: TokenDetails(
-                                                      tokenData: token,
-                                                    ),
-                                                  );
-                                                },
+                                        ),
+                                      ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            useRootNavigator: true,
+                                            builder: (BuildContext context) {
+                                              return FractionallySizedBox(
+                                                heightFactor: 0.98,
+                                                child: TokenDetails(
+                                                  tokenData: token,
+                                                ),
                                               );
                                             },
-                                            child: Text(
-                                              token.name, // Access directly
-                                              style: const TextStyle(fontSize: 16),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Container(
-                                    width: 110,
-                                    child: TextField(
-                                      readOnly: true,
-                                      controller: TextEditingController(text: token.symbol), // Access directly
-                                      style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        isDense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  GestureDetector(
-                                    onTap: () => _copyToClipboard(token.smartContract), // Access directly
-                                    child: Container(
-                                      width: 150,
-                                      child: Text(
-                                            () {
-                                          final smartContract = token.smartContract; // Access directly
-                                          if (smartContract.isEmpty || smartContract == 'N/A') {
-                                            return 'N/A';
-                                          }
-                                          if (smartContract == '0x') {
-                                            return '0x';
-                                          }
-                                          final int minLengthForTruncation = 10;
-                                          if (smartContract.length <= minLengthForTruncation) {
-                                            return smartContract;
-                                          } else {
-                                            return '${smartContract.substring(0, 6)}...${smartContract.substring(smartContract.length - 4)}';
-                                          }
-                                        }(),
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          decoration: TextDecoration.underline,
-                                          color: Colors.blue,
-                                          fontWeight: FontWeight.normal,
+                                          );
+                                        },
+                                        child: Text(
+                                          token.name, // Access directly
+                                          style: const TextStyle(fontSize: 16),
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Container(
+                                width: 110,
+                                child: TextField(
+                                  readOnly: true,
+                                  controller: TextEditingController(text: token.symbol), // Access directly
+                                  style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
                                   ),
                                 ),
-                              ]);
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0, right: 15),
-                        child: Align(
-                          alignment: Alignment.topRight,
-                          child: Text(
-                            displayTimestamp ?? 'N/A', // Display timestamp from the first token
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 80),
-                        child: RichText(
-                          text: TextSpan(
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            children: [
-                              const TextSpan(
-                                  text: 'Powered by ',
-                                  style: const TextStyle(fontWeight: FontWeight.normal,)
                               ),
-                              TextSpan(
-                                text: 'Bitquery',
-                                style: const TextStyle(
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline,
-                                  fontWeight: FontWeight.normal,
+                            ),
+                            DataCell(
+                              GestureDetector(
+                                onTap: () => _copyToClipboard(token.smartContract), // Access directly
+                                child: Container(
+                                  width: 150,
+                                  child: Text(
+                                        () {
+                                      final smartContract = token.smartContract; // Access directly
+                                      if (smartContract.isEmpty || smartContract == 'N/A') {
+                                        return 'N/A';
+                                      }
+                                      if (smartContract == '0x') {
+                                        return '0x';
+                                      }
+                                      final int minLengthForTruncation = 10;
+                                      if (smartContract.length <= minLengthForTruncation) {
+                                        return smartContract;
+                                      } else {
+                                        return '${smartContract.substring(0, 6)}...${smartContract.substring(smartContract.length - 4)}';
+                                      }
+                                    }(),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
                                 ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = _launchURL,
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          ]);
+                        }).toList(),
                       ),
-                    ],
-                  );
-                } else {
-                  return const Center(
-                    child: Text('No data available'),
-                  );
-                }
-              },
-            ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0, right: 15),
+                    child: Align(
+                      alignment: Alignment.topRight,
+                      child: Text(
+                        currentDisplayTimestamp != null
+                            ? 'Last updated: ${currentDisplayTimestamp!.substring(0, 10)} ${currentDisplayTimestamp!.substring(11, 16)}' // Format display
+                            : 'N/A',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15.0, bottom: 80),
+                    child: RichText(
+                      text: TextSpan(
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        children: [
+                          const TextSpan(
+                              text: 'Powered by ',
+                              style: const TextStyle(fontWeight: FontWeight.normal,)
+                          ),
+                          TextSpan(
+                            text: 'Bitquery',
+                            style: const TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = _launchURL,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),
