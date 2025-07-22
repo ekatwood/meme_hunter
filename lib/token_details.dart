@@ -69,7 +69,8 @@ class _TokenDetailsState extends State<TokenDetails> {
     // MODIFIED: Access SmartContract directly from tokenData object
     final String? contractAddress = widget.tokenData.smartContract;
     if (contractAddress != null && contractAddress.isNotEmpty && contractAddress != 'N/A') {
-      _rawChartData = await fetchChartData(contractAddress);
+      // TODO: use contractAddress, for now hard coding to what is in the db
+      _rawChartData = await fetchChartData('0x95af4af910c28e8ece4512bfe46f1f33687424ce');
       _applyTimeFilterAndChartData(); // Apply filter after fetching
     } else {
       _rawChartData = [];
@@ -82,58 +83,81 @@ class _TokenDetailsState extends State<TokenDetails> {
     });
   }
 
+  // Helper to parse dynamic timestamp into DateTime
+  DateTime? _parseDynamicTimestamp(dynamic timestampData) {
+    if (timestampData is Timestamp) { //
+      return timestampData.toDate();
+    } else if (timestampData is int) { //
+      return DateTime.fromMillisecondsSinceEpoch(timestampData);
+    } else if (timestampData is String) { //
+      try {
+        return DateTime.parse(timestampData);
+      } catch (e) {
+        print('Error parsing timestamp string: $e');
+        return null; // Indicate parsing failure
+      }
+    }
+    print('Unexpected timestamp type: ${timestampData.runtimeType}');
+    return null; // Return null for unsupported types
+  }
+
   void _applyTimeFilterAndChartData() {
     if (_rawChartData.isEmpty) {
       _filteredChartData = [];
       return;
     }
 
-    DateTime now = DateTime.now();
+    // Step 1: Parse all raw timestamps and find the absolute latest timestamp in your data
+    // This will be our dynamic "current" time reference
+    DateTime? latestDataTimestamp;
+    List<ChartData> tempChartData = []; // To store parsed data for finding max and then filtering
+
+    for (var dataPoint in _rawChartData) {
+      final DateTime? parsedTime = _parseDynamicTimestamp(dataPoint['timestamp']);
+      final double? value = (dataPoint['open'] as num?)?.toDouble();
+
+      if (parsedTime != null && value != null) {
+        tempChartData.add(ChartData(parsedTime, value));
+        if (latestDataTimestamp == null || parsedTime.isAfter(latestDataTimestamp)) {
+          latestDataTimestamp = parsedTime;
+        }
+      }
+    }
+
+    // If no valid timestamps found, return empty
+    if (latestDataTimestamp == null) {
+      _filteredChartData = [];
+      return;
+    }
+
+    // Step 2: Determine the start time for the filter based on the latestDataTimestamp
     DateTime startTime;
 
     if (_selectedTimeFilter[0]) { // 1H
-      startTime = now.subtract(const Duration(hours: 1));
+      startTime = latestDataTimestamp.subtract(const Duration(hours: 1));
     } else if (_selectedTimeFilter[1]) { // 6H
-      startTime = now.subtract(const Duration(hours: 6));
+      startTime = latestDataTimestamp.subtract(const Duration(hours: 6));
     } else if (_selectedTimeFilter[2]) { // 12H
-      startTime = now.subtract(const Duration(hours: 12));
+      startTime = latestDataTimestamp.subtract(const Duration(hours: 12));
     } else if (_selectedTimeFilter[3]) { // 1D
-      startTime = now.subtract(const Duration(days: 1));
+      startTime = latestDataTimestamp.subtract(const Duration(days: 1));
     } else if (_selectedTimeFilter[4]) { // 1W
-      startTime = now.subtract(const Duration(days: 7));
-    } else if (_selectedTimeFilter[5]) { // 3M
-      startTime = now.subtract(const Duration(days: 90)); // Approx 3 months
-    } else { // All time (default to showing all if no filter selected)
-      startTime = DateTime.fromMillisecondsSinceEpoch(0); // Effectively all time
+      startTime = latestDataTimestamp.subtract(const Duration(days: 7));
+    } else if (_selectedTimeFilter[5]) { // 2W
+      startTime = latestDataTimestamp.subtract(const Duration(days: 14));
+    } else { // All time (show all data if no specific filter is active or for fallback)
+      startTime = DateTime.fromMillisecondsSinceEpoch(0); // Effectively the beginning of time
     }
 
-    _filteredChartData = _rawChartData
-        .where((dataPoint) {
-      final timestamp = dataPoint['timestamp'];
-      if (timestamp is Timestamp) {
-        return timestamp.toDate().isAfter(startTime);
-      } else if (timestamp is int) { // Assuming milliseconds since epoch
-        return DateTime.fromMillisecondsSinceEpoch(timestamp).isAfter(startTime);
-      }
-      return false;
-    })
-        .map((dataPoint) {
-      DateTime time;
-      if (dataPoint['timestamp'] is Timestamp) {
-        time = dataPoint['timestamp'].toDate();
-      } else if (dataPoint['timestamp'] is int) {
-        time = DateTime.fromMillisecondsSinceEpoch(dataPoint['timestamp']);
-      } else {
-        // TODO: Handle unexpected timestamp type more robustly
-        time = DateTime.now();
-      }
-      final value = (dataPoint['open'] as num?)?.toDouble() ?? 0.0;
-      return ChartData(time, value);
-    })
+    // Step 3: Filter the data using the calculated startTime and the latestDataTimestamp
+    _filteredChartData = tempChartData
+        .where((chartData) => chartData.time.isAfter(startTime) || chartData.time.isAtSameMomentAs(startTime))
         .toList();
 
-    // Sort by time to ensure correct chart display
+    // Step 4: Sort by time to ensure correct chart display
     _filteredChartData.sort((a, b) => a.time.compareTo(b.time));
+
+    setState(() {}); // Ensure UI updates
   }
 
   @override
@@ -179,8 +203,8 @@ class _TokenDetailsState extends State<TokenDetails> {
               ClipOval( //
                 child: CachedNetworkImage( //
                   imageUrl: logoUrl ?? '', // Use logoUrl directly
-                  width: 100, // Smaller logo for expanded view
-                  height: 100, //
+                  width: 120, // Smaller logo for expanded view
+                  height: 120, //
                   fit: BoxFit.cover, //
                   placeholder: (context, url) => const CircularProgressIndicator(), //
                   errorWidget: (context, url, error) => const Icon(Icons.error_outline, size: 100), //
@@ -326,32 +350,11 @@ class _TokenDetailsState extends State<TokenDetails> {
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('12H')), //
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1D')), //
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1W')), //
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('3M')), //
+                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('2W')), //
                 ],
               ),
               const SizedBox(height: 16), //
-              // Chart Type ToggleButtons
-              ToggleButtons( //
-                isSelected: _selectedChartType, //
-                onPressed: (int index) { //
-                  setState(() { //
-                    for (int i = 0; i < _selectedChartType.length; i++) { //
-                      _selectedChartType[i] = i == index; //
-                    }
-                  });
-                },
-                borderRadius: BorderRadius.circular(8.0), //
-                selectedColor: Colors.white, //
-                fillColor: Theme.of(context).primaryColor, //
-                color: Theme.of(context).primaryColor, //
-                borderColor: Theme.of(context).primaryColor, //
-                selectedBorderColor: Theme.of(context).primaryColor, //
-                children: const <Widget>[ //
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Line')), //
-                  Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('Spline')), //
-                ],
-              ),
-              const SizedBox(height: 16), //
+
               _isLoadingChartData //
                   ? const CircularProgressIndicator() //
                   : _filteredChartData.isEmpty //
@@ -364,20 +367,14 @@ class _TokenDetailsState extends State<TokenDetails> {
                 child: SfCartesianChart( //
                   primaryXAxis: DateTimeAxis(), //
                   series: <CartesianSeries<ChartData, DateTime>>[ //
-                    _selectedChartType[0] // If Line chart is selected
-                        ? LineSeries<ChartData, DateTime>( //
+                    // Directly use LineSeries, no more conditional check
+                    LineSeries<ChartData, DateTime>( //
                       dataSource: _filteredChartData, //
                       xValueMapper: (ChartData data, _) => data.time, //
                       yValueMapper: (ChartData data, _) => data.value, //
                       name: 'Price', //
                       enableTooltip: true, //
-                    )
-                        : SplineSeries<ChartData, DateTime>( // If Spline chart is selected
-                      dataSource: _filteredChartData, //
-                      xValueMapper: (ChartData data, _) => data.time, //
-                      yValueMapper: (ChartData data, _) => data.value, //
-                      name: 'Price', //
-                      enableTooltip: true, //
+                      animationDuration: 0, //
                     ),
                   ],
                   tooltipBehavior: TooltipBehavior(enable: true), //

@@ -86,11 +86,7 @@ Future<List<TokenData>> fetchSOLDocuments() async {
   return tokens;
 }
 
-/// Fetches the minute_data array for a given contract address from the 'charts' collection.
-///
-/// Returns a List of Maps, where each Map represents a minute data point
-/// with 'timestamp' and 'open' price. Returns an empty list if the document
-/// or the 'minute_data' field does not exist, or if an error occurs.
+
 Future<List<Map<String, dynamic>>> fetchChartData(String contractAddress) async {
   try {
     final docRef = FirebaseFirestore.instance.collection('charts').doc(contractAddress);
