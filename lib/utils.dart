@@ -1,4 +1,26 @@
-import 'package:intl/intl.dart'; // Import for NumberFormat
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import for NumberFormat
+
+// Helper function to launch URLs
+void launchURL(String? url) async {
+  if (url == null || url.isEmpty) return;
+  final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } else {
+    print('Could not launch ${url}');
+  }
+}
+
+// Function to copy text to clipboard and show SnackBar
+void copyToClipboard(String text, BuildContext context) {
+  Clipboard.setData(ClipboardData(text: text));
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Address copied to clipboard.")),
+  );
+}
 
 String formatBigNumber(String? numString) {
   if (numString == null || numString.isEmpty) {

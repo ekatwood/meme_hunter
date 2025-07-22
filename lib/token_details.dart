@@ -2,11 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart'; // For network image loading
 import 'package:provider/provider.dart'; // For AuthProvider
-import 'package:url_launcher/url_launcher.dart'; // For launching URLs
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:syncfusion_flutter_charts/charts.dart'; // For charts
 import 'firestore_functions.dart'; // For fetchChartData
 import 'auth_provider.dart'; // For accessing connected wallet info
+import 'utils.dart';
 import 'package:meme_hunter/swap_token.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp type
 import 'token_data.dart'; // NEW: Import the TokenData class
@@ -58,26 +58,6 @@ class _TokenDetailsState extends State<TokenDetails> {
       return address;
     } else {
       return '${address.substring(0, 6)}...${address.substring(address.length - 4)}';
-    }
-  }
-
-  // Helper function to copy text to clipboard
-  void _copyToClipboard(String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Address copied to clipboard.")),
-    );
-  }
-
-  // Helper function to launch URLs
-  void _launchURL(String? url) async {
-    if (url == null || url.isEmpty) return;
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      // TODO: Add error logging/snackbar if URL cannot be launched
-      print('Could not launch ${url}');
     }
   }
 
@@ -172,21 +152,6 @@ class _TokenDetailsState extends State<TokenDetails> {
     final websiteLink = widget.tokenData.websiteLink;
     final twitterLink = widget.tokenData.twitterLink;
 
-    // Helper for formatting market cap if it's a double
-    String _formatMarketCap(double? value) {
-      if (value == null) return 'N/A';
-      if (value < 1000) {
-        return '\$${value.toStringAsFixed(2)}';
-      } else if (value < 1000000) {
-        return '\$${(value / 1000).toStringAsFixed(2)}K';
-      } else if (value < 1000000000) {
-        return '\$${(value / 1000000).toStringAsFixed(2)}M';
-      } else {
-        return '\$${(value / 1000000000).toStringAsFixed(2)}B';
-      }
-    }
-
-
     return Container(
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
@@ -242,7 +207,7 @@ class _TokenDetailsState extends State<TokenDetails> {
 
               // Contract Address
               GestureDetector( //
-                onTap: () => _copyToClipboard(mintAddress), // Use mintAddress directly
+                onTap: () => copyToClipboard(mintAddress, context), // Use mintAddress directly
                 child: RichText( //
                   text: TextSpan( //
                     style: Theme.of(context).textTheme.bodyMedium, // Base style
@@ -302,7 +267,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               // Website Link (if available)
               if (websiteLink != null && websiteLink.isNotEmpty) ...[ //
                 GestureDetector( //
-                  onTap: () => _launchURL(websiteLink), // Use websiteLink directly
+                  onTap: () => launchURL(websiteLink), // Use websiteLink directly
                   child: Align( //
                     alignment: Alignment.centerLeft, //
                     child: Text( //
@@ -320,7 +285,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               // Twitter Link (if available)
               if (twitterLink != null && twitterLink.isNotEmpty) ...[ //
                 GestureDetector( //
-                  onTap: () => _launchURL(twitterLink), // Use twitterLink directly
+                  onTap: () => launchURL(twitterLink), // Use twitterLink directly
                   child: Align( //
                     alignment: Alignment.centerLeft, //
                     child: Text( //

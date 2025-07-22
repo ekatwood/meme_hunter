@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firestore_functions.dart';
 import 'package:meme_hunter/token_details.dart';
 import 'auth_provider.dart';
+import 'utils.dart';
 import 'appbar.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
@@ -119,18 +120,9 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     });
   }
 
-  void _launchURL() async {
-    final url = Uri.parse("https://bitquery.io/");
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      // Consider logging this error or showing a SnackBar
-      print('Could not launch $url');
-    }
-  }
-
   // Helper function to check if cached data is stale
   bool _isDataStale(String? timestampString) {
+
     if (timestampString == null) return true;
     try {
       final cachedTime = DateTime.parse(timestampString);
@@ -232,14 +224,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     });
   }
 
-  // Function to copy text to clipboard and show SnackBar
-  void _copyToClipboard(String text) {
-    Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Address copied to clipboard.")),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -269,16 +253,13 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     // Determine which list and loading state to use based on AuthProvider
     List<TokenData>? currentTokens;
     bool isLoadingCurrent;
-    String? currentDisplayTimestamp;
 
     if (authProvider.isSolana) {
       currentTokens = _solanaTokens;
       isLoadingCurrent = _isLoadingSolana;
-      currentDisplayTimestamp = _solanaFetchTimestamp;
     } else {
       currentTokens = _ethereumTokens;
       isLoadingCurrent = _isLoadingEthereum;
-      currentDisplayTimestamp = _ethereumFetchTimestamp;
     }
 
     return Scaffold(
@@ -317,7 +298,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                 ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    _copyToClipboard(_tipAddress);
+                                    copyToClipboard(_tipAddress, context);
                                   },
                               ),
                             ]
@@ -395,6 +376,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   authProvider.setBlockchainPreference(index == 1);
                   // Fetch data only if not already loaded or if it's stale
                   if (index == 0) { // Ethereum selected
+                    print('checking if _ethereumTokens == null || _isDataStale(_ethereumFetchTimestamp)');
                     if (_ethereumTokens == null || _isDataStale(_ethereumFetchTimestamp)) {
                       _fetchEthereumTokensData();
                     }
@@ -602,7 +584,17 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                               fontWeight: FontWeight.normal,
                             ),
                             recognizer: TapGestureRecognizer()
-                              ..onTap = _launchURL,
+                              ..onTap = () async { // Changed to an async anonymous function
+                                final url = Uri.parse("https://bitquery.io/");
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                                } else {
+                                  // Optionally, show an error message to the user
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Could not launch ${url.toString()}')),
+                                  );
+                                }
+                              },
                           ),
                         ],
                       ),
