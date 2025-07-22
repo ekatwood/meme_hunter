@@ -264,41 +264,38 @@ class _TokenDetailsState extends State<TokenDetails> {
                 const SizedBox(height: 16), //
               ],
 
-              // Website Link (if available)
-              if (websiteLink != null && websiteLink.isNotEmpty) ...[ //
-                GestureDetector( //
-                  onTap: () => launchURL(websiteLink), // Use websiteLink directly
-                  child: Align( //
-                    alignment: Alignment.centerLeft, //
-                    child: Text( //
-                      'Website: ${websiteLink}', // Use websiteLink directly
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith( //
-                        color: Colors.blue, //
-                        decoration: TextDecoration.underline, //
+              // Website and Twitter Icons in a Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (websiteLink != null && websiteLink.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Tooltip(
+                        message: 'Visit Website',
+                        child: IconButton(
+                          icon: const Icon(Icons.web_asset, size: 30),
+                          color: Colors.blue,
+                          onPressed: () => launchURL(websiteLink),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 4), //
-              ],
-
-              // Twitter Link (if available)
-              if (twitterLink != null && twitterLink.isNotEmpty) ...[ //
-                GestureDetector( //
-                  onTap: () => launchURL(twitterLink), // Use twitterLink directly
-                  child: Align( //
-                    alignment: Alignment.centerLeft, //
-                    child: Text( //
-                      'Twitter: ${twitterLink}', // Use twitterLink directly
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith( //
-                        color: Colors.blue, //
-                        decoration: TextDecoration.underline, //
+                  if (twitterLink != null && twitterLink.isNotEmpty)
+                    Tooltip(
+                      message: 'Visit Twitter',
+                      child: IconButton(
+                        icon: Image.asset(
+                          'assets/twitter_logo.png', // Assuming you have a twitter_logo.png in your assets
+                          width: 30,
+                          height: 30,
+                        ),
+                        onPressed: () => launchURL(twitterLink),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16), //
-              ],
+                ],
+              ),
+              if ((websiteLink != null && websiteLink.isNotEmpty) || (twitterLink != null && twitterLink.isNotEmpty))
+                const SizedBox(height: 16),
 
               // Price History Chart
               Text( //
