@@ -447,7 +447,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                           DataColumn(
                             label: Flexible(
                               child: Text(
-                                'Mint Address',
+                                'Market Cap.',
                                 style: TextStyle(fontStyle: FontStyle.italic),
                               ),
                             ),
@@ -536,50 +536,51 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                               ),
                             ),
                             DataCell(
-                              GestureDetector(
-                                onTap: () => _copyToClipboard(token.smartContract), // Access directly
-                                child: Container(
-                                  width: 150,
-                                  child: Text(
-                                        () {
-                                      final smartContract = token.smartContract; // Access directly
-                                      if (smartContract.isEmpty || smartContract == 'N/A') {
-                                        return 'N/A';
-                                      }
-                                      if (smartContract == '0x') {
-                                        return '0x';
-                                      }
-                                      final int minLengthForTruncation = 10;
-                                      if (smartContract.length <= minLengthForTruncation) {
-                                        return smartContract;
-                                      } else {
-                                        return '${smartContract.substring(0, 6)}...${smartContract.substring(smartContract.length - 4)}';
-                                      }
-                                    }(),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      decoration: TextDecoration.underline,
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.normal,
-                                    ),
+                              Container(
+                                width: 150,
+                                child: TextField(
+                                  readOnly: true,
+                                  controller: TextEditingController(text: '\$${token.marketCap}'), // Access directly
+                                  style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.zero,
                                   ),
                                 ),
                               ),
+                              // GestureDetector(
+                              //   onTap: () => _copyToClipboard(token.marketCap), // Access directly
+                              //   child: Container(
+                              //     width: 150,
+                              //     child: Text(
+                              //           () {
+                              //         final smartContract = token.marketCap; // Access directly
+                              //         if (smartContract.isEmpty || smartContract == 'N/A') {
+                              //           return 'N/A';
+                              //         }
+                              //         if (smartContract == '0x') {
+                              //           return '0x';
+                              //         }
+                              //         final int minLengthForTruncation = 10;
+                              //         if (smartContract.length <= minLengthForTruncation) {
+                              //           return smartContract;
+                              //         } else {
+                              //           return '${smartContract.substring(0, 6)}...${smartContract.substring(smartContract.length - 4)}';
+                              //         }
+                              //       }(),
+                              //       style: const TextStyle(
+                              //         fontSize: 14,
+                              //         decoration: TextDecoration.underline,
+                              //         color: Colors.blue,
+                              //         fontWeight: FontWeight.normal,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                             ),
                           ]);
                         }).toList(),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0, right: 15),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Text(
-                        currentDisplayTimestamp != null
-                            ? 'Last updated: ${currentDisplayTimestamp!.substring(0, 10)} ${currentDisplayTimestamp!.substring(11, 16)}' // Format display
-                            : 'N/A',
-                        style: const TextStyle(fontSize: 16),
                       ),
                     ),
                   ),

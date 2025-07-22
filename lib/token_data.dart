@@ -5,7 +5,7 @@ class TokenData {
   final String smartContract;
   final String symbol;
   final String? circulatingSupply; // Nullable if not always present
-  final String? marketCap;
+  final String marketCap;
   final String? description;
   final String? websiteLink;
   final String? twitterLink;
@@ -19,7 +19,7 @@ class TokenData {
     required this.smartContract,
     required this.symbol,
     this.circulatingSupply,
-    this.marketCap,
+    required this.marketCap,
     this.description,
     this.websiteLink,
     this.twitterLink,
@@ -34,8 +34,8 @@ class TokenData {
       smartContract: doc['SmartContract'] as String? ?? 'N/A',
       symbol: doc['Symbol'] as String? ?? 'N/A',
       circulatingSupply: formatBigNumber(doc['circulating_supply']) as String?,
-      marketCap: formatBigNumber(doc['market_cap']) as String?,
-      description: doc['description'] as String?,
+      marketCap: formatBigNumber(doc['market_cap']) as String? ?? 'N/A',
+      description: doc['description'] as String? ?? '',
       websiteLink: doc['website_link'] as String?,
       twitterLink: doc['twitter_link'] as String?,
       firebaseLogoUrl: doc['firebase_logo_url'] as String?,
@@ -67,7 +67,7 @@ class TokenData {
       smartContract: json['SmartContract'] as String? ?? 'N/A',
       symbol: json['Symbol'] as String? ?? 'N/A',
       circulatingSupply: json['circulating_supply'] as String?,
-      marketCap: json['market_cap'] as String?,
+      marketCap: json['market_cap'] as String? ?? 'N/A',
       description: json['description'] as String?,
       websiteLink: json['website_link'] as String?,
       twitterLink: json['twitter_link'] as String?,
