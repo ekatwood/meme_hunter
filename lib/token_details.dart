@@ -264,7 +264,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               Align( //
                 alignment: Alignment.centerLeft, //
                 child: Text( //
-                  'Market Cap: \$''${marketCap}', // Use formatted market cap
+                  'Market Capitalization: \$''${marketCap}', // Use formatted market cap
                   style: Theme.of(context).textTheme.bodyLarge, //
                 ),
               ),
@@ -321,12 +321,6 @@ class _TokenDetailsState extends State<TokenDetails> {
               if ((websiteLink != null && websiteLink.isNotEmpty) || (twitterLink != null && twitterLink.isNotEmpty))
                 const SizedBox(height: 16),
 
-              // Price History Chart
-              Text( //
-                'Price History', //
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), //
-              ),
-              const SizedBox(height: 16), //
               // Time Filter ToggleButtons
               ToggleButtons( //
                 isSelected: _selectedTimeFilter, //
@@ -355,29 +349,58 @@ class _TokenDetailsState extends State<TokenDetails> {
               ),
               const SizedBox(height: 16), //
 
-              _isLoadingChartData //
-                  ? const CircularProgressIndicator() //
-                  : _filteredChartData.isEmpty //
-                  ? const SizedBox( //
-                height: 200, //
-                child: Center(child: Text('No chart data available for this period.')), //
+              _isLoadingChartData
+                  ? const CircularProgressIndicator()
+                  : _filteredChartData.isEmpty
+                  ? const SizedBox(
+                height: 250,
+                child: Center(child: Text('No chart data available for this period.')),
               )
-                  : SizedBox( //
-                height: 300, //
-                child: SfCartesianChart( //
-                  primaryXAxis: DateTimeAxis(), //
-                  series: <CartesianSeries<ChartData, DateTime>>[ //
-                    // Directly use LineSeries, no more conditional check
-                    LineSeries<ChartData, DateTime>( //
-                      dataSource: _filteredChartData, //
-                      xValueMapper: (ChartData data, _) => data.time, //
-                      yValueMapper: (ChartData data, _) => data.value, //
-                      name: 'Price', //
-                      enableTooltip: true, //
-                      animationDuration: 0, //
+                  : Container( // Wrap with Container
+                height: 310,
+                width: 450,
+                decoration: BoxDecoration(
+                  color: Colors.grey[850], // Match this to the chart background
+                  borderRadius: BorderRadius.circular(4.0), // Apply rounded corners
+                  border: Border.all(
+                    color: Colors.white, // If you want a white border around the rounded container
+                    width: 1,
+                  ),
+                ),
+                child: ClipRRect( // Clip the chart content to the rounded corners
+                  borderRadius: BorderRadius.circular(4.0), // Match the border radius
+                  child: SfCartesianChart(
+                    plotAreaBorderWidth: 2,
+                    plotAreaBorderColor: Colors.white,
+                    backgroundColor: Colors.transparent, // Make chart background transparent
+                    primaryXAxis: DateTimeAxis(
+                      isVisible: true, // Keep X-axis visible
+                      majorGridLines: const MajorGridLines(width: 0), // Remove X-axis grid lines
+                      axisLine: const AxisLine( // Change X-axis line color
+                        width: 2, // Set a width for the line
+                        color: Colors.white, // Set the color to white
+                      ),
+                      labelStyle: const TextStyle( // Direct TextStyle for more control
+                        color: Colors.white, // White color for labels
+                        fontWeight: FontWeight.bold, // Bold font weight
+                      ),
                     ),
-                  ],
-                  tooltipBehavior: TooltipBehavior(enable: true), //
+                    primaryYAxis: NumericAxis(
+                      isVisible: false, // Hide Y-axis labels and line
+                    ),
+                    series: <CartesianSeries<ChartData, DateTime>>[
+                      LineSeries<ChartData, DateTime>(
+                        dataSource: _filteredChartData,
+                        xValueMapper: (ChartData data, _) => data.time,
+                        yValueMapper: (ChartData data, _) => data.value,
+                        name: 'Price History',
+                        enableTooltip: false,
+                        animationDuration: 0,
+                        color: Colors.greenAccent, // Light green color for the line
+                        width: 2, // Line thickness
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24), //
