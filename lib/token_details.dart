@@ -132,30 +132,49 @@ class _TokenDetailsState extends State<TokenDetails> {
 
     // Step 2: Determine the start time for the filter based on the latestDataTimestamp
     DateTime startTime;
+    int skipInterval = 1; // Default to no skipping
 
     if (_selectedTimeFilter[0]) { // 1H
       startTime = latestDataTimestamp.subtract(const Duration(hours: 1));
+      skipInterval = 1;
     } else if (_selectedTimeFilter[1]) { // 6H
       startTime = latestDataTimestamp.subtract(const Duration(hours: 6));
+      skipInterval = 3;
     } else if (_selectedTimeFilter[2]) { // 12H
       startTime = latestDataTimestamp.subtract(const Duration(hours: 12));
+      skipInterval = 6; // Skip every other
     } else if (_selectedTimeFilter[3]) { // 1D
       startTime = latestDataTimestamp.subtract(const Duration(days: 1));
+      skipInterval = 10; // Skip 2, take 1 (every 3rd point)
     } else if (_selectedTimeFilter[4]) { // 1W
       startTime = latestDataTimestamp.subtract(const Duration(days: 7));
+      skipInterval = 27; // Skip 6, take 1 (every 7th point)
     } else if (_selectedTimeFilter[5]) { // 2W
       startTime = latestDataTimestamp.subtract(const Duration(days: 14));
+      skipInterval = 55; // Skip 15, take 1 (every 16th point)
     } else { // All time (show all data if no specific filter is active or for fallback)
       startTime = DateTime.fromMillisecondsSinceEpoch(0); // Effectively the beginning of time
     }
 
-    // Step 3: Filter the data using the calculated startTime and the latestDataTimestamp
-    _filteredChartData = tempChartData
+    // Step 3: Filter the data using the calculated startTime
+    List<ChartData> filteredByTime = tempChartData
         .where((chartData) => chartData.time.isAfter(startTime) || chartData.time.isAtSameMomentAs(startTime))
         .toList();
 
     // Step 4: Sort by time to ensure correct chart display
-    _filteredChartData.sort((a, b) => a.time.compareTo(b.time));
+    filteredByTime.sort((a, b) => a.time.compareTo(b.time));
+
+    // Step 5: Apply the thinning logic
+    _filteredChartData = [];
+    if (skipInterval <= 1) {
+      _filteredChartData = filteredByTime;
+    } else {
+      for (int i = 0; i < filteredByTime.length; i++) {
+        if (i % skipInterval == 0) {
+          _filteredChartData.add(filteredByTime[i]);
+        }
+      }
+    }
 
     setState(() {}); // Ensure UI updates
   }
@@ -389,7 +408,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                       isVisible: false, // Hide Y-axis labels and line
                     ),
                     series: <CartesianSeries<ChartData, DateTime>>[
-                      LineSeries<ChartData, DateTime>(
+                      SplineSeries<ChartData, DateTime>(
                         dataSource: _filteredChartData,
                         xValueMapper: (ChartData data, _) => data.time,
                         yValueMapper: (ChartData data, _) => data.value,
