@@ -76,7 +76,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             const SizedBox(width: 8),
             Text(
               _truncateWalletAddress(authProvider.walletAddress),
-              style: const TextStyle(fontSize: 12,color: Colors.white),
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
           ],
         ),

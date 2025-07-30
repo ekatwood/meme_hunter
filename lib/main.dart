@@ -294,7 +294,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                                   fontSize: 14,
                                   decoration: TextDecoration.underline,
                                   color: Colors.blue,
-                                  fontWeight: FontWeight.normal,
+                                  fontWeight: FontWeight.bold,
                                 ),
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
@@ -324,34 +324,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 25.0, right: 10, left: 10),
-              child: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: _fontFamily,
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: 'Trending Blockchain Tokens ',
-                      ),
-                      TextSpan(
-                        text: '📈💸✅',
-                        style: const TextStyle(
-                          fontFamily: 'NotoColorEmoji',
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: ToggleButtons(
                 color: unselectedTextColor,
@@ -376,7 +348,6 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                   authProvider.setBlockchainPreference(index == 1);
                   // Fetch data only if not already loaded or if it's stale
                   if (index == 0) { // Ethereum selected
-                    print('checking if _ethereumTokens == null || _isDataStale(_ethereumFetchTimestamp)');
                     if (_ethereumTokens == null || _isDataStale(_ethereumFetchTimestamp)) {
                       _fetchEthereumTokensData();
                     }
@@ -414,7 +385,9 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             label: Flexible(
                               child: Text(
                                 'Name',
-                                style: TextStyle(fontStyle: FontStyle.italic),
+                                style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -422,7 +395,9 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             label: Flexible(
                               child: Text(
                                 'Symbol',
-                                style: TextStyle(fontStyle: FontStyle.italic),
+                                style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -430,7 +405,9 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             label: Flexible(
                               child: Text(
                                 'Market Cap.',
-                                style: TextStyle(fontStyle: FontStyle.italic),
+                                style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
@@ -574,14 +551,14 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                         children: [
                           const TextSpan(
                               text: 'Powered by ',
-                              style: const TextStyle(fontWeight: FontWeight.normal,)
+                              style: const TextStyle(fontWeight: FontWeight.bold,)
                           ),
                           TextSpan(
                             text: 'Bitquery',
                             style: const TextStyle(
                               color: Colors.blue,
                               decoration: TextDecoration.underline,
-                              fontWeight: FontWeight.normal,
+                              fontWeight: FontWeight.bold,
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () async { // Changed to an async anonymous function

@@ -142,16 +142,16 @@ class _TokenDetailsState extends State<TokenDetails> {
       skipInterval = 3;
     } else if (_selectedTimeFilter[2]) { // 12H
       startTime = latestDataTimestamp.subtract(const Duration(hours: 12));
-      skipInterval = 6; // Skip every other
+      skipInterval = 6;
     } else if (_selectedTimeFilter[3]) { // 1D
       startTime = latestDataTimestamp.subtract(const Duration(days: 1));
-      skipInterval = 10; // Skip 2, take 1 (every 3rd point)
+      skipInterval = 10;
     } else if (_selectedTimeFilter[4]) { // 1W
       startTime = latestDataTimestamp.subtract(const Duration(days: 7));
-      skipInterval = 27; // Skip 6, take 1 (every 7th point)
+      skipInterval = 27;
     } else if (_selectedTimeFilter[5]) { // 2W
       startTime = latestDataTimestamp.subtract(const Duration(days: 14));
-      skipInterval = 55; // Skip 15, take 1 (every 16th point)
+      skipInterval = 55;
     } else { // All time (show all data if no specific filter is active or for fallback)
       startTime = DateTime.fromMillisecondsSinceEpoch(0); // Effectively the beginning of time
     }
@@ -242,7 +242,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                   const SizedBox(width: 8), //
                   Text( //
                     '(${tokenSymbol})', // Use tokenSymbol directly
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[700]), //
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold), //
                   ),
                 ],
               ),
@@ -261,6 +261,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                         style: const TextStyle( //
                           color: Colors.blue, //
                           decoration: TextDecoration.underline, //
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -274,7 +275,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                 alignment: Alignment.centerLeft, //
                 child: Text( //
                   'Total Supply: ${circulatingSupply}', // Use the formatted circulating supply
-                  style: Theme.of(context).textTheme.bodyLarge, //
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold), //
                 ),
               ),
               const SizedBox(height: 4), //
@@ -284,7 +285,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                 alignment: Alignment.centerLeft, //
                 child: Text( //
                   'Market Capitalization: \$''${marketCap}', // Use formatted market cap
-                  style: Theme.of(context).textTheme.bodyLarge, //
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold), //
                 ),
               ),
               const SizedBox(height: 16), //
