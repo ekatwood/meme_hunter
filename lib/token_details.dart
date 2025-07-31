@@ -352,12 +352,12 @@ class _TokenDetailsState extends State<TokenDetails> {
                     _applyTimeFilterAndChartData(); // Re-apply filter
                   });
                 },
-                borderRadius: BorderRadius.circular(8.0), //
-                selectedColor: Colors.white, //
-                fillColor: Theme.of(context).primaryColor, //
-                color: Theme.of(context).primaryColor, //
-                borderColor: Theme.of(context).primaryColor, //
-                selectedBorderColor: Theme.of(context).primaryColor, //
+                borderRadius: BorderRadius.circular(8.0),
+                selectedColor: Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.black, // Adjusted for dark mode
+                fillColor: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
+                color: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
+                borderColor: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
+                selectedBorderColor: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
                 children: const <Widget>[ //
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1H')), //
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('6H')), //
@@ -427,7 +427,7 @@ class _TokenDetailsState extends State<TokenDetails> {
 
               // Swap Token Widget (Stubbed)
               Text( //
-                'Swap ${tokenSymbol}', // Use tokenSymbol directly
+                'Swap ${tokenName}',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold), //
               ),
               const SizedBox(height: 16), //

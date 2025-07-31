@@ -101,6 +101,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   // Timestamps to track when the data was last fetched/cached for each blockchain
   String? _ethereumFetchTimestamp;
   String? _solanaFetchTimestamp;
+  // String? _timestamp; // This variable is not needed anymore
 
   // Cache duration in hours
   static const int _cacheDurationHours = 12;
@@ -253,13 +254,16 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     // Determine which list and loading state to use based on AuthProvider
     List<TokenData>? currentTokens;
     bool isLoadingCurrent;
+    String? currentTimestamp; // New variable to hold the currently active timestamp
 
     if (authProvider.isSolana) {
       currentTokens = _solanaTokens;
       isLoadingCurrent = _isLoadingSolana;
+      currentTimestamp = _solanaFetchTimestamp;
     } else {
       currentTokens = _ethereumTokens;
       isLoadingCurrent = _isLoadingEthereum;
+      currentTimestamp = _ethereumFetchTimestamp;
     }
 
     return Scaffold(
@@ -276,33 +280,9 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     child:
                     Align(
                       alignment: Alignment.topLeft,
-                      child: RichText(
-                        text: TextSpan(
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: _fontFamily,
-                              color: Theme.of(context).textTheme.bodyMedium?.color,
-                            ),
-                            children: [
-                              const TextSpan(
-                                text: 'Tip the dev (SOL): ',
-                              ),
-                              TextSpan(
-                                text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  decoration: TextDecoration.underline,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    copyToClipboard(_tipAddress, context);
-                                  },
-                              ),
-                            ]
-                        ),
+                      child: Text(
+                        currentTimestamp != null ? '${convertTimestampToFormattedString(currentTimestamp)}' : 'Loading...',
+                        style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color),
                       ),
                     ),
                   ),
@@ -544,7 +524,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 15.0, bottom: 80),
+                    padding: const EdgeInsets.only(top: 15.0, bottom: 15),
                     child: RichText(
                       text: TextSpan(
                         style: Theme.of(context).textTheme.bodyMedium,

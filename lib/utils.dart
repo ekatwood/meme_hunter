@@ -22,6 +22,17 @@ void copyToClipboard(String text, BuildContext context) {
   );
 }
 
+String convertTimestampToFormattedString(String timestampString) {
+  try {
+    DateTime dateTime = DateTime.parse(timestampString);
+    DateFormat formatter = DateFormat('EEEE, hh:mm a');
+    return formatter.format(dateTime);
+  } catch (e) {
+    // Handle any parsing errors.
+    return 'Error converting timestamp: $e';
+  }
+}
+
 String formatBigNumber(String? numString) {
   if (numString == null || numString.isEmpty) {
     return 'N/A';
