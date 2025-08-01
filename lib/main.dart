@@ -101,7 +101,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   // Timestamps to track when the data was last fetched/cached for each blockchain
   String? _ethereumFetchTimestamp;
   String? _solanaFetchTimestamp;
-  // String? _timestamp; // This variable is not needed anymore
+  String? _timestamp; // This variable is not needed anymore
 
   // Cache duration in hours
   static const int _cacheDurationHours = 12;
@@ -150,6 +150,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
       try {
         final List<dynamic> decodedData = json.decode(cachedDataString);
         _ethereumTokens = decodedData.map((e) => TokenData.fromJson(e as Map<String, dynamic>)).toList();
+        _timestamp = _ethereumTokens?.first.timestamp;
         _ethereumFetchTimestamp = cachedTimestampString;
         print('Loaded Ethereum data from cache. Timestamp: $_ethereumFetchTimestamp');
       } catch (e) {
@@ -162,6 +163,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
       try {
         final fetchedTokens = await fetchDocuments();
         _ethereumTokens = fetchedTokens;
+        _timestamp = _ethereumTokens?.first.timestamp;
         _ethereumFetchTimestamp = DateTime.now().toIso8601String(); // Store current time as fetch timestamp
 
         // Cache the fetched data
@@ -195,6 +197,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
       try {
         final List<dynamic> decodedData = json.decode(cachedDataString);
         _solanaTokens = decodedData.map((e) => TokenData.fromJson(e as Map<String, dynamic>)).toList();
+        _timestamp = _solanaTokens?.first.timestamp;
         _solanaFetchTimestamp = cachedTimestampString;
         print('Loaded Solana data from cache. Timestamp: $_solanaFetchTimestamp');
       } catch (e) {
@@ -207,6 +210,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
       try {
         final fetchedTokens = await fetchSOLDocuments();
         _solanaTokens = fetchedTokens;
+        _timestamp = _solanaTokens?.first.timestamp;
         _solanaFetchTimestamp = DateTime.now().toIso8601String(); // Store current time as fetch timestamp
 
         // Cache the fetched data
@@ -254,16 +258,13 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     // Determine which list and loading state to use based on AuthProvider
     List<TokenData>? currentTokens;
     bool isLoadingCurrent;
-    String? currentTimestamp; // New variable to hold the currently active timestamp
 
     if (authProvider.isSolana) {
       currentTokens = _solanaTokens;
       isLoadingCurrent = _isLoadingSolana;
-      currentTimestamp = _solanaFetchTimestamp;
     } else {
       currentTokens = _ethereumTokens;
       isLoadingCurrent = _isLoadingEthereum;
-      currentTimestamp = _ethereumFetchTimestamp;
     }
 
     return Scaffold(
@@ -281,8 +282,8 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                     Align(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        currentTimestamp != null ? '${convertTimestampToFormattedString(currentTimestamp)}' : 'Loading...',
-                        style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyMedium?.color),
+                          _timestamp != null ? '${convertTimestampToFormattedString(_timestamp!)}' : 'Loading...',
+                        style: Theme.of(context).textTheme.bodyMedium
                       ),
                     ),
                   ),
@@ -554,6 +555,32 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                               },
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                  // New RichText for tipping the dev
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 80), // Added padding
+                    child: RichText(
+                      text: TextSpan(
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          children: [
+                            const TextSpan(
+                              text: 'Tip the dev (SOL): ',
+                            ),
+                            TextSpan(
+                              text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}',
+                              style: const TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  copyToClipboard(_tipAddress, context);
+                                },
+                            ),
+                          ]
                       ),
                     ),
                   ),
