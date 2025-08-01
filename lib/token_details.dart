@@ -33,11 +33,13 @@ class TokenDetails extends StatefulWidget {
 
 class _TokenDetailsState extends State<TokenDetails> {
   List<bool> _selectedTimeFilter = [false, true, false, false, false, false]; // Default 6H selected
-  List<bool> _selectedChartType = [true, false]; // Default Line chart selected (Line, Spline)
 
   List<Map<String, dynamic>> _rawChartData = []; // Stores the full fetched data
   List<ChartData> _filteredChartData = []; // Stores filtered data for chart
   bool _isLoadingChartData = true;
+
+  final _darkModeColor = Color(0xFF800020);
+  final _lightModeColor = const Color(0xFFA8415B);
 
   @override
   void initState() {
@@ -353,11 +355,11 @@ class _TokenDetailsState extends State<TokenDetails> {
                   });
                 },
                 borderRadius: BorderRadius.circular(8.0),
-                selectedColor: Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.black, // Adjusted for dark mode
-                fillColor: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
-                color: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
-                borderColor: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
-                selectedBorderColor: Theme.of(context).brightness == Brightness.light ? Theme.of(context).primaryColor : Colors.white, // Adjusted for dark mode
+                selectedColor: Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.white, // Adjusted for dark mode
+                fillColor: Theme.of(context).brightness == Brightness.light ? _lightModeColor : _darkModeColor, // Adjusted for dark mode
+                color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white, // Adjusted for dark mode
+                borderColor: Theme.of(context).brightness == Brightness.light ? _lightModeColor : _darkModeColor, // Adjusted for dark mode
+                selectedBorderColor: Theme.of(context).brightness == Brightness.light ? _lightModeColor : _darkModeColor, // Adjusted for dark mode
                 children: const <Widget>[ //
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('1H')), //
                   Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('6H')), //
