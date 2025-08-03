@@ -18,7 +18,11 @@ void launchURL(String? url) async {
 void copyToClipboard(String text, BuildContext context) {
   Clipboard.setData(ClipboardData(text: text));
   ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Address copied to clipboard.")),
+    const SnackBar(content: Text(
+        "Address copied to clipboard.",
+        style: TextStyle(fontWeight: FontWeight.bold),
+      )
+    ),
   );
 }
 

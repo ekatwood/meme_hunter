@@ -538,7 +538,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             text: 'Bitquery',
                             style: const TextStyle(
                               color: Colors.blue,
-                              decoration: TextDecoration.underline,
+                              //decoration: TextDecoration.underline,
                               fontWeight: FontWeight.bold,
                             ),
                             recognizer: TapGestureRecognizer()
@@ -571,7 +571,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
                             TextSpan(
                               text: '${_tipAddress.substring(0, 6)}...${_tipAddress.substring(_tipAddress.length - 4)}',
                               style: const TextStyle(
-                                decoration: TextDecoration.underline,
+                                //decoration: TextDecoration.underline,
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
                               ),

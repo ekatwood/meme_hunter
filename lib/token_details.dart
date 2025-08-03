@@ -32,7 +32,8 @@ class TokenDetails extends StatefulWidget {
 }
 
 class _TokenDetailsState extends State<TokenDetails> {
-  List<bool> _selectedTimeFilter = [false, true, false, false, false, false]; // Default 6H selected
+  // Default 6H selected, but will be overridden by cookie
+  List<bool> _selectedTimeFilter = [false, true, false, false, false, false];
 
   List<Map<String, dynamic>> _rawChartData = []; // Stores the full fetched data
   List<ChartData> _filteredChartData = []; // Stores filtered data for chart
@@ -44,7 +45,19 @@ class _TokenDetailsState extends State<TokenDetails> {
   @override
   void initState() {
     super.initState();
+    _loadChartTimePreference(); // Load preference when state initializes
     _fetchAndSetChartData();
+  }
+
+  // New: Load chart time preference from cookie
+  void _loadChartTimePreference() {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final int? savedIndex = authProvider.getChartTimeCookie(); // Access the private method
+    if (savedIndex != null && savedIndex >= 0 && savedIndex < _selectedTimeFilter.length) {
+      setState(() {
+        _selectedTimeFilter = List.generate(_selectedTimeFilter.length, (i) => i == savedIndex);
+      });
+    }
   }
 
   // Helper function to abbreviate address
@@ -262,7 +275,7 @@ class _TokenDetailsState extends State<TokenDetails> {
                         text: _abbreviateAddress(mintAddress), // Use mintAddress directly
                         style: const TextStyle( //
                           color: Colors.blue, //
-                          decoration: TextDecoration.underline, //
+                          //decoration: TextDecoration.underline, //
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -351,6 +364,8 @@ class _TokenDetailsState extends State<TokenDetails> {
                     for (int i = 0; i < _selectedTimeFilter.length; i++) { //
                       _selectedTimeFilter[i] = i == index; //
                     }
+                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    authProvider.setChartTimeCookie(index); // Save the selected index to cookie
                     _applyTimeFilterAndChartData(); // Re-apply filter
                   });
                 },

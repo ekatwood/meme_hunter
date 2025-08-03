@@ -88,6 +88,31 @@ class AuthProvider extends ChangeNotifier {
     }
     return null;
   }
+
+  // New: Set chart time preference cookie
+  void setChartTimeCookie(int selectedIndex) {
+    if (kIsWeb) {
+      final DateTime expirationDate = DateTime.now().add(const Duration(days: 365));
+      html.document.cookie = 'chartTimePreference=$selectedIndex; expires=${_formatHttpDate(expirationDate)}; path=/';
+    }
+  }
+
+  // New: Get chart time preference cookie
+  int? getChartTimeCookie() {
+    if (kIsWeb) {
+      final String? cookies = html.document.cookie;
+      if (cookies != null && cookies.isNotEmpty) {
+        final List<String> cookieList = cookies.split(';');
+        for (String cookie in cookieList) {
+          final List<String> parts = cookie.trim().split('=');
+          if (parts.length == 2 && parts[0] == 'chartTimePreference') {
+            return int.tryParse(parts[1]);
+          }
+        }
+      }
+    }
+    return null;
+  }
   // --- End Cookie Management Functions ---
 
   void _loadThemePreference() {
