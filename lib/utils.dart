@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart'; // Import for NumberFormat
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+
+Future<String> getRemoteConfigValue(String parameter) async {
+  final FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+  await remoteConfig.fetchAndActivate();
+  return remoteConfig.getString(parameter);
+}
 
 // Helper function to launch URLs
 void launchURL(String? url) async {
