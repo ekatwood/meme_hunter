@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'utils.dart';
 import 'package:http/http.dart' as http;
 
+// Moralis API key remote config parameter: moralis_api_key
+// WETH address: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 Future<double?> getTokenPriceMoralis({
   required String contractAddress,
   required String remoteConfigParameter,
@@ -36,6 +38,7 @@ Future<double?> getTokenPriceMoralis({
   }
 }
 
+// wSOL address: So11111111111111111111111111111111111111112
 Future<double?> getTokenPriceMoralisSOL({
   required String contractAddress,
   required String remoteConfigParameter,
