@@ -1,86 +1,129 @@
 async function connectMetaMask() {
   try {
+    // Check if MetaMask is available in the browser
     if (typeof window.ethereum === 'undefined') {
-      //console.error("MetaMask not available.");
+      console.error("MetaMask not available.");
       return "MetaMask unavailable";
     }
 
-    // 1. Request accounts to ensure wallet is connected
+    // Request accounts to ensure the wallet is connected and get the user's address
+    // This will prompt the user to connect their MetaMask wallet if they haven't already.
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const address = accounts[0];
-    //console.log("MetaMask connected, address:", address);
 
-    // Arbitrum One Chain ID (in hexadecimal)
-    const ARBITRUM_CHAIN_ID = '0xa4b1'; // 42161 in decimal
+    // If accounts are successfully retrieved, return the first address
+    if (accounts.length > 0) {
+      const address = accounts[0];
+      console.log("MetaMask connected, address:", address);
+      // retrieve WETH balance
+      // TODO: use in the project
+      const wethBalance = await getBalanceMetaMask(address, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
 
-    // Arbitrum One Network Details for adding the chain
-    const ARBITRUM_NETWORK_DETAILS = {
-      chainId: ARBITRUM_CHAIN_ID,
-      chainName: 'Arbitrum One',
-      rpcUrls: ['https://arb1.arbitrum.io/rpc'], // You can add more RPCs if needed
-      nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH', // Arbitrum uses ETH for gas
-        decimals: 18,
-      },
-      blockExplorerUrls: ['https://arbiscan.io/'],
-    };
-
-    // 2. Get current chain ID
-    let currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-    //console.log("Current MetaMask Chain ID:", currentChainId);
-
-    // 3. Check if on Arbitrum network
-    if (currentChainId !== ARBITRUM_CHAIN_ID) {
-      console.log("Switching or adding Arbitrum network...");
-      try {
-        // Try to switch to Arbitrum
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: ARBITRUM_CHAIN_ID }],
-        });
-        console.log("Successfully switched to Arbitrum One.");
-      } catch (switchError) {
-        // This error indicates the chain might not be added yet (code 4902)
-        if (switchError.code === 4902) {
-          console.log("Arbitrum network not found, attempting to add it...");
-          try {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [ARBITRUM_NETWORK_DETAILS],
-            });
-            console.log("Arbitrum One added and switched successfully.");
-          } catch (addError) {
-            console.error("Failed to add Arbitrum network:", addError);
-            if (addError.code === 4001) {
-                return "User rejected";
-            }
-            return "MetaMask unavailable";
-          }
-        } else if (switchError.code === 4001) {
-            return "User rejected";
-        } else {
-            console.error("Failed to switch network:", switchError);
-            return "MetaMask unavailable";
-        }
-      }
-      // Re-check chain ID after switch/add attempt
-      currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-      //console.log("currentChainId: " + currentChainId.toString());
-      if (currentChainId !== ARBITRUM_CHAIN_ID) {
-          console.error("Still not on Arbitrum One after attempt.");
-          return "MetaMask unavailable";
-      }
+      return address;
+    } else {
+      // This case should ideally not be reached if eth_requestAccounts succeeds but returns no accounts
+      console.error("No accounts found after MetaMask connection request.");
+      return "MetaMask unavailable";
     }
 
-    // If we reach here, the wallet is connected and on Arbitrum One
-    return address;
   } catch (error) {
+    // Log the error for debugging purposes
     console.error("Error connecting to MetaMask:", error);
-    // Handle user rejection (error code 4001) specifically
+
+    // Handle specific error codes
     if (error.code === 4001) {
+      // User rejected the connection request
       return "User rejected";
     }
-    return "MetaMask unavailable"; // Generic error for other issues
+    // For any other errors, return a generic "MetaMask unavailable" message
+    return "MetaMask unavailable";
   }
+}
+
+
+async function getBalanceMetaMask(walletAddress, contractAddress) {
+  // Check if ethers (v6) is available globally
+  // Now, 'ethers' should be directly available from the UMD build
+  if (typeof ethers === 'undefined') {
+    console.error("Ethers.js v6 library not found. Ensure the UMD CDN is loaded correctly.");
+    return null;
+  }
+
+  // Check if MetaMask (window.ethereum) is available
+  if (typeof window.ethereum === 'undefined') {
+    console.error("MetaMask is not installed or detected.");
+    return null;
+  }
+
+  try {
+    // V6 change: Use BrowserProvider for interacting with window.ethereum
+    // 'ethers' is now globally available
+    const provider = new ethers.BrowserProvider(window.ethereum);
+
+    // The minimum ABI required to get the ERC-20 token balance and decimals
+    const minABI = [
+      // balanceOf
+      {
+        "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      // decimals (optional, but highly recommended for correct formatting)
+      {
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+
+    // Create a contract instance
+    // V6 change: Contract constructor takes (address, abi, provider/signer)
+    // 'ethers' is now globally available
+    const tokenContract = new ethers.Contract(contractAddress, minABI, provider);
+
+    // Get the raw balance (as a BigNumber)
+    const balanceBigNumber = await tokenContract.balanceOf(walletAddress);
+
+    // Get the number of decimals for the token
+    const decimalsBigInt = await tokenContract.decimals();
+    const decimals = Number(decimalsBigInt);
+
+    // Format the balance using the token's decimals
+    const formattedBalance = formatBigIntWithDecimals(balanceBigNumber, decimals);
+
+    console.log("WETH amount:", formattedBalance);
+    return formattedBalance;
+
+  } catch (error) {
+    console.error("Error retrieving token balance:", error);
+    // Handle specific errors, e.g., user denied access
+    if (error.code === 4001) {
+      console.warn("User rejected the connection request.");
+    }
+    return null;
+  }
+}
+
+function formatBigIntWithDecimals(rawBigIntValue, decimals) {
+  // Convert the BigInt to a string
+  let strValue = rawBigIntValue.toString();
+
+  // Handle cases where the value is too short for the decimals
+  // Pad with leading zeros if necessary
+  if (strValue.length <= decimals) {
+    strValue = '0'.repeat(decimals - strValue.length + 1) + strValue;
+  }
+
+  // Calculate the position for the decimal point
+  const decimalPointPosition = strValue.length - decimals;
+
+  // Insert the decimal point
+  const formatted = strValue.substring(0, decimalPointPosition) + '.' + strValue.substring(decimalPointPosition);
+
+  // Remove trailing zeros after the decimal point if any (optional, for cleaner output)
+  // This step is important for numbers like "1.000000000" to become "1"
+  return formatted.replace(/\.?0+$/, '');
 }
