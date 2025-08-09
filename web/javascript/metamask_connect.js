@@ -14,9 +14,6 @@ async function connectMetaMask() {
     if (accounts.length > 0) {
       const address = accounts[0];
       console.log("MetaMask connected, address:", address);
-      // retrieve WETH balance
-      // TODO: use in the project
-      const wethBalance = await getBalanceMetaMask(address, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
 
       return address;
     } else {
@@ -39,7 +36,7 @@ async function connectMetaMask() {
   }
 }
 
-
+// WETH: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 async function getBalanceMetaMask(walletAddress, contractAddress) {
   // Check if ethers (v6) is available globally
   // Now, 'ethers' should be directly available from the UMD build
