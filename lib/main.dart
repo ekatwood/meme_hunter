@@ -258,13 +258,16 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
     // Determine which list and loading state to use based on AuthProvider
     List<TokenData>? currentTokens;
     bool isLoadingCurrent;
+    String currentBlockchainNetwork;
 
     if (authProvider.isSolana) {
       currentTokens = _solanaTokens;
       isLoadingCurrent = _isLoadingSolana;
+      currentBlockchainNetwork = 'SOL';
     } else {
       currentTokens = _ethereumTokens;
       isLoadingCurrent = _isLoadingEthereum;
+      currentBlockchainNetwork = 'ETH';
     }
 
     return Scaffold(

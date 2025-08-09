@@ -12,8 +12,6 @@ class TokenData {
   final String? firebaseLogoUrl;
   final String? timestamp; // Changed to String? to match your Firestore data type
 
-  final String blockchainNetwork = "ETH"; // Default, but consider making this dynamic if needed
-
   TokenData({
     required this.name,
     required this.smartContract,
@@ -56,7 +54,6 @@ class TokenData {
       'twitter_link': twitterLink,
       'firebase_logo_url': firebaseLogoUrl,
       'timestamp': timestamp,
-      // Note: blockchainNetwork is not stored as it's a constant or derived
     };
   }
 

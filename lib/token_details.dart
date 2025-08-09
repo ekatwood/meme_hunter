@@ -449,7 +449,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               ),
               const SizedBox(height: 16), //
               SwapToken( //
-                tokenBlockchainNetwork: widget.tokenData.blockchainNetwork, // Assuming you add blockchainNetwork to TokenData
+                tokenBlockchainNetwork: authProvider.blockchainNetwork,
                 tokenMintAddress: mintAddress, // Use mintAddress directly
                 tokenSymbol: tokenSymbol, // Use tokenSymbol directly
                 userBlockchainNetwork: userBlockchainNetwork, //
