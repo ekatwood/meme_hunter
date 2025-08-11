@@ -11,7 +11,7 @@ class SwapToken extends StatefulWidget {
   final String tokenBlockchainNetwork;
   final String tokenMintAddress;
   final String tokenSymbol;
-  final String? userBlockchainNetwork; // From AuthProvider, can be null if not connected
+  final String? walletProvider; // From AuthProvider, can be null if not connected
   final String? userWalletAddress; // Added to get the user's wallet address
 
   const SwapToken({
@@ -19,7 +19,7 @@ class SwapToken extends StatefulWidget {
     required this.tokenBlockchainNetwork,
     required this.tokenMintAddress,
     required this.tokenSymbol,
-    this.userBlockchainNetwork,
+    this.walletProvider,
     this.userWalletAddress, // Added to constructor
   });
 
@@ -37,7 +37,7 @@ class _SwapTokenState extends State<SwapToken> {
   bool _isLoadingPrice = false;
   bool _showBalanceWarning = false;
 
-  // WETH (Arbitrum) and SOL addresses for fetching prices and balances
+  // WETH and SOL addresses for fetching prices and balances
   // Note: For SOL, we often use the wSOL (wrapped SOL) address for smart contract interactions,
   // as native SOL isn't an ERC-20 token. The price APIs might handle this internally or
   // refer to the wSOL price as effectively the SOL price.
@@ -56,7 +56,7 @@ class _SwapTokenState extends State<SwapToken> {
     super.didUpdateWidget(oldWidget);
     // Re-fetch balances and prices if the network or wallet address changes
     if (widget.tokenBlockchainNetwork != oldWidget.tokenBlockchainNetwork ||
-        widget.userBlockchainNetwork != oldWidget.userBlockchainNetwork ||
+        widget.walletProvider != oldWidget.walletProvider ||
         widget.userWalletAddress != oldWidget.userWalletAddress) {
       _fetchBalancesAndPrices();
     }
@@ -110,23 +110,23 @@ class _SwapTokenState extends State<SwapToken> {
     String? purchaseTokenAddress;
     String? purchaseTokenSymbol;
 
-    if (widget.tokenBlockchainNetwork == 'Ethereum') {
+    if (widget.tokenBlockchainNetwork == 'ETH') {
       purchaseTokenAddress = _wethContractAddress;
       purchaseTokenSymbol = 'WETH';
-    } else if (widget.tokenBlockchainNetwork == 'Solana') {
+    } else if (widget.tokenBlockchainNetwork == 'SOL') {
       purchaseTokenAddress = _solContractAddress; // Using wSOL address for consistency
       purchaseTokenSymbol = 'SOL';
     }
 
     if (purchaseTokenAddress != null && widget.userWalletAddress != null && widget.userWalletAddress!.isNotEmpty) {
       // Fetch balance
-      if (widget.userBlockchainNetwork == 'MetaMask' && widget.tokenBlockchainNetwork == 'Ethereum') {
+      if (widget.walletProvider == 'MetaMask' && widget.tokenBlockchainNetwork == 'ETH') {
         final balance = await _getBalanceMetaMask(widget.userWalletAddress!, purchaseTokenAddress);
         setState(() {
           _availablePurchaseTokenBalance = balance;
           _isLoadingBalance = false;
         });
-      } else if (widget.userBlockchainNetwork == 'Solflare' && widget.tokenBlockchainNetwork == 'Solana') {
+      } else if (widget.walletProvider == 'Solflare' && widget.tokenBlockchainNetwork == 'SOL') {
         final balance = await _getBalanceSolflare(purchaseTokenAddress);
         setState(() {
           _availablePurchaseTokenBalance = balance;
@@ -140,13 +140,13 @@ class _SwapTokenState extends State<SwapToken> {
       }
 
       // Fetch price
-      if (widget.tokenBlockchainNetwork == 'Ethereum') {
+      if (widget.tokenBlockchainNetwork == 'ETH') {
         final price = getTokenPriceMoralis(purchaseTokenAddress); // This is currently sync/stubbed
         setState(() {
           _purchaseTokenPriceUSD = price;
           _isLoadingPrice = false;
         });
-      } else if (widget.tokenBlockchainNetwork == 'Solana') {
+      } else if (widget.tokenBlockchainNetwork == 'SOL') {
         final price = getTokenPriceMoralisSOL(purchaseTokenAddress); // This is currently sync/stubbed
         setState(() {
           _purchaseTokenPriceUSD = price;
@@ -195,7 +195,7 @@ class _SwapTokenState extends State<SwapToken> {
     // Use tokenBlockchainNetwork and userBlockchainNetwork to determine the path.
     print('Swap button pressed!');
     print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
-    print('User connected to: ${widget.userBlockchainNetwork ?? 'N/A'}');
+    print('User connected to: ${widget.walletProvider ?? 'N/A'}');
     print('Amount to swap: ${_amountController.text}');
     print('Estimated USD: $_estimatedUSDAmount');
 
@@ -212,15 +212,15 @@ class _SwapTokenState extends State<SwapToken> {
     String purchaseTokenDisplaySymbol = ''; // To display WETH or SOL
 
     // Determine purchase token display symbol
-    if (widget.tokenBlockchainNetwork == 'Ethereum') {
+    if (widget.tokenBlockchainNetwork == 'ETH') {
       purchaseTokenDisplaySymbol = 'WETH';
-    } else if (widget.tokenBlockchainNetwork == 'Solana') {
+    } else if (widget.tokenBlockchainNetwork == 'SOL') {
       purchaseTokenDisplaySymbol = 'SOL';
     }
 
     // Determine button text and enablement based on wallet connection and network
-    if (widget.userBlockchainNetwork == widget.tokenBlockchainNetwork) {
-      if (widget.userBlockchainNetwork == 'Solflare' || widget.userBlockchainNetwork == 'MetaMask') {
+    if (widget.walletProvider == widget.tokenBlockchainNetwork) {
+      if (widget.walletProvider == 'Solflare' || widget.walletProvider == 'MetaMask') {
         swapButtonText = 'Purchase ${widget.tokenSymbol}';
         textFieldEnabled = true;
 
@@ -231,10 +231,10 @@ class _SwapTokenState extends State<SwapToken> {
         }
       } else {
         // This case should ideally not be hit if userBlockchainNetwork is strictly Solflare or MetaMask
-        swapButtonText = 'Unsupported Connected Wallet';
+        swapButtonText = 'Connected Wallet';
         textFieldEnabled = false;
       }
-    } else if (widget.userBlockchainNetwork != null && widget.userBlockchainNetwork!.isNotEmpty) {
+    } else if (widget.walletProvider != null && widget.walletProvider!.isNotEmpty) {
       // User is connected, but to a different network
       swapButtonText = 'Connect to ${widget.tokenBlockchainNetwork} to swap';
       textFieldEnabled = false;

@@ -200,7 +200,8 @@ class _TokenDetailsState extends State<TokenDetails> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final userBlockchainNetwork = authProvider.walletProvider;
+    final walletProvider = authProvider.walletProvider;
+    final userWalletAddress = authProvider.walletAddress;
 
     // MODIFIED: Access properties directly from widget.tokenData
     final tokenName = widget.tokenData.name;
@@ -452,10 +453,11 @@ class _TokenDetailsState extends State<TokenDetails> {
               ),
               const SizedBox(height: 16), //
               SwapToken( //
-                tokenBlockchainNetwork: authProvider.walletProvider,
+                tokenBlockchainNetwork: (authProvider.isSolana ? 'SOL' : 'ETH'),
                 tokenMintAddress: mintAddress, // Use mintAddress directly
                 tokenSymbol: tokenSymbol, // Use tokenSymbol directly
-                userBlockchainNetwork: userBlockchainNetwork, //
+                walletProvider: walletProvider,
+                userWalletAddress: userWalletAddress,
               ),
               const SizedBox(height: 48), //
             ],
