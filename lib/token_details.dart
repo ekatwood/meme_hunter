@@ -5,11 +5,8 @@ import 'package:provider/provider.dart'; // For AuthProvider
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:syncfusion_flutter_charts/charts.dart'; // For charts
 import 'firestore_functions.dart'; // For fetchChartData
-import 'dart:js_util' as js_util;
-import 'dart:html' as html;
 import 'auth_provider.dart'; // For accessing connected wallet info
 import 'utils.dart';
-import 'api_calls.dart';
 import 'package:meme_hunter/swap_token.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp type
 import 'token_data.dart'; // NEW: Import the TokenData class
@@ -53,19 +50,6 @@ class _TokenDetailsState extends State<TokenDetails> {
     super.initState();
     _loadChartTimePreference(); // Load preference when state initializes
     _fetchAndSetChartData();
-  }
-
-  Future<double> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
-    double result = await js_util.promiseToFuture<double>(
-      js_util.callMethod(html.window, 'getBalanceMetaMask', [walletAddress, contractAddress]),
-    );
-
-    if(result != null)
-      return result;
-    else {
-      // TODO: handle error
-      return -1;
-    }
   }
 
   // New: Load chart time preference from cookie
@@ -216,7 +200,7 @@ class _TokenDetailsState extends State<TokenDetails> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final userBlockchainNetwork = authProvider.blockchainNetwork;
+    final userBlockchainNetwork = authProvider.walletProvider;
 
     // MODIFIED: Access properties directly from widget.tokenData
     final tokenName = widget.tokenData.name;
@@ -468,7 +452,7 @@ class _TokenDetailsState extends State<TokenDetails> {
               ),
               const SizedBox(height: 16), //
               SwapToken( //
-                tokenBlockchainNetwork: authProvider.blockchainNetwork,
+                tokenBlockchainNetwork: authProvider.walletProvider,
                 tokenMintAddress: mintAddress, // Use mintAddress directly
                 tokenSymbol: tokenSymbol, // Use tokenSymbol directly
                 userBlockchainNetwork: userBlockchainNetwork, //

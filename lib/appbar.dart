@@ -161,14 +161,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   Future<void> _connectToWallet(
-      BuildContext context, AuthProvider authProvider, String blockchain) async {
+      BuildContext context, AuthProvider authProvider, String wallet) async {
     try {
       String? result;
-      if (blockchain == 'Solflare') {
+      if (wallet == 'Solflare') {
         result = await js_util.promiseToFuture<String>(
           js_util.callMethod(html.window, 'connectSolflare', []),
         );
-      } else if (blockchain == 'MetaMask') {
+      } else if (wallet == 'MetaMask') {
         result = await js_util.promiseToFuture<String>(
           js_util.callMethod(html.window, 'connectMetaMask', []), //  Call Metamask
         );
@@ -180,13 +180,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           || result == 'User rejected') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$blockchain wallet unavailable. Please make sure to install the browser extension.'),
+            content: Text('$wallet wallet unavailable. Please make sure to install the browser extension.'),
             duration: const Duration(seconds: 5),
           ),
         );
       } else if (result != null) {
         //  Assume it's the public key
-        authProvider.login(result, blockchain);
+        authProvider.login(result, wallet);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -199,11 +199,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       //print("Error connecting to $wallet: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to connect to $blockchain: $e'),
+          content: Text('Failed to connect to $wallet: $e'),
           duration: const Duration(seconds: 5),
         ),
       );
-      errorLogger('Failed to connect to $blockchain: $e', 'Future<void> _connectToWallet(BuildContext context, AuthProvider authProvider, String wallet) async');
+      errorLogger('Failed to connect to $wallet: $e', 'Future<void> _connectToWallet(BuildContext context, AuthProvider authProvider, String wallet) async');
     }
   }
 

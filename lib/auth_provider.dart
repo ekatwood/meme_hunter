@@ -7,13 +7,13 @@ import 'firestore_functions.dart';
 class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   String _walletAddress = '';
-  String _blockchainNetwork = '';
+  String _walletProvider = '';
   ThemeMode _themeMode = ThemeMode.system;
   bool _isSolana = false; // New state variable for blockchain preference
 
   bool get isLoggedIn => _isLoggedIn;
   String get walletAddress => _walletAddress;
-  String get blockchainNetwork => _blockchainNetwork;
+  String get walletProvider => _walletProvider;
   ThemeMode get themeMode => _themeMode;
   bool get isSolana => _isSolana; // Getter for blockchain preference
 
@@ -139,14 +139,14 @@ class AuthProvider extends ChangeNotifier {
   Future<void> login(String walletAddress, String blockchainNetwork) async {
     _isLoggedIn = true;
     _walletAddress = walletAddress;
-    _blockchainNetwork = blockchainNetwork;
+    _walletProvider = blockchainNetwork;
     notifyListeners();
   }
 
   void logout() {
     _isLoggedIn = false;
     _walletAddress = '';
-    _blockchainNetwork = '';
+    _walletProvider = '';
     notifyListeners();
   }
 
