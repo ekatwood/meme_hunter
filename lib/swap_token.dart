@@ -11,16 +11,16 @@ class SwapToken extends StatefulWidget {
   final String tokenBlockchainNetwork;
   final String tokenMintAddress;
   final String tokenSymbol;
-  final String? walletProvider; // From AuthProvider, can be null if not connected
-  final String? userWalletAddress; // Added to get the user's wallet address
+  final String walletProvider; // From AuthProvider, can be empty string if not connected
+  final String userWalletAddress; // Added to get the user's wallet address
 
   const SwapToken({
     super.key,
     required this.tokenBlockchainNetwork,
     required this.tokenMintAddress,
     required this.tokenSymbol,
-    this.walletProvider,
-    this.userWalletAddress, // Added to constructor
+    required this.walletProvider,
+    required this.userWalletAddress,
   });
 
   @override
@@ -49,6 +49,12 @@ class _SwapTokenState extends State<SwapToken> {
     super.initState();
     _amountController.addListener(_updateConversionAndValidate);
     _fetchBalancesAndPrices();
+    print('tokenBlockchainNetwork: ' + widget.tokenBlockchainNetwork);
+    print('tokenMintAddress: ' + widget.tokenMintAddress);
+    print('tokenSymbol: ' + widget.tokenSymbol);
+    print('walletProvider: ' + widget.walletProvider);
+    print('userWalletAddress: ' + widget.userWalletAddress);
+
   }
 
   @override
@@ -81,7 +87,7 @@ class _SwapTokenState extends State<SwapToken> {
       } else if (result is int) { // Handle cases where JS might return an integer
         return result.toDouble();
       }
-      return null;
+      return double.tryParse(result);
     } catch (e) {
       print("Error calling getBalanceMetaMask: $e");
       return null;
@@ -98,6 +104,7 @@ class _SwapTokenState extends State<SwapToken> {
 
   // Fetches balances and prices based on the connected network
   Future<void> _fetchBalancesAndPrices() async {
+    print('_fetchBalancesAndPrices');
     setState(() {
       _isLoadingBalance = true;
       _isLoadingPrice = true;
@@ -118,10 +125,10 @@ class _SwapTokenState extends State<SwapToken> {
       purchaseTokenSymbol = 'SOL';
     }
 
-    if (purchaseTokenAddress != null && widget.userWalletAddress != null && widget.userWalletAddress!.isNotEmpty) {
+    if (purchaseTokenAddress != null && widget.userWalletAddress.isNotEmpty) {
       // Fetch balance
       if (widget.walletProvider == 'MetaMask' && widget.tokenBlockchainNetwork == 'ETH') {
-        final balance = await _getBalanceMetaMask(widget.userWalletAddress!, purchaseTokenAddress);
+        final balance = await _getBalanceMetaMask(widget.userWalletAddress, purchaseTokenAddress);
         setState(() {
           _availablePurchaseTokenBalance = balance;
           _isLoadingBalance = false;
@@ -219,26 +226,18 @@ class _SwapTokenState extends State<SwapToken> {
     }
 
     // Determine button text and enablement based on wallet connection and network
-    if (widget.walletProvider == widget.tokenBlockchainNetwork) {
-      if (widget.walletProvider == 'Solflare' || widget.walletProvider == 'MetaMask') {
-        swapButtonText = 'Purchase ${widget.tokenSymbol}';
-        textFieldEnabled = true;
+    if ((widget.walletProvider == 'Solflare' && widget.tokenBlockchainNetwork == 'SOL') ||
+        (widget.walletProvider == 'MetaMask' && widget.tokenBlockchainNetwork == 'ETH')) {
+      swapButtonText = 'Purchase ${widget.tokenSymbol}';
+      textFieldEnabled = true;
 
-        // Check if amount is valid for enabling the button
-        double? amount = double.tryParse(_amountController.text);
-        if (amount != null && amount > 0 && _availablePurchaseTokenBalance != null && amount <= _availablePurchaseTokenBalance!) {
-          canEnableButton = true;
-        }
-      } else {
-        // This case should ideally not be hit if userBlockchainNetwork is strictly Solflare or MetaMask
-        swapButtonText = 'Connected Wallet';
-        textFieldEnabled = false;
+      // Check if amount is valid for enabling the button
+      double? amount = double.tryParse(_amountController.text);
+      if (amount != null && amount > 0 && _availablePurchaseTokenBalance != null && amount <= _availablePurchaseTokenBalance!) {
+        canEnableButton = true;
       }
-    } else if (widget.walletProvider != null && widget.walletProvider!.isNotEmpty) {
-      // User is connected, but to a different network
-      swapButtonText = 'Connect to ${widget.tokenBlockchainNetwork} to swap';
-      textFieldEnabled = false;
-    } else {
+    }
+    else {
       // User is not connected
       swapButtonText = 'Connect Wallet';
       textFieldEnabled = false;

@@ -8,8 +8,6 @@ async function connectSolflare() {
     const response = await window.solflare.connect();
 
     if (response) {
-      // TODO: use the SOL amount in the app
-      getBalanceSolflare(window.solflare.publicKey.toString(), null);
       return window.solflare.publicKey.toString();
     }
   } catch (error) {
