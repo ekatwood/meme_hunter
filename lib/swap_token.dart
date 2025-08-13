@@ -60,6 +60,7 @@ class _SwapTokenState extends State<SwapToken> {
   @override
   void didUpdateWidget(covariant SwapToken oldWidget) {
     super.didUpdateWidget(oldWidget);
+    print('didUpdateWidget(covariant SwapToken oldWidget)');
     // Re-fetch balances and prices if the network or wallet address changes
     if (widget.tokenBlockchainNetwork != oldWidget.tokenBlockchainNetwork ||
         widget.walletProvider != oldWidget.walletProvider ||
@@ -78,6 +79,8 @@ class _SwapTokenState extends State<SwapToken> {
 
   // Calls the MetaMask JavaScript function to get ERC-20 token balance
   Future<double?> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
+    print('_getBalanceMetaMask(String walletAddress, String contractAddress)');
+    return 35.34;
     try {
       final dynamic result = await js_util.promiseToFuture(
         js_util.callMethod(html.window, 'getBalanceMetaMask', [walletAddress, contractAddress]),
@@ -99,6 +102,7 @@ class _SwapTokenState extends State<SwapToken> {
     // This calls the stubbed function from gcloud_functions.dart
     // In a real app, this would be an async call to a cloud function
     // that interacts with the Solana blockchain.
+    print('_getBalanceSolflare(String contractAddress)');
     return getBalanceSolflare(contractAddress); // Assuming this is now async or returns Future<double?>
   }
 
@@ -147,13 +151,13 @@ class _SwapTokenState extends State<SwapToken> {
       }
 
       // Fetch price
-      if (widget.tokenBlockchainNetwork == 'ETH') {
+      if (widget.tokenBlockchainNetwork == 'ETH' && widget.walletProvider == 'MetaMask') {
         final price = getTokenPriceMoralis(purchaseTokenAddress); // This is currently sync/stubbed
         setState(() {
           _purchaseTokenPriceUSD = price;
           _isLoadingPrice = false;
         });
-      } else if (widget.tokenBlockchainNetwork == 'SOL') {
+      } else if (widget.tokenBlockchainNetwork == 'SOL' && widget.walletProvider == 'Solflare') {
         final price = getTokenPriceMoralisSOL(purchaseTokenAddress); // This is currently sync/stubbed
         setState(() {
           _purchaseTokenPriceUSD = price;
