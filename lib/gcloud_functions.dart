@@ -4,19 +4,16 @@ import 'package:http/http.dart' as http;
 
 // TODO: move these queries into google cloud functions. stubbing out for now
 double getTokenPriceMoralis(String contractAddress){
-    print('getTokenPriceMoralis(String contractAddress)');
-    return 4197;
+    return 0.0;
 }
 
 double getTokenPriceMoralisSOL(String contractAddress){
-    print('getTokenPriceMoralisSOL(String contractAddress)');
-    return 145.23;
+    return 0.0;
 }
 
 // TODO: set up in gcloud, because this uses an RPC node with an api key
 double getBalanceSolflare(String contractAddress){
-    print('getBalanceSolflare(String contractAddress)');
-    return 10.5;
+    return 0.0;
 }
 // Moralis API key remote config parameter: moralis_api_key
 // WETH address: 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2

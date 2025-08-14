@@ -49,18 +49,11 @@ class _SwapTokenState extends State<SwapToken> {
     super.initState();
     _amountController.addListener(_updateConversionAndValidate);
     _fetchBalancesAndPrices();
-    print('tokenBlockchainNetwork: ' + widget.tokenBlockchainNetwork);
-    print('tokenMintAddress: ' + widget.tokenMintAddress);
-    print('tokenSymbol: ' + widget.tokenSymbol);
-    print('walletProvider: ' + widget.walletProvider);
-    print('userWalletAddress: ' + widget.userWalletAddress);
-
   }
 
   @override
   void didUpdateWidget(covariant SwapToken oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('didUpdateWidget(covariant SwapToken oldWidget)');
     // Re-fetch balances and prices if the network or wallet address changes
     if (widget.tokenBlockchainNetwork != oldWidget.tokenBlockchainNetwork ||
         widget.walletProvider != oldWidget.walletProvider ||
@@ -79,8 +72,6 @@ class _SwapTokenState extends State<SwapToken> {
 
   // Calls the MetaMask JavaScript function to get ERC-20 token balance
   Future<double?> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
-    print('_getBalanceMetaMask(String walletAddress, String contractAddress)');
-    return 35.34;
     try {
       final dynamic result = await js_util.promiseToFuture(
         js_util.callMethod(html.window, 'getBalanceMetaMask', [walletAddress, contractAddress]),
@@ -97,18 +88,12 @@ class _SwapTokenState extends State<SwapToken> {
     }
   }
 
-  // Stub for getting Solflare balance (from gcloud_functions.dart)
   Future<double?> _getBalanceSolflare(String contractAddress) async {
-    // This calls the stubbed function from gcloud_functions.dart
-    // In a real app, this would be an async call to a cloud function
-    // that interacts with the Solana blockchain.
-    print('_getBalanceSolflare(String contractAddress)');
-    return getBalanceSolflare(contractAddress); // Assuming this is now async or returns Future<double?>
+    return getBalanceSolflare(contractAddress);
   }
 
   // Fetches balances and prices based on the connected network
   Future<void> _fetchBalancesAndPrices() async {
-    print('_fetchBalancesAndPrices');
     setState(() {
       _isLoadingBalance = true;
       _isLoadingPrice = true;
@@ -202,17 +187,8 @@ class _SwapTokenState extends State<SwapToken> {
   /// This method will be implemented later to call the appropriate swap API.
   void _performSwap() {
     // TODO: Implement actual swap logic here.
-    // This will involve calling Jupiter API for Solana or 1inch API for Arbitrum.
-    // Use tokenBlockchainNetwork and userBlockchainNetwork to determine the path.
-    print('Swap button pressed!');
     print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
-    print('User connected to: ${widget.walletProvider ?? 'N/A'}');
     print('Amount to swap: ${_amountController.text}');
-    print('Estimated USD: $_estimatedUSDAmount');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Swap for ${widget.tokenSymbol} stubbed out!')),
-    );
   }
 
   @override
