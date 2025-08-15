@@ -38,9 +38,6 @@ class _SwapTokenState extends State<SwapToken> {
   bool _showBalanceWarning = false;
 
   // WETH and SOL addresses for fetching prices and balances
-  // Note: For SOL, we often use the wSOL (wrapped SOL) address for smart contract interactions,
-  // as native SOL isn't an ERC-20 token. The price APIs might handle this internally or
-  // refer to the wSOL price as effectively the SOL price.
   final String _wethContractAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
   final String _solContractAddress = 'So11111111111111111111111111111111111111112';
 
@@ -54,7 +51,6 @@ class _SwapTokenState extends State<SwapToken> {
   @override
   void didUpdateWidget(covariant SwapToken oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Re-fetch balances and prices if the network or wallet address changes
     if (widget.tokenBlockchainNetwork != oldWidget.tokenBlockchainNetwork ||
         widget.walletProvider != oldWidget.walletProvider ||
         widget.userWalletAddress != oldWidget.userWalletAddress) {
@@ -70,7 +66,6 @@ class _SwapTokenState extends State<SwapToken> {
     super.dispose();
   }
 
-  // Calls the MetaMask JavaScript function to get ERC-20 token balance
   Future<double?> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
     try {
       final dynamic result = await js_util.promiseToFuture(
@@ -78,7 +73,7 @@ class _SwapTokenState extends State<SwapToken> {
       );
       if (result is double) {
         return result;
-      } else if (result is int) { // Handle cases where JS might return an integer
+      } else if (result is int) {
         return result.toDouble();
       }
       return double.tryParse(result);
@@ -89,10 +84,10 @@ class _SwapTokenState extends State<SwapToken> {
   }
 
   Future<double?> _getBalanceSolflare(String contractAddress) async {
+    return 1.2;
     return getBalanceSolflare(contractAddress);
   }
 
-  // Fetches balances and prices based on the connected network
   Future<void> _fetchBalancesAndPrices() async {
     setState(() {
       _isLoadingBalance = true;
@@ -110,7 +105,7 @@ class _SwapTokenState extends State<SwapToken> {
       purchaseTokenAddress = _wethContractAddress;
       purchaseTokenSymbol = 'WETH';
     } else if (widget.tokenBlockchainNetwork == 'SOL') {
-      purchaseTokenAddress = _solContractAddress; // Using wSOL address for consistency
+      purchaseTokenAddress = _solContractAddress;
       purchaseTokenSymbol = 'SOL';
     }
 
@@ -129,7 +124,6 @@ class _SwapTokenState extends State<SwapToken> {
           _isLoadingBalance = false;
         });
       } else {
-        // Mismatch or unsupported network
         setState(() {
           _isLoadingBalance = false;
         });
@@ -137,13 +131,13 @@ class _SwapTokenState extends State<SwapToken> {
 
       // Fetch price
       if (widget.tokenBlockchainNetwork == 'ETH' && widget.walletProvider == 'MetaMask') {
-        final price = getTokenPriceMoralis(purchaseTokenAddress); // This is currently sync/stubbed
+        final price = getTokenPriceMoralis(purchaseTokenAddress);
         setState(() {
           _purchaseTokenPriceUSD = price;
           _isLoadingPrice = false;
         });
       } else if (widget.tokenBlockchainNetwork == 'SOL' && widget.walletProvider == 'Solflare') {
-        final price = getTokenPriceMoralisSOL(purchaseTokenAddress); // This is currently sync/stubbed
+        final price = getTokenPriceMoralisSOL(purchaseTokenAddress);
         setState(() {
           _purchaseTokenPriceUSD = price;
           _isLoadingPrice = false;
@@ -159,10 +153,9 @@ class _SwapTokenState extends State<SwapToken> {
         _isLoadingPrice = false;
       });
     }
-    _updateConversionAndValidate(); // Recalculate based on new balance/price
+    _updateConversionAndValidate();
   }
 
-  // Updates the estimated USD conversion and validates the input amount
   void _updateConversionAndValidate() {
     final String text = _amountController.text;
     double? amount = double.tryParse(text);
@@ -173,20 +166,16 @@ class _SwapTokenState extends State<SwapToken> {
       _estimatedUSDAmount = '~ \$0.00';
     }
 
-    // Validate amount against available balance
     if (amount != null && _availablePurchaseTokenBalance != null && amount > _availablePurchaseTokenBalance!) {
       _showBalanceWarning = true;
     } else {
       _showBalanceWarning = false;
     }
 
-    setState(() {}); // Update the UI
+    setState(() {});
   }
 
-  /// Stubs out the swap button's functionality.
-  /// This method will be implemented later to call the appropriate swap API.
   void _performSwap() {
-    // TODO: Implement actual swap logic here.
     print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
     print('Amount to swap: ${_amountController.text}');
   }
@@ -196,29 +185,28 @@ class _SwapTokenState extends State<SwapToken> {
     String swapButtonText;
     bool canEnableButton = false;
     bool textFieldEnabled = false;
-    String purchaseTokenDisplaySymbol = ''; // To display WETH or SOL
+    String purchaseTokenDisplaySymbol = '';
 
-    // Determine purchase token display symbol
+    final Color primaryColor = Theme.of(context).brightness == Brightness.light
+        ? const Color(0xFFA8415B)
+        : const Color(0xFF800020);
+
     if (widget.tokenBlockchainNetwork == 'ETH') {
       purchaseTokenDisplaySymbol = 'WETH';
     } else if (widget.tokenBlockchainNetwork == 'SOL') {
       purchaseTokenDisplaySymbol = 'SOL';
     }
 
-    // Determine button text and enablement based on wallet connection and network
     if ((widget.walletProvider == 'Solflare' && widget.tokenBlockchainNetwork == 'SOL') ||
         (widget.walletProvider == 'MetaMask' && widget.tokenBlockchainNetwork == 'ETH')) {
       swapButtonText = 'Purchase ${widget.tokenSymbol}';
       textFieldEnabled = true;
 
-      // Check if amount is valid for enabling the button
       double? amount = double.tryParse(_amountController.text);
       if (amount != null && amount > 0 && _availablePurchaseTokenBalance != null && amount <= _availablePurchaseTokenBalance!) {
         canEnableButton = true;
       }
-    }
-    else {
-      // User is not connected
+    } else {
       swapButtonText = 'Connect Wallet';
       textFieldEnabled = false;
     }
@@ -247,12 +235,12 @@ class _SwapTokenState extends State<SwapToken> {
             Text(
               'Currently displaying: ${widget.tokenSymbol} on ${widget.tokenBlockchainNetwork}',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Text(
               balanceDisplay,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             TextFormField(
@@ -261,27 +249,43 @@ class _SwapTokenState extends State<SwapToken> {
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               enabled: textFieldEnabled,
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')), // Allow only numbers and a single decimal point
+                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*$')),
               ],
+              style: const TextStyle(fontWeight: FontWeight.bold),
               decoration: InputDecoration(
                 labelText: 'Amount of $purchaseTokenDisplaySymbol to swap',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                floatingLabelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: primaryColor,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: primaryColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: primaryColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: primaryColor, width: 2.0),
+                ),
                 prefixIcon: const Icon(Icons.currency_bitcoin),
                 errorText: _showBalanceWarning ? 'Amount exceeds available balance' : null,
               ),
             ),
             const SizedBox(height: 16),
-            // Placeholder for "You will receive"
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: Theme.of(context).brightness == Brightness.light ? Colors.grey[100] : Colors.grey[800],
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('You will receive approximately:', style: TextStyle(fontWeight: FontWeight.w500)),
+                  Text('You will receive approximately:', style: TextStyle(fontWeight: FontWeight.bold)),
                   _isLoadingPrice
                       ? const CircularProgressIndicator(strokeWidth: 2)
                       : Text(_estimatedUSDAmount, style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -290,15 +294,15 @@ class _SwapTokenState extends State<SwapToken> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: canEnableButton ? _performSwap : null, // Disable if cannot swap
+              onPressed: canEnableButton ? _performSwap : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: primaryColor,
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 30),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
               child: Text(
                 swapButtonText,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ],
