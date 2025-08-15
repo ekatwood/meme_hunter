@@ -257,7 +257,7 @@ class _SwapTokenState extends State<SwapToken> {
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 floatingLabelStyle: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: primaryColor,
+                  color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -271,8 +271,9 @@ class _SwapTokenState extends State<SwapToken> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: primaryColor, width: 2.0),
                 ),
-                prefixIcon: const Icon(Icons.currency_bitcoin),
+                prefixIcon: const Icon(Icons.swap_horiz),
                 errorText: _showBalanceWarning ? 'Amount exceeds available balance' : null,
+                errorStyle: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 16),
