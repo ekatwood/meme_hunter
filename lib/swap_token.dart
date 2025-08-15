@@ -67,6 +67,9 @@ class _SwapTokenState extends State<SwapToken> {
   }
 
   Future<double?> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
+    print('_getBalanceMetaMask(String walletAddress, String contractAddress)');
+    // stubbed amount
+    return 4.7;
     try {
       final dynamic result = await js_util.promiseToFuture(
         js_util.callMethod(html.window, 'getBalanceMetaMask', [walletAddress, contractAddress]),
@@ -84,11 +87,12 @@ class _SwapTokenState extends State<SwapToken> {
   }
 
   Future<double?> _getBalanceSolflare(String contractAddress) async {
-    return 1.2;
+    print('_getBalanceSolflare(String contractAddress)');
     return getBalanceSolflare(contractAddress);
   }
 
   Future<void> _fetchBalancesAndPrices() async {
+    print('_fetchBalancesAndPrices()');
     setState(() {
       _isLoadingBalance = true;
       _isLoadingPrice = true;
@@ -108,6 +112,8 @@ class _SwapTokenState extends State<SwapToken> {
       purchaseTokenAddress = _solContractAddress;
       purchaseTokenSymbol = 'SOL';
     }
+    print('purchaseTokenAddress: ' + purchaseTokenAddress!);
+    print('purchaseTokenSymbol: ' + purchaseTokenSymbol!);
 
     if (purchaseTokenAddress != null && widget.userWalletAddress.isNotEmpty) {
       // Fetch balance
