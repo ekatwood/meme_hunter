@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyALnkP4pw4ufkZ09EUSj9Rhc4TnwWPxy4o',
+    apiKey: String.fromEnvironment('FIREBASE_API_KEY'),
     appId: '1:194957573763:web:e37d34fc282d546a6c25b6',
     messagingSenderId: '194957573763',
     projectId: 'meme-hunter-4f1c1',
@@ -61,5 +61,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'meme-hunter-4f1c1.firebasestorage.app',
     measurementId: 'G-P5JJPQXTGK',
   );
-
 }
