@@ -104,6 +104,7 @@ async function getBalanceMetaMask(walletAddress, contractAddress) {
   }
 }
 
+// Helper function for getBalanceMetaMask(walletAddress, contractAddress)
 function formatBigIntWithDecimals(rawBigIntValue, decimals) {
   // Convert the BigInt to a string
   let strValue = rawBigIntValue.toString();
@@ -123,4 +124,45 @@ function formatBigIntWithDecimals(rawBigIntValue, decimals) {
   // Remove trailing zeros after the decimal point if any (optional, for cleaner output)
   // This step is important for numbers like "1.000000000" to become "1"
   return formatted.replace(/\.?0+$/, '');
+}
+
+/**
+ * Sends a transaction to be signed by MetaMask.
+ * @param {object} tx - The transaction object returned by the 0x API.
+ * @returns {Promise<string|null>} The transaction hash if successful, null otherwise.
+ */
+async function sendTransaction(tx) {
+  console.log("sendTransaction called with tx:", tx);
+  try {
+    // Check if MetaMask is available
+    if (typeof window.ethereum === 'undefined') {
+      console.error("MetaMask not available.");
+      return null;
+    }
+
+    // Ensure the network is correct (e.g., Ethereum Mainnet)
+    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    const ethMainnetChainId = '0x1'; // Chain ID for Ethereum Mainnet
+    if (currentChainId !== ethMainnetChainId) {
+      console.error(`Please switch to Ethereum Mainnet (Chain ID: ${ethMainnetChainId}) in MetaMask.`);
+      return null;
+    }
+
+    // Request the user to sign and send the transaction
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [tx],
+    });
+
+    console.log("Transaction sent. Transaction hash:", txHash);
+    return txHash;
+
+  } catch (error) {
+    console.error("Error sending transaction:", error);
+    if (error.code === 4001) {
+      // User rejected the transaction
+      console.warn("User rejected the transaction.");
+    }
+    return null;
+  }
 }

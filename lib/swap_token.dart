@@ -68,8 +68,6 @@ class _SwapTokenState extends State<SwapToken> {
 
   Future<double?> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
     print('_getBalanceMetaMask(String walletAddress, String contractAddress)');
-    // stubbed amount
-    return 4.7;
     try {
       final dynamic result = await js_util.promiseToFuture(
         js_util.callMethod(html.window, 'getBalanceMetaMask', [walletAddress, contractAddress]),
@@ -181,9 +179,44 @@ class _SwapTokenState extends State<SwapToken> {
     setState(() {});
   }
 
-  void _performSwap() {
+  Future<void> _performSwap() async {
     print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
     print('Amount to swap: ${_amountController.text}');
+
+    if (widget.tokenBlockchainNetwork == 'ETH') {
+      try {
+        // Step 1: Call the GCloud function (now in Dart) to get the 0x quote
+        final quote = await get0xQuote(
+          {
+            'chainId': '1', // Ethereum Mainnet
+            'sellToken': _wethContractAddress,
+            'buyToken': widget.tokenMintAddress,
+            'sellAmount': (_amountController.text),
+            'takerAddress': widget.userWalletAddress,
+          },
+        );
+
+        if (quote != null) {
+          print('Received 0x quote: $quote');
+          // Step 2: Use the quote to prompt the user to sign the transaction with MetaMask
+          final dynamic txHash = await js_util.promiseToFuture(
+            js_util.callMethod(html.window, 'sendTransaction', [js_util.jsify(quote)]),
+          );
+
+          if (txHash != null) {
+            print('Transaction successful! Hash: $txHash');
+            // You can now display a success message to the user
+          } else {
+            print('Transaction failed or was rejected.');
+            // Display an error message to the user
+          }
+        } else {
+          print('Failed to get quote from 0x API.');
+        }
+      } catch (e) {
+        print("Error during swap process: $e");
+      }
+    }
   }
 
   @override
