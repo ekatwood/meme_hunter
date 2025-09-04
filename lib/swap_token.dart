@@ -183,35 +183,71 @@ class _SwapTokenState extends State<SwapToken> {
     print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
     print('Amount to swap: ${_amountController.text}');
 
-    if (widget.tokenBlockchainNetwork == 'ETH') {
+    if(widget.tokenBlockchainNetwork == 'ETH' || widget.tokenBlockchainNetwork == 'SOL'){
       try {
-        // Step 1: Call the GCloud function (now in Dart) to get the 0x quote
-        final quote = await get0xQuote(
-          {
-            'chainId': '1', // Ethereum Mainnet
-            'sellToken': _wethContractAddress,
-            'buyToken': widget.tokenMintAddress,
-            'sellAmount': (_amountController.text),
-            'takerAddress': widget.userWalletAddress,
-          },
-        );
-
-        if (quote != null) {
-          print('Received 0x quote: $quote');
-          // Step 2: Use the quote to prompt the user to sign the transaction with MetaMask
-          final dynamic txHash = await js_util.promiseToFuture(
-            js_util.callMethod(html.window, 'sendTransaction', [js_util.jsify(quote)]),
+        if (widget.tokenBlockchainNetwork == 'ETH') {
+          // Step 1: Call the GCloud function (now in Dart) to get the 0x quote
+          final quote = await get0xQuote(
+            {
+              'chainId': '1', // Ethereum Mainnet
+              'sellToken': _wethContractAddress,
+              'buyToken': widget.tokenMintAddress,
+              'sellAmount': (_amountController.text),
+              'takerAddress': widget.userWalletAddress,
+            },
           );
 
-          if (txHash != null) {
-            print('Transaction successful! Hash: $txHash');
-            // You can now display a success message to the user
+          if (quote != null) {
+            print('Received 0x quote: $quote');
+            // Step 2: Use the quote to prompt the user to sign the transaction with MetaMask
+            final dynamic txHash = await js_util.promiseToFuture(
+              js_util.callMethod(
+                  html.window, 'sendTransaction', [js_util.jsify(quote)]),
+            );
+
+            if (txHash != null) {
+              print('Transaction successful! Hash: $txHash');
+              // You can now display a success message to the user
+            } else {
+              print('Transaction failed or was rejected.');
+              // Display an error message to the user
+            }
           } else {
-            print('Transaction failed or was rejected.');
-            // Display an error message to the user
+            print('Failed to get quote from 0x API.');
           }
-        } else {
-          print('Failed to get quote from 0x API.');
+        }
+
+        if(widget.tokenBlockchainNetwork == 'SOL'){
+          // 1. Get the Jupiter quote via the mock GCloud function
+          // In a real app, this would be a network call to your GCloud function
+          final quoteParams = {
+            'sellToken': _solContractAddress,
+            'buyToken': widget.tokenMintAddress,
+            'amount': _amountController.text,
+            'userWalletAddress': widget.userWalletAddress,
+          };
+
+          final Map<String, dynamic> solanaQuote = await getJupiterQuote(quoteParams);
+
+          if (solanaQuote.containsKey('transaction')) {
+            final String encodedTransaction = solanaQuote['transaction'];
+            print("Received Solana transaction from GCloud function. Sending to Solflare...");
+
+            // 2. Call the JavaScript function `signAndSendTransactionSolana` to interact with the wallet
+            final jsTransactionSignature = await js_util.callMethod(
+              html.window,
+              'signAndSendTransactionSolana',
+              [encodedTransaction],
+            );
+
+            if (jsTransactionSignature != null) {
+              print("Swap successful! Transaction signature: $jsTransactionSignature");
+            } else {
+              print("Swap failed: Transaction was not signed or sent.");
+            }
+          } else {
+            throw Exception('Invalid quote response: missing transaction data.');
+          }
         }
       } catch (e) {
         print("Error during swap process: $e");

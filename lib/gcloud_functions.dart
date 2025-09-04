@@ -49,3 +49,28 @@ Future<Map<String, dynamic>> get0xQuote(Map<String, dynamic> params) async {
 
     return mockQuote;
 }
+
+/**
+ * Mock function to simulate a call to the jup_api.py GCloud function.
+ * This function returns a hardcoded, base64-encoded transaction string
+ * within a Map, to match the expected format.
+ * @param {Map<String, dynamic>} params - The parameters for the Jupiter API call.
+ * @returns {Future<Map<String, dynamic>>} A future that resolves with a map
+ * containing a base64 transaction string.
+ */
+Future<Map<String, dynamic>> getJupiterQuote(Map<String, dynamic> params) async {
+    print("Mocking Jupiter API call with parameters: $params");
+
+    // This is a hardcoded, base64-encoded transaction from a real Jupiter API call.
+    // This mock data is what you would receive from your jup_api.py Cloud Function.
+    final String mockBase64Transaction = "AAAA";
+
+    // Simulate a network delay
+    await Future.delayed(Duration(seconds: 1));
+
+    // The function now returns a Map with a 'transaction' key, as expected
+    // by the _performSwap function.
+    return {
+        'transaction': mockBase64Transaction
+    };
+}

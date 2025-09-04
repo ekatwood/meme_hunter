@@ -15,3 +15,68 @@ async function connectSolflare() {
     return "Solflare unavailable";
   }
 }
+
+/**
+ * Signs a Solana transaction using the Solflare wallet and sends it to a
+ * Google Cloud Function for broadcast.
+ * @param {string} base64Transaction - A base64-encoded string of the Solana transaction.
+ * @returns {Promise<string|null>} The transaction signature if successful, null otherwise.
+ */
+async function signAndSendTransactionSolana(base64Transaction) {
+  try {
+    if (!window.solflare) {
+      console.error("Solflare not detected.");
+      return null;
+    }
+
+    // Decode the base64 string to a byte array
+    const decodedBytes = Uint8Array.from(atob(base64Transaction), c => c.charCodeAt(0));
+
+    // Check for the global solanaWeb3 object
+    if (typeof solanaWeb3 === 'undefined') {
+      console.error("Solana Web3.js library not available.");
+      return null;
+    }
+
+    // Deserialize the byte array back into a Transaction object
+    const transaction = solanaWeb3.Transaction.from(decodedBytes);
+
+    // Sign the transaction with Solflare
+    const signedTransaction = await window.solflare.signTransaction(transaction);
+    console.log("Solflare signed the transaction.");
+
+    // Serialize the signed transaction to base64 using the global bs58 object
+    // A script tag for bs58 must be in your index.html
+    const serializedTransaction = bs58.encode(signedTransaction.serialize());
+
+    // Call the GCloud Function to send the transaction
+    const gcloudUrl = "YOUR_GCLOUD_FUNCTION_URL_HERE";
+    const response = await fetch(gcloudUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        transaction: serializedTransaction
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
+
+    console.log("Transaction result from GCloud:", responseData);
+
+    // Assuming the GCloud function returns the signature
+    return responseData.signature;
+
+  } catch (error) {
+    console.error("Error signing and sending Solana transaction:", error);
+    if (error.code === 4001 || error.message.includes("User rejected")) {
+      console.warn("Solflare user rejected the transaction.");
+    }
+    return null;
+  }
+}
