@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'utils.dart';
 import 'package:http/http.dart' as http;
 
+// TODO: add real url
+const String _baseUrl = 'https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/';
+
 // TODO: move these queries into google cloud functions. stubbing out for now
 double getTokenPriceMoralis(String contractAddress){
     print('getTokenPriceMoralis(String contractAddress)');
@@ -13,10 +16,30 @@ double getTokenPriceMoralisSOL(String contractAddress){
     return 183;
 }
 
-// TODO: set up in gcloud, because this uses an RPC node with an api key
-double getBalanceSolflare(String contractAddress){
+Future<double> getBalanceSolflare(String contractAddress) async {
     print('getBalanceSolflare(String contractAddress)');
-    return 7.2;
+
+    //TODO: get name of function
+    String fullUrl = _baseUrl + "NAME_OF_FUNCTION";
+    final uri = Uri.parse('$fullUrl?walletAddress=$contractAddress');
+
+    try {
+        final response = await http.get(uri);
+
+        if (response.statusCode == 200) {
+            final jsonResponse = jsonDecode(response.body);
+            // The function returns a JSON object with the balance.
+            return jsonResponse['balance'] as double;
+        } else {
+            // Handle the error here
+            print('Request failed with status: ${response.statusCode}.');
+            print('Response body: ${response.body}');
+            throw Exception('Failed to load balance');
+        }
+    } catch (e) {
+        print('Error: $e');
+        throw Exception('Error fetching balance');
+    }
 }
 
 /**
