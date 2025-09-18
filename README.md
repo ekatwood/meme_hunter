@@ -2,8 +2,6 @@
 
 A GraphQL query that searches for the most unique trades of a token recently, helping you find trending tokens without doing heavy research.
 
-Progress so far: https://meme-hunter-4f1c1.web.app/
-
 TODO:
 
 Buy a custom domain
