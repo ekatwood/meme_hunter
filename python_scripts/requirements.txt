@@ -1,0 +1,3 @@
+functions-framework
+solana
+google-cloud-secret-manager
