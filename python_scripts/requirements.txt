@@ -1,3 +1,5 @@
 functions-framework
 solana
+solders
+spl-token
 google-cloud-secret-manager
