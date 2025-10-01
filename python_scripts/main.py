@@ -1,4 +1,7 @@
 import functions_framework
+import requests
+import json
+import decimal
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from spl.token.instructions import get_associated_token_address
@@ -88,11 +91,72 @@ def get_balance_Solflare(wallet_address: str, contract_address: str = None):
         print(f"Error fetching balance: {e}")
         return None
 
-# def get_0x_quote(Map<String, dynamic> params):
-#
-# def get_Jupiter_quote(Map<String, dynamic> params):
-#
-# def send_Solana_transaction():
+def get_0x_swap_quote(token_contract_address, weth_amount_to_spend, taker_address):
+
+    decimal.getcontext().prec = 50
+
+    API_BASE_URL = "https://api.0x.org"
+    WETH_CONTRACT_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+    # The affiliate fee in basis points (BPS). 1 BPS = 0.01%.
+    # 0.25% = 25 BPS.
+    AFFILIATE_FEE_BPS = 25
+
+    # Define the API endpoint for getting a quote.
+    endpoint = f"{API_BASE_URL}/swap/allowance-holder/quote"
+
+    try:
+        # Get the API key from Secret Manager
+        api_key = get_secret("meme_hunter", "0X_API_KEY")
+
+        # Get the API key from Secret Manager
+        fee_recipient_address = get_secret("meme_hunter", "0x_FEE_RECIPIENT_ADDRESS")
+
+        # Convert the human-readable WETH amount to the smallest unit (wei)
+        # as required by the 0x API. 1 ETH = 10^18 wei.
+        wei_amount_to_spend = int(decimal.Decimal(str(weth_amount_to_spend)) * decimal.Decimal('1e18'))
+
+        # Define the query parameters for the API request.
+        # sellToken and buyToken are contract addresses.
+        # sellAmount is the amount of the sellToken in its smallest denomination (wei).
+        # affiliateAddress and affiliateFeeBps are for collecting fees.
+        params = {
+            "chainId": 1,
+            "sellToken": WETH_CONTRACT_ADDRESS,
+            "buyToken": token_contract_address,
+            "sellAmount": str(wei_amount_to_spend),
+            "swapFeeRecipient": fee_recipient_address,
+            "swapFeeBps": AFFILIATE_FEE_BPS,
+            "swapFeeToken": WETH_CONTRACT_ADDRESS,
+            "taker": taker_address,
+        }
+
+        # Set up the headers, including the API key for authentication.
+        headers = {
+            "0x-api-key": api_key,
+            "0x-version": "v2",
+            "Accept": "application/json"
+        }
+
+        # Make the GET request to the API.
+        response = requests.get(endpoint, params=params, headers=headers)
+
+        # Raise an exception for bad status codes (4xx or 5xx).
+        response.raise_for_status()
+
+        # Parse the JSON response.
+        quote_data = response.json()
+        return quote_data
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred during the API request: {e}")
+        return {"error": str(e)}
+    except (ValueError, TypeError) as e:
+        print(f"Invalid input: {e}")
+        return {"error": f"Invalid input: {e}"}
+
+def get_Jupiter_quote(Map<String, dynamic> params):
+
+def send_Solana_transaction():
 
 # --- The main entry point for a single deployed function ---
 @functions_framework.http
@@ -117,6 +181,19 @@ def api_router(request):
             return "Missing wallet_address parameter", 400
         result = get_balance_Solflare(wallet, contract)
         return {"balance": result} if result is not None else "Error fetching balance", 500
+
+    elif function_name == "get_0x_swap_quote":
+        token = request_args.get("token_contract_address")
+        weth_amount = request_args.get("weth_amount_to_spend")
+        taker = request_args.get("taker_address")
+        if not token:
+            return "Missing token parameter", 400
+        if not weth_amount:
+            return "Missing weth_amount parameter", 400
+        if not taker:
+            return "Missing taker parameter", 400
+        result = get_0x_swap_quote(token, weth_amount, taker)
+        return {"quote": result} if result is not None else "Error fetching 0x quote", 500
 
     else:
         return "Invalid function name specified", 400
