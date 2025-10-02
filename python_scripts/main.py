@@ -1,6 +1,7 @@
 import functions_framework
 import requests
 import json
+from typing import Optional, Dict, Any
 import decimal
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
@@ -38,7 +39,7 @@ def get_token_price_Moralis(contract_address: str, chain: str):
 
     if not api_key:
         print("Failed to retrieve API key from Secret Manager. Exiting.")
-        return None
+        return {"error": "Failed to retrieve API key from Secret Manager. Exiting."}
 
     headers = {
         "Accept": "application/json",
@@ -65,7 +66,7 @@ def get_balance_Solflare(wallet_address: str, contract_address: str = None):
 
         if not api_key:
             print("Failed to retrieve API key from Secret Manager. Exiting.")
-            return None
+            return {"error": "Failed to retrieve API key from Secret Manager. Exiting."}
 
         RPC_URL = f"https://mainnet.helius-rpc.com/?api-key={api_key}"
         client = Client(RPC_URL)
@@ -108,8 +109,16 @@ def get_0x_swap_quote(token_contract_address, weth_amount_to_spend, taker_addres
         # Get the API key from Secret Manager
         api_key = get_secret("meme_hunter", "0X_API_KEY")
 
+        if not api_key:
+            print("Failed to retrieve API key from Secret Manager. Exiting.")
+            return {"error": "Failed to retrieve API key from Secret Manager. Exiting."}
+
         # Get the API key from Secret Manager
         fee_recipient_address = get_secret("meme_hunter", "0x_FEE_RECIPIENT_ADDRESS")
+
+        if not fee_recipient_address:
+            print("Failed to retrieve fee receipient address from Secret Manager. Exiting.")
+            return {"error": "Failed to retrieve fee receipient address from Secret Manager. Exiting."}
 
         # Convert the human-readable WETH amount to the smallest unit (wei)
         # as required by the 0x API. 1 ETH = 10^18 wei.
@@ -154,7 +163,69 @@ def get_0x_swap_quote(token_contract_address, weth_amount_to_spend, taker_addres
         print(f"Invalid input: {e}")
         return {"error": f"Invalid input: {e}"}
 
-def get_Jupiter_quote(Map<String, dynamic> params):
+def generate_jupiter_swap_tx(
+    output_token_mint: str,
+    sol_amount_to_sell: float,
+    user_wallet_address: str,
+) -> Optional[Dict[str, Any]]:
+
+    JUPITER_API_BASE_URL = "https://lite-api.jup.ag/swap/v1"
+    SOL_MINT_ADDRESS = "So11111111111111111111111111111111111111112"
+    # 0.25% in Basis Points (1 bp = 0.01%)
+    FEE_BPS = 25
+    # Standard SOL decimals
+    SOL_DECIMALS = 9
+    # 1. Convert SOL amount to Lamports (1 SOL = 10^9 Lamports)
+    amount_in_lamports = int(sol_amount_to_sell * (10 ** SOL_DECIMALS))
+
+    quote_url = f"{JUPITER_API_BASE_URL}/quote"
+    quote_params = {
+        "inputMint": SOL_MINT_ADDRESS,
+        "outputMint": output_token_mint,
+        "amount": amount_in_lamports,
+        "platformFeeBps": FEE_BPS,
+    }
+
+    try:
+        response = requests.get(quote_url, params=quote_params)
+        response.raise_for_status() # Raise an HTTPError for bad responses (4xx or 5xx)
+        quote_response = response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching quote: {e}")
+        return {"error": f"Error fetching quote: {e}"}
+
+    if not quote_response.get("outAmount"):
+        print("Quote response did not return a valid route or outAmount.")
+        # print(json.dumps(quote_response, indent=2))
+        return {"error": f"Quote response did not return a valid route or outAmount. {e}"}
+
+    swap_url = f"{JUPITER_API_BASE_URL}/swap"
+    # Get fee account address from Secret Manager
+    fee_recipient_address = get_secret("meme_hunter", "JUPITER_FEE_RECIPIENT_ADDRESS")
+
+    if not fee_recipient_address:
+        print("Failed to retrieve fee receipient address from Secret Manager. Exiting.")
+        return {"error": "Failed to retrieve fee receipient address from Secret Manager. Exiting."}
+
+    swap_body = {
+        "quoteResponse": quote_response,
+        "userPublicKey": user_wallet_address,
+        "feeAccount": fee_recipient_address,
+    }
+
+    try:
+        response = requests.post(
+            swap_url,
+            headers={"Content-Type": "application/json"},
+            data=json.dumps(swap_body)
+        )
+        response.raise_for_status()
+        swap_transaction = response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error generating swap transaction: {e}")
+        return {"error": f"Error generating swap transaction: {e}"}
+
+    return swap_transaction
 
 def send_Solana_transaction():
 
@@ -194,6 +265,19 @@ def api_router(request):
             return "Missing taker parameter", 400
         result = get_0x_swap_quote(token, weth_amount, taker)
         return {"quote": result} if result is not None else "Error fetching 0x quote", 500
+
+    elif function_name == "generate_jupiter_swap_tx":
+        token = request_args.get("output_token_mint")
+        sol_amount = request_args.get("sol_amount_to_sell")
+        user_wallet = request_args.get("user_wallet_address")
+        if not token:
+            return "Missing token parameter", 400
+        if not sol_amount:
+            return "Missing sol_amount parameter", 400
+        if not user_wallet:
+            return "Missing user_wallet parameter", 400
+        result = generate_jupiter_swap_tx(token, sol_amount, user_wallet)
+        return {"swap_tx": result} if result is not None else "Error fetching Jupiter swap transaction", 500
 
     else:
         return "Invalid function name specified", 400
