@@ -1,5 +1,6 @@
 functions-framework
+requests
+google-cloud-secret-manager
 solana
 solders
 spl-token
-google-cloud-secret-manager
