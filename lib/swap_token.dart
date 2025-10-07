@@ -135,15 +135,15 @@ class _SwapTokenState extends State<SwapToken> {
 
       // Fetch price
       if (widget.tokenBlockchainNetwork == 'ETH' && widget.walletProvider == 'MetaMask') {
-        final price = getTokenPriceMoralis(purchaseTokenAddress);
+        final price = getTokenPriceMoralis(purchaseTokenAddress,'eth');
         setState(() {
-          _purchaseTokenPriceUSD = price;
+          _purchaseTokenPriceUSD = price as double?;
           _isLoadingPrice = false;
         });
       } else if (widget.tokenBlockchainNetwork == 'SOL' && widget.walletProvider == 'Solflare') {
-        final price = getTokenPriceMoralisSOL(purchaseTokenAddress);
+        final price = getTokenPriceMoralis(purchaseTokenAddress,'sol');
         setState(() {
-          _purchaseTokenPriceUSD = price;
+          _purchaseTokenPriceUSD = price as double?;
           _isLoadingPrice = false;
         });
       } else {
@@ -187,15 +187,7 @@ class _SwapTokenState extends State<SwapToken> {
       try {
         if (widget.tokenBlockchainNetwork == 'ETH') {
           // Step 1: Call the GCloud function (now in Dart) to get the 0x quote
-          final quote = await get0xQuote(
-            {
-              'chainId': '1', // Ethereum Mainnet
-              'sellToken': _wethContractAddress,
-              'buyToken': widget.tokenMintAddress,
-              'sellAmount': (_amountController.text),
-              'takerAddress': widget.userWalletAddress,
-            },
-          );
+          final quote = await get0xQuote(widget.tokenMintAddress, _amountController.text as double, widget.userWalletAddress);
 
           if (quote != null) {
             print('Received 0x quote: $quote');
@@ -218,16 +210,8 @@ class _SwapTokenState extends State<SwapToken> {
         }
 
         if(widget.tokenBlockchainNetwork == 'SOL'){
-          // 1. Get the Jupiter quote via the mock GCloud function
-          // In a real app, this would be a network call to your GCloud function
-          final quoteParams = {
-            'sellToken': _solContractAddress,
-            'buyToken': widget.tokenMintAddress,
-            'amount': _amountController.text,
-            'userWalletAddress': widget.userWalletAddress,
-          };
 
-          final Map<String, dynamic> solanaQuote = await getJupiterQuote(quoteParams);
+          final Map<String, dynamic> solanaQuote = await getJupiterQuote(widget.tokenMintAddress, _amountController.text as double, widget.userWalletAddress);
 
           if (solanaQuote.containsKey('transaction')) {
             final String encodedTransaction = solanaQuote['transaction'];
