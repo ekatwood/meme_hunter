@@ -5,7 +5,10 @@ from typing import Optional, Dict, Any
 import decimal
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
+from solders.transaction import Transaction
+from solders.transaction_status import VersionedTransaction
 from spl.token.instructions import get_associated_token_address
+import base64
 from google.cloud import secretmanager
 
 # --- Helper function to get secrets from Google Cloud Secret Manager ---
@@ -227,7 +230,38 @@ def generate_jupiter_swap_tx(
 
     return swap_transaction
 
-def send_Solana_transaction():
+def send_transaction_Solana(signed_transaction_base64: str):
+    try:
+        tx_bytes = base64.b64decode(signed_transaction_base64)
+        try:
+            signed_transaction = VersionedTransaction.from_bytes(tx_bytes)
+        except Exception:
+            signed_transaction = Transaction.from_bytes(tx_bytes)
+
+        # Get the API key from Secret Manager
+        api_key = get_secret("meme_hunter", "HELIUS_API_KEY")
+
+        if not api_key:
+            print("Failed to retrieve API key from Secret Manager. Exiting.")
+            return {"error": "Failed to retrieve API key from Secret Manager. Exiting."}
+
+        RPC_URL = f"https://mainnet.helius-rpc.com/?api-key={api_key}"
+        client = Client(RPC_URL)
+
+        response = client.send_transaction(signed_transaction)
+
+        signature = str(response.value)
+
+        confirmation_response = client.confirm_transaction(signature)
+
+        if confirmation_response.value.is_err():
+            print(f"Transaction confirmation failed or timed out: {confirmation_response.value.err}")
+            return {"error": f"Transaction confirmation failed or timed out: {confirmation_response.value.err}"}
+
+        return signature
+    except Exception as e:
+        print(f"Error sending Solana transaction: {e}")
+        return {"error": f"Error sending Solana transaction: {e}"}
 
 # --- The main entry point for a single deployed function ---
 @functions_framework.http
@@ -279,5 +313,11 @@ def api_router(request):
         result = generate_jupiter_swap_tx(token, sol_amount, user_wallet)
         return {"swap_tx": result} if result is not None else "Error fetching Jupiter swap transaction", 500
 
+    elif function_name == "send_transaction_Solana":
+        tx = request_args.get("signed_transaction_base64")
+        if not tx:
+            return "Missing signed_transaction_base64 parameter", 400
+        result = send_transaction_Solana(tx)
+        return {"signature": result} if result is not None else "Error sending Solana transaction", 500
     else:
         return "Invalid function name specified", 400
