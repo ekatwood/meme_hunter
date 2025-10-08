@@ -3,4 +3,3 @@ requests
 google-cloud-secret-manager
 solana
 solders
-spl-token

@@ -7,7 +7,7 @@ from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from solders.transaction import Transaction
 from solders.transaction_status import VersionedTransaction
-from spl.token.instructions import get_associated_token_address
+#from spl.token.instructions import get_associated_token_address
 import base64
 from google.cloud import secretmanager
 
@@ -79,18 +79,19 @@ def get_balance_Solflare(wallet_address: str, contract_address: str = None):
             # Case 1: Fetch native SOL balance
             balance_in_lamports = client.get_balance(wallet_pubkey).value
             return balance_in_lamports / 10**9  # 1 SOL = 10^9 Lamports
-        else:
+        #else:
+            # Commenting out spl, it is not used yet for this app, it only checks SOL
             # Case 2: Fetch SPL token balance
-            token_mint_pubkey = Pubkey.from_string(contract_address)
-            token_account_address = get_associated_token_address(
-                wallet_pubkey, token_mint_pubkey
-            )
-            token_accounts = client.get_token_account_balance(token_account_address)
-            if token_accounts.value.ui_amount:
-                return token_accounts.value.ui_amount
-            else:
-                print("No token account balance found for the provided mint address.")
-                return 0
+#             token_mint_pubkey = Pubkey.from_string(contract_address)
+#             token_account_address = get_associated_token_address(
+#                 wallet_pubkey, token_mint_pubkey
+#             )
+#             token_accounts = client.get_token_account_balance(token_account_address)
+#             if token_accounts.value.ui_amount:
+#                 return token_accounts.value.ui_amount
+#             else:
+#                 print("No token account balance found for the provided mint address.")
+#                 return 0
     except Exception as e:
         print(f"Error fetching balance: {e}")
         return None

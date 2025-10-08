@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// TODO: add real url
-const String _baseUrl = 'https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/';
+const String _baseUrl = ' https://us-central1-meme-hunter-4f1c1.cloudfunctions.net/api_router';
 
 Future<double> getTokenPriceMoralis(String contractAddress, String blockchain) async {
     print('getTokenPriceMoralis(String contractAddress)');
-    String fullUrl = _baseUrl + "get_token_price_Moralis";
-    final uri = Uri.parse('$fullUrl?contract_address=$contractAddress&chain=$blockchain');
+    String fullUrl = _baseUrl + "?function=get_token_price_Moralis";
+    final uri = Uri.parse('$fullUrl&contract_address=$contractAddress&chain=$blockchain');
 
     try {
         final response = await http.get(uri);
@@ -31,7 +30,7 @@ Future<double> getTokenPriceMoralis(String contractAddress, String blockchain) a
 Future<double> getBalanceSolflare(String walletAddress) async {
     print('getBalanceSolflare(String contractAddress)');
 
-    String fullUrl = _baseUrl + "get_balance_Solflare";
+    String fullUrl = _baseUrl + "?function=get_balance_Solflare";
     final uri = Uri.parse('$fullUrl?wallet_address=$walletAddress');
 
     try {
@@ -54,7 +53,8 @@ Future<double> getBalanceSolflare(String walletAddress) async {
 }
 
 Future<Map<String, dynamic>> get0xQuote(String tokenContractAddress, double WETHAmountToSpend, String takerAddress) async {
-    String fullUrl = _baseUrl + "get_0x_swap_quote";
+    print('get0xQuote(String tokenContractAddress, double WETHAmountToSpend, String takerAddress)');
+    String fullUrl = _baseUrl + "?function=get_0x_swap_quote";
     final uri = Uri.parse('$fullUrl?token_contract_address=$tokenContractAddress&weth_amount_to_spend=$WETHAmountToSpend&taker_address=$takerAddress');
 
     try {
@@ -77,7 +77,8 @@ Future<Map<String, dynamic>> get0xQuote(String tokenContractAddress, double WETH
 }
 
 Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLAmountToSell, String userWalletAddress) async {
-    String fullUrl = _baseUrl + "generate_jupiter_swap_tx";
+    print('getJupiterQuote(String outputTokenMint, double SOLAmountToSell, String userWalletAddress)');
+    String fullUrl = _baseUrl + "?function=generate_jupiter_swap_tx";
     final uri = Uri.parse('$fullUrl?output_token_mint=$outputTokenMint&sol_amount_to_sell=$SOLAmountToSell&user_wallet_address=$userWalletAddress');
 
     try {
@@ -100,7 +101,8 @@ Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLA
 }
 
 Future <String> sendTransactionSolana(String signedTransactionBase64) async {
-    String fullUrl = _baseUrl + "send_transaction_Solana";
+    print('sendTransactionSolana(String signedTransactionBase64)');
+    String fullUrl = _baseUrl + "?function=send_transaction_Solana";
     final uri = Uri.parse('$fullUrl?signed_transaction_base64=$signedTransactionBase64');
 
     try {
