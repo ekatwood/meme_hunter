@@ -85,12 +85,17 @@ class _SwapTokenState extends State<SwapToken> {
   }
 
   Future<double?> _getBalanceSolflare(String contractAddress) async {
-    print('_getBalanceSolflare(String contractAddress)');
-    return getBalanceSolflare(contractAddress);
+    try {
+      double balance = await getBalanceSolflare(contractAddress);
+      return balance;
+    } catch (e) {
+      print('Error getting balance in _getBalanceSolflare: $e');
+      return null;
+      // OR re-throw e;
+    }
   }
 
   Future<void> _fetchBalancesAndPrices() async {
-    print('_fetchBalancesAndPrices()');
     setState(() {
       _isLoadingBalance = true;
       _isLoadingPrice = true;
@@ -110,8 +115,6 @@ class _SwapTokenState extends State<SwapToken> {
       purchaseTokenAddress = _solContractAddress;
       purchaseTokenSymbol = 'SOL';
     }
-    print('purchaseTokenAddress: ' + purchaseTokenAddress!);
-    print('purchaseTokenSymbol: ' + purchaseTokenSymbol!);
 
     if (purchaseTokenAddress != null && widget.userWalletAddress.isNotEmpty) {
       // Fetch balance
@@ -122,7 +125,7 @@ class _SwapTokenState extends State<SwapToken> {
           _isLoadingBalance = false;
         });
       } else if (widget.walletProvider == 'Solflare' && widget.tokenBlockchainNetwork == 'SOL') {
-        final balance = await _getBalanceSolflare(purchaseTokenAddress);
+        final balance = await _getBalanceSolflare(widget.userWalletAddress);
         setState(() {
           _availablePurchaseTokenBalance = balance;
           _isLoadingBalance = false;
@@ -135,13 +138,13 @@ class _SwapTokenState extends State<SwapToken> {
 
       // Fetch price
       if (widget.tokenBlockchainNetwork == 'ETH' && widget.walletProvider == 'MetaMask') {
-        final price = getTokenPriceMoralis(purchaseTokenAddress,'eth');
+        final price = await getTokenPriceMoralis(purchaseTokenAddress,'eth');
         setState(() {
           _purchaseTokenPriceUSD = price as double?;
           _isLoadingPrice = false;
         });
       } else if (widget.tokenBlockchainNetwork == 'SOL' && widget.walletProvider == 'Solflare') {
-        final price = getTokenPriceMoralis(purchaseTokenAddress,'sol');
+        final price = await getTokenPriceMoralis(purchaseTokenAddress,'sol');
         setState(() {
           _purchaseTokenPriceUSD = price as double?;
           _isLoadingPrice = false;

@@ -1,17 +1,18 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const String _baseUrl = ' https://us-central1-meme-hunter-4f1c1.cloudfunctions.net/api_router';
+const String _baseUrl = 'https://us-central1-meme-hunter-4f1c1.cloudfunctions.net/api_router';
 
 Future<double> getTokenPriceMoralis(String contractAddress, String blockchain) async {
-    print('getTokenPriceMoralis(String contractAddress)');
-    String fullUrl = _baseUrl + "?function=get_token_price_Moralis";
-    final uri = Uri.parse('$fullUrl&contract_address=$contractAddress&chain=$blockchain');
+    String fullUrl = _baseUrl + '?function=get_token_price_Moralis';
+    final urlString = fullUrl + '&contract_address=$contractAddress&chain=$blockchain';
 
     try {
+        final uri = Uri.parse(urlString);
         final response = await http.get(uri);
 
         if (response.statusCode == 200) {
+            print('response 200 from gcloud function');
             final jsonResponse = jsonDecode(response.body);
             // The function returns a JSON object with the balance.
             return jsonResponse['token_price'] as double;
@@ -28,12 +29,11 @@ Future<double> getTokenPriceMoralis(String contractAddress, String blockchain) a
 }
 
 Future<double> getBalanceSolflare(String walletAddress) async {
-    print('getBalanceSolflare(String contractAddress)');
-
-    String fullUrl = _baseUrl + "?function=get_balance_Solflare";
-    final uri = Uri.parse('$fullUrl?wallet_address=$walletAddress');
+    String fullUrl = _baseUrl + '?function=get_balance_Solflare';
+    final urlString = fullUrl + '&wallet_address=$walletAddress';
 
     try {
+        final uri = Uri.parse(urlString);
         final response = await http.get(uri);
 
         if (response.statusCode == 200) {

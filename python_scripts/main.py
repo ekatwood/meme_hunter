@@ -11,6 +11,13 @@ from solders.transaction_status import VersionedTransaction
 import base64
 from google.cloud import secretmanager
 
+CORS_HEADERS = {
+    'Access-Control-Allow-Origin': '*', # Allows all origins for development
+    'Access-Control-Allow-Methods': 'GET, OPTIONS', # Allow the methods you use
+    'Access-Control-Allow-Headers': 'Content-Type', # Allow Content-Type header
+    'Access-Control-Max-Age': '3600' # Cache preflight response for 1 hour
+}
+
 # --- Helper function to get secrets from Google Cloud Secret Manager ---
 def get_secret(project_id: str, secret_id: str):
 
@@ -74,7 +81,7 @@ def get_balance_Solflare(wallet_address: str, contract_address: str = None):
         RPC_URL = f"https://mainnet.helius-rpc.com/?api-key={api_key}"
         client = Client(RPC_URL)
         wallet_pubkey = Pubkey.from_string(wallet_address)
-
+        print('got here')
         if not contract_address:
             # Case 1: Fetch native SOL balance
             balance_in_lamports = client.get_balance(wallet_pubkey).value
@@ -267,58 +274,80 @@ def send_transaction_Solana(signed_transaction_base64: str):
 # --- The main entry point for a single deployed function ---
 @functions_framework.http
 def api_router(request):
-    request_args = request.args
+
+    # --- 1. HANDLE CORS PRE-FLIGHT REQUEST ---
+    if request.method == 'OPTIONS':
+        # Send a 204 No Content response with CORS headers
+        return ('', 204, CORS_HEADERS)
+    # --- 2. HANDLE MAIN REQUEST ---
+
+    # Check if we have arguments (from GET request URL)
+    if request.args:
+        request_args = request.args
+    else:
+        # Check if we have a JSON body (for POST request, though not used here)
+        try:
+            request_json = request.get_json(silent=True)
+            request_args = request_json
+        except:
+            return ("Invalid request format", 400, CORS_HEADERS)
+
     function_name = request_args.get("function", "")
+
+    if not function_name:
+        return ("Missing function parameter", 400, CORS_HEADERS)
 
     if function_name == "get_token_price_Moralis":
         contract = request_args.get("contract_address")
         chain = request_args.get("chain")
         if not contract:
-            return "Missing contract parameter", 400
+            return ("Missing contract parameter", 400, CORS_HEADERS)
         if not chain:
-            return "Missing chain parameter", 400
+            return ("Missing chain parameter", 400, CORS_HEADERS)
         result = get_token_price_Moralis(contract, chain)
-        return {"token_price": result} if result is not None else "Error fetching token price", 500
+        return ({"token_price": result}, 200, CORS_HEADERS) if result is not None else ("Error fetching token price", 500, CORS_HEADERS)
 
     elif function_name == "get_balance_Solflare":
+        print('in api_router, function = get_balance_Solflare')
         wallet = request_args.get("wallet_address")
         contract = request_args.get("contract_address")
         if not wallet:
-            return "Missing wallet_address parameter", 400
+            return ("Missing wallet_address parameter", 400, CORS_HEADERS)
+        print('wallet = ' + wallet)
         result = get_balance_Solflare(wallet, contract)
-        return {"balance": result} if result is not None else "Error fetching balance", 500
+        return ({"balance": result}, 200, CORS_HEADERS) if result is not None else ("Error fetching balance", 500, CORS_HEADERS)
 
     elif function_name == "get_0x_swap_quote":
         token = request_args.get("token_contract_address")
         weth_amount = request_args.get("weth_amount_to_spend")
         taker = request_args.get("taker_address")
         if not token:
-            return "Missing token parameter", 400
+            return ("Missing token parameter", 400, CORS_HEADERS)
         if not weth_amount:
-            return "Missing weth_amount parameter", 400
+            return ("Missing weth_amount parameter", 400, CORS_HEADERS)
         if not taker:
-            return "Missing taker parameter", 400
+            return ("Missing taker parameter", 400, CORS_HEADERS)
         result = get_0x_swap_quote(token, weth_amount, taker)
-        return {"quote": result} if result is not None else "Error fetching 0x quote", 500
+        return ({"quote": result}, 200, CORS_HEADERS) if result is not None else ("Error fetching 0x quote", 500, CORS_HEADERS)
 
     elif function_name == "generate_jupiter_swap_tx":
         token = request_args.get("output_token_mint")
         sol_amount = request_args.get("sol_amount_to_sell")
         user_wallet = request_args.get("user_wallet_address")
         if not token:
-            return "Missing token parameter", 400
+            return ("Missing token parameter", 400, CORS_HEADERS)
         if not sol_amount:
-            return "Missing sol_amount parameter", 400
+            return ("Missing sol_amount parameter", 400, CORS_HEADERS)
         if not user_wallet:
-            return "Missing user_wallet parameter", 400
+            return ("Missing user_wallet parameter", 400, CORS_HEADERS)
         result = generate_jupiter_swap_tx(token, sol_amount, user_wallet)
-        return {"swap_tx": result} if result is not None else "Error fetching Jupiter swap transaction", 500
+        return ({"swap_tx": result}, 200, CORS_HEADERS) if result is not None else ("Error fetching Jupiter swap transaction", 500, CORS_HEADERS)
 
     elif function_name == "send_transaction_Solana":
         tx = request_args.get("signed_transaction_base64")
         if not tx:
-            return "Missing signed_transaction_base64 parameter", 400
+            return ("Missing signed_transaction_base64 parameter", 400, CORS_HEADERS)
         result = send_transaction_Solana(tx)
-        return {"signature": result} if result is not None else "Error sending Solana transaction", 500
+        return ({"signature": result}, 200, CORS_HEADERS) if result is not None else ("Error sending Solana transaction", 500, CORS_HEADERS)
     else:
-        return "Invalid function name specified", 400
+        return ("Invalid function name specified", 400, CORS_HEADERS)
