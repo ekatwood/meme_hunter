@@ -185,8 +185,6 @@ class _SwapTokenState extends State<SwapToken> {
   }
 
   Future<void> _performSwap() async {
-    print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
-    print('Amount to swap: ${_amountController.text}');
 
     final double? amountToSwap = double.tryParse(_amountController.text);
 
@@ -206,7 +204,6 @@ class _SwapTokenState extends State<SwapToken> {
             // 3. Convert the prepared transaction object (tx) to a JavaScript-compatible format
             final jsTx = js_util.jsify(tx);
 
-            print('Received 0x quote: $quote');
             // Step 2: Use the quote to prompt the user to sign the transaction with MetaMask
             final dynamic txHash = await js_util.promiseToFuture(
               js_util.callMethod(
@@ -234,14 +231,15 @@ class _SwapTokenState extends State<SwapToken> {
             print("Received Solana transaction from GCloud function: " + encodedTransaction);
 
             // 2. Call the JavaScript function `signAndSendTransactionSolana` to interact with the wallet
-            final jsTransactionSignature = await js_util.callMethod(
+            final jsSignedTransaction = await js_util.callMethod(
               html.window,
-              'signAndSendTransactionSolana',
+              'signTransactionSolana',
               [encodedTransaction],
             );
 
-            if (jsTransactionSignature != null) {
-              print("Swap successful! Transaction signature: $jsTransactionSignature");
+            if (jsSignedTransaction != null) {
+              print("Sending Solana transaction via gcloud");
+              final signature = await sendTransactionSolana(jsSignedTransaction.toString());
             } else {
               print("Swap failed: Transaction was not signed or sent.");
             }

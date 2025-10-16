@@ -22,7 +22,7 @@ async function connectSolflare() {
  * @param {string} base64Transaction - A base64-encoded string of the Solana transaction.
  * @returns {Promise<string|null>} The transaction signature if successful, null otherwise.
  */
-async function signAndSendTransactionSolana(base64Transaction) {
+async function signTransactionSolana(base64Transaction) {
   try {
     if (!window.solflare) {
       console.error("Solflare not detected.");
@@ -48,34 +48,13 @@ async function signAndSendTransactionSolana(base64Transaction) {
     console.log("Solflare signed the transaction.");
 
     // Serialize the signed transaction to base64 using the global bs58 object
-    // A script tag for bs58 must be in your index.html
     const serializedTransaction = bs58.encode(signedTransaction.serialize());
 
-    // Call the GCloud Function to send the transaction
-    const gcloudUrl = "YOUR_GCLOUD_FUNCTION_URL_HERE";
-    const response = await fetch(gcloudUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        transaction: serializedTransaction
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const responseData = await response.json();
-
-    console.log("Transaction result from GCloud:", responseData);
-
     // Assuming the GCloud function returns the signature
-    return responseData.signature;
+    return serializedTransaction;
 
   } catch (error) {
-    console.error("Error signing and sending Solana transaction:", error);
+    console.error("Error signing Solana transaction:", error);
     if (error.code === 4001 || error.message.includes("User rejected")) {
       console.warn("Solflare user rejected the transaction.");
     }

@@ -107,7 +107,6 @@ Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLA
 }
 
 Future <String> sendTransactionSolana(String signedTransactionBase64) async {
-    print('sendTransactionSolana(String signedTransactionBase64)');
     String fullUrl = _baseUrl + "?function=send_transaction_Solana";
     final uri = Uri.parse('$fullUrl&signed_transaction_base64=$signedTransactionBase64');
 
