@@ -78,7 +78,6 @@ Future<Map<String, dynamic>> get0xQuote(String tokenContractAddress, double WETH
 }
 
 Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLAmountToSell, String userWalletAddress) async {
-    print('getJupiterQuote(String outputTokenMint, double SOLAmountToSell, String userWalletAddress)');
     // Perform the calculation (1 SOL = 10^9 Lamports)
     const int solDecimals = 9;
     // We use .round() to ensure correct integer conversion after multiplication
@@ -89,7 +88,6 @@ Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLA
     final uri = Uri.parse('$fullUrl&output_token_mint=$outputTokenMint&lamport_amount_to_sell=$lamportAmountToSell&user_wallet_address=$userWalletAddress');
 
     try {
-        print('uri = ' + uri.toString());
         final response = await http.get(uri);
 
         if (response.statusCode == 200) {

@@ -229,8 +229,8 @@ class _SwapTokenState extends State<SwapToken> {
 
           final Map<String, dynamic> solanaQuote = await getJupiterQuote(widget.tokenMintAddress, amountToSwap!, widget.userWalletAddress);
 
-          if (solanaQuote.containsKey('transaction')) {
-            final String encodedTransaction = solanaQuote['transaction'];
+          if (solanaQuote.containsKey('swapTransaction')) {
+            final String encodedTransaction = solanaQuote['swapTransaction'];
             print("Received Solana transaction from GCloud function: " + encodedTransaction);
 
             // 2. Call the JavaScript function `signAndSendTransactionSolana` to interact with the wallet

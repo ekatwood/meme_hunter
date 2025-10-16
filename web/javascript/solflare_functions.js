@@ -39,7 +39,9 @@ async function signAndSendTransactionSolana(base64Transaction) {
     }
 
     // Deserialize the byte array back into a Transaction object
-    const transaction = solanaWeb3.Transaction.from(decodedBytes);
+    const transaction = solanaWeb3.VersionedTransaction.deserialize(decodedBytes);
+
+    console.log("Deserialized transaction successfully.");
 
     // Sign the transaction with Solflare
     const signedTransaction = await window.solflare.signTransaction(transaction);

@@ -175,16 +175,13 @@ def get_0x_swap_quote(token_contract_address, weth_amount_to_spend, taker_addres
         return {"error": f"Invalid input: {e}"}
 
 def generate_jupiter_swap_tx(output_token_mint: str, lamport_amount_to_sell: int, user_wallet_address: str):
-    print('in generate_jupiter_swap_tx')
     JUPITER_API_BASE_URL = "https://lite-api.jup.ag/swap/v1"
     SOL_MINT_ADDRESS = "So11111111111111111111111111111111111111112"
     # 0.25% in Basis Points (1 bp = 0.01%)
     FEE_BPS = 25
     # Standard SOL decimals
     SOL_DECIMALS = 9
-    # 1. Convert SOL amount to Lamports (1 SOL = 10^9 Lamports)
-    # amount_in_lamports = int(sol_amount_to_sell * (10 ** SOL_DECIMALS))
-    print('lamport_amount_to_sell = ' + str(lamport_amount_to_sell))
+
     quote_url = f"{JUPITER_API_BASE_URL}/quote"
     quote_params = {
         "inputMint": SOL_MINT_ADDRESS,
@@ -210,7 +207,7 @@ def generate_jupiter_swap_tx(output_token_mint: str, lamport_amount_to_sell: int
     swap_url = f"{JUPITER_API_BASE_URL}/swap"
     # Get fee account address from Secret Manager
     fee_recipient_address = get_secret("meme_hunter", "JUPITER_FEE_RECIPIENT_ADDRESS")
-    print('fee_recipient_address = ' + fee_recipient_address)
+
     if not fee_recipient_address:
         print("Failed to retrieve fee receipient address from Secret Manager. Exiting.")
         return {"error": "Failed to retrieve fee receipient address from Secret Manager. Exiting."}
@@ -222,7 +219,6 @@ def generate_jupiter_swap_tx(output_token_mint: str, lamport_amount_to_sell: int
     }
 
     try:
-        print('attempting requests.post')
         response = requests.post(
             swap_url,
             headers={"Content-Type": "application/json"},
@@ -234,7 +230,6 @@ def generate_jupiter_swap_tx(output_token_mint: str, lamport_amount_to_sell: int
         print(f"Error generating swap transaction: {e}")
         return {"error": f"Error generating swap transaction: {e}"}
 
-    print('swap_transaction = ' + json.dumps(swap_transaction))
     return swap_transaction
 
 def send_transaction_Solana(signed_transaction_base64: str):
@@ -343,10 +338,7 @@ def api_router(request):
             lamport_amount_int = int(lamport_amount_str)
         except ValueError:
             return ("Invalid lamport amount format: must be an integer string.", 400, CORS_HEADERS)
-        print('calling generate_jupiter_swap_tx')
-        print('token = ' + token)
-        print('lamport_amount_int = ' + str(lamport_amount_int))
-        print('user_wallet = ' + user_wallet)
+
         result = generate_jupiter_swap_tx(token, lamport_amount_int, user_wallet)
         return ({"swap_tx": result}, 200, CORS_HEADERS) if result is not None else ("Error fetching Jupiter swap transaction", 500, CORS_HEADERS)
 
