@@ -13,7 +13,7 @@ from google.cloud import secretmanager
 
 CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*', # Allows all origins for development
-    'Access-Control-Allow-Methods': 'GET, OPTIONS', # Allow the methods you use
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', # Allow the methods you use
     'Access-Control-Allow-Headers': 'Content-Type', # Allow Content-Type header
     'Access-Control-Max-Age': '3600' # Cache preflight response for 1 hour
 }
@@ -174,12 +174,8 @@ def get_0x_swap_quote(token_contract_address, weth_amount_to_spend, taker_addres
         print(f"Invalid input: {e}")
         return {"error": f"Invalid input: {e}"}
 
-def generate_jupiter_swap_tx(
-    output_token_mint: str,
-    sol_amount_to_sell: float,
-    user_wallet_address: str,
-) -> Optional[Dict[str, Any]]:
-
+def generate_jupiter_swap_tx(output_token_mint: str, lamport_amount_to_sell: int, user_wallet_address: str):
+    print('in generate_jupiter_swap_tx')
     JUPITER_API_BASE_URL = "https://lite-api.jup.ag/swap/v1"
     SOL_MINT_ADDRESS = "So11111111111111111111111111111111111111112"
     # 0.25% in Basis Points (1 bp = 0.01%)
@@ -187,13 +183,13 @@ def generate_jupiter_swap_tx(
     # Standard SOL decimals
     SOL_DECIMALS = 9
     # 1. Convert SOL amount to Lamports (1 SOL = 10^9 Lamports)
-    amount_in_lamports = int(sol_amount_to_sell * (10 ** SOL_DECIMALS))
-
+    # amount_in_lamports = int(sol_amount_to_sell * (10 ** SOL_DECIMALS))
+    print('lamport_amount_to_sell = ' + str(lamport_amount_to_sell))
     quote_url = f"{JUPITER_API_BASE_URL}/quote"
     quote_params = {
         "inputMint": SOL_MINT_ADDRESS,
         "outputMint": output_token_mint,
-        "amount": amount_in_lamports,
+        "amount": lamport_amount_to_sell,
         "platformFeeBps": FEE_BPS,
     }
 
@@ -204,6 +200,7 @@ def generate_jupiter_swap_tx(
     except requests.exceptions.RequestException as e:
         print(f"Error fetching quote: {e}")
         return {"error": f"Error fetching quote: {e}"}
+    print('quote_response = ' + json.dumps(quote_response))
 
     if not quote_response.get("outAmount"):
         print("Quote response did not return a valid route or outAmount.")
@@ -213,7 +210,7 @@ def generate_jupiter_swap_tx(
     swap_url = f"{JUPITER_API_BASE_URL}/swap"
     # Get fee account address from Secret Manager
     fee_recipient_address = get_secret("meme_hunter", "JUPITER_FEE_RECIPIENT_ADDRESS")
-
+    print('fee_recipient_address = ' + fee_recipient_address)
     if not fee_recipient_address:
         print("Failed to retrieve fee receipient address from Secret Manager. Exiting.")
         return {"error": "Failed to retrieve fee receipient address from Secret Manager. Exiting."}
@@ -225,6 +222,7 @@ def generate_jupiter_swap_tx(
     }
 
     try:
+        print('attempting requests.post')
         response = requests.post(
             swap_url,
             headers={"Content-Type": "application/json"},
@@ -236,6 +234,7 @@ def generate_jupiter_swap_tx(
         print(f"Error generating swap transaction: {e}")
         return {"error": f"Error generating swap transaction: {e}"}
 
+    print('swap_transaction = ' + json.dumps(swap_transaction))
     return swap_transaction
 
 def send_transaction_Solana(signed_transaction_base64: str):
@@ -332,15 +331,23 @@ def api_router(request):
 
     elif function_name == "generate_jupiter_swap_tx":
         token = request_args.get("output_token_mint")
-        sol_amount = request_args.get("sol_amount_to_sell")
+        lamport_amount_str = request_args.get("lamport_amount_to_sell")
         user_wallet = request_args.get("user_wallet_address")
         if not token:
             return ("Missing token parameter", 400, CORS_HEADERS)
-        if not sol_amount:
-            return ("Missing sol_amount parameter", 400, CORS_HEADERS)
+        if not lamport_amount_str:
+            return ("Missing lamport_amount_str parameter", 400, CORS_HEADERS)
         if not user_wallet:
             return ("Missing user_wallet parameter", 400, CORS_HEADERS)
-        result = generate_jupiter_swap_tx(token, sol_amount, user_wallet)
+        try:
+            lamport_amount_int = int(lamport_amount_str)
+        except ValueError:
+            return ("Invalid lamport amount format: must be an integer string.", 400, CORS_HEADERS)
+        print('calling generate_jupiter_swap_tx')
+        print('token = ' + token)
+        print('lamport_amount_int = ' + str(lamport_amount_int))
+        print('user_wallet = ' + user_wallet)
+        result = generate_jupiter_swap_tx(token, lamport_amount_int, user_wallet)
         return ({"swap_tx": result}, 200, CORS_HEADERS) if result is not None else ("Error fetching Jupiter swap transaction", 500, CORS_HEADERS)
 
     elif function_name == "send_transaction_Solana":

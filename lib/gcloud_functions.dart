@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:http/http.dart' as http;
 
 const String _baseUrl = 'https://us-central1-meme-hunter-4f1c1.cloudfunctions.net/api_router';
@@ -55,7 +56,7 @@ Future<double> getBalanceSolflare(String walletAddress) async {
 Future<Map<String, dynamic>> get0xQuote(String tokenContractAddress, double WETHAmountToSpend, String takerAddress) async {
     print('get0xQuote(String tokenContractAddress, double WETHAmountToSpend, String takerAddress)');
     String fullUrl = _baseUrl + "?function=get_0x_swap_quote";
-    final uri = Uri.parse('$fullUrl?token_contract_address=$tokenContractAddress&weth_amount_to_spend=$WETHAmountToSpend&taker_address=$takerAddress');
+    final uri = Uri.parse('$fullUrl&token_contract_address=$tokenContractAddress&weth_amount_to_spend=$WETHAmountToSpend&taker_address=$takerAddress');
 
     try {
         final response = await http.get(uri);
@@ -78,10 +79,17 @@ Future<Map<String, dynamic>> get0xQuote(String tokenContractAddress, double WETH
 
 Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLAmountToSell, String userWalletAddress) async {
     print('getJupiterQuote(String outputTokenMint, double SOLAmountToSell, String userWalletAddress)');
+    // Perform the calculation (1 SOL = 10^9 Lamports)
+    const int solDecimals = 9;
+    // We use .round() to ensure correct integer conversion after multiplication
+    final int lamportAmountToSell = (SOLAmountToSell * math.pow(10, solDecimals)).round();
+
     String fullUrl = _baseUrl + "?function=generate_jupiter_swap_tx";
-    final uri = Uri.parse('$fullUrl?output_token_mint=$outputTokenMint&sol_amount_to_sell=$SOLAmountToSell&user_wallet_address=$userWalletAddress');
+    // Change parameter name in the URI to reflect Lamports
+    final uri = Uri.parse('$fullUrl&output_token_mint=$outputTokenMint&lamport_amount_to_sell=$lamportAmountToSell&user_wallet_address=$userWalletAddress');
 
     try {
+        print('uri = ' + uri.toString());
         final response = await http.get(uri);
 
         if (response.statusCode == 200) {
@@ -103,7 +111,7 @@ Future<Map<String, dynamic>> getJupiterQuote(String outputTokenMint, double SOLA
 Future <String> sendTransactionSolana(String signedTransactionBase64) async {
     print('sendTransactionSolana(String signedTransactionBase64)');
     String fullUrl = _baseUrl + "?function=send_transaction_Solana";
-    final uri = Uri.parse('$fullUrl?signed_transaction_base64=$signedTransactionBase64');
+    final uri = Uri.parse('$fullUrl&signed_transaction_base64=$signedTransactionBase64');
 
     try {
         final response = await http.get(uri);

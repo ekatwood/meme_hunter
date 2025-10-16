@@ -67,7 +67,6 @@ class _SwapTokenState extends State<SwapToken> {
   }
 
   Future<double?> _getBalanceMetaMask(String walletAddress, String contractAddress) async {
-    print('_getBalanceMetaMask(String walletAddress, String contractAddress)');
     try {
       final dynamic result = await js_util.promiseToFuture(
         js_util.callMethod(html.window, 'getBalanceMetaMask', [walletAddress, contractAddress]),
@@ -77,6 +76,7 @@ class _SwapTokenState extends State<SwapToken> {
       } else if (result is int) {
         return result.toDouble();
       }
+
       return double.tryParse(result);
     } catch (e) {
       print("Error calling getBalanceMetaMask: $e");
@@ -86,8 +86,10 @@ class _SwapTokenState extends State<SwapToken> {
 
   Future<double?> _getBalanceSolflare(String contractAddress) async {
     try {
-      double balance = await getBalanceSolflare(contractAddress);
-      return balance;
+      //double balance = await getBalanceSolflare(contractAddress);
+      print('unit testing: SOL = 1');
+      return 1.1;
+      //return balance;
     } catch (e) {
       print('Error getting balance in _getBalanceSolflare: $e');
       return null;
@@ -186,18 +188,29 @@ class _SwapTokenState extends State<SwapToken> {
     print('Token to swap: ${widget.tokenSymbol} (${widget.tokenMintAddress}) on ${widget.tokenBlockchainNetwork}');
     print('Amount to swap: ${_amountController.text}');
 
+    final double? amountToSwap = double.tryParse(_amountController.text);
+
     if(widget.tokenBlockchainNetwork == 'ETH' || widget.tokenBlockchainNetwork == 'SOL'){
       try {
         if (widget.tokenBlockchainNetwork == 'ETH') {
           // Step 1: Call the GCloud function (now in Dart) to get the 0x quote
-          final quote = await get0xQuote(widget.tokenMintAddress, _amountController.text as double, widget.userWalletAddress);
+          final quote = await get0xQuote(widget.tokenMintAddress, amountToSwap!, widget.userWalletAddress);
 
           if (quote != null) {
+
+            Map<String, dynamic> tx = (quote as Map)['transaction'] as Map<String, dynamic>;
+
+            // 2. Add the user's wallet address as the required 'from' field
+            tx['from'] = widget.userWalletAddress; // THIS IS THE KEY FIX
+
+            // 3. Convert the prepared transaction object (tx) to a JavaScript-compatible format
+            final jsTx = js_util.jsify(tx);
+
             print('Received 0x quote: $quote');
             // Step 2: Use the quote to prompt the user to sign the transaction with MetaMask
             final dynamic txHash = await js_util.promiseToFuture(
               js_util.callMethod(
-                  html.window, 'sendTransaction', [js_util.jsify(quote)]),
+                  html.window, 'sendTransaction', [jsTx]),
             );
 
             if (txHash != null) {
@@ -214,11 +227,11 @@ class _SwapTokenState extends State<SwapToken> {
 
         if(widget.tokenBlockchainNetwork == 'SOL'){
 
-          final Map<String, dynamic> solanaQuote = await getJupiterQuote(widget.tokenMintAddress, _amountController.text as double, widget.userWalletAddress);
+          final Map<String, dynamic> solanaQuote = await getJupiterQuote(widget.tokenMintAddress, amountToSwap!, widget.userWalletAddress);
 
           if (solanaQuote.containsKey('transaction')) {
             final String encodedTransaction = solanaQuote['transaction'];
-            print("Received Solana transaction from GCloud function. Sending to Solflare...");
+            print("Received Solana transaction from GCloud function: " + encodedTransaction);
 
             // 2. Call the JavaScript function `signAndSendTransactionSolana` to interact with the wallet
             final jsTransactionSignature = await js_util.callMethod(
