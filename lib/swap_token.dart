@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:js_util' as js_util;
 import 'dart:html' as html;
 import 'gcloud_functions.dart'; // Import for getTokenPriceMoralis and getTokenPriceMoralisSOL
+import 'transaction_confirmation_dialog.dart';
 import 'package:flutter/services.dart'; // For TextInputFormatter
 
 /// A widget that displays an interface for the user to swap a token.
@@ -184,6 +185,21 @@ class _SwapTokenState extends State<SwapToken> {
     setState(() {});
   }
 
+  /// Helper function to show the transaction confirmation dialog
+  void _showConfirmationDialog(String hash, String network) {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        // Pass the transaction hash and the network type
+        return TransactionConfirmationDialog(
+          txHash: hash,
+          network: network,
+        );
+      },
+    );
+  }
+
   Future<void> _performSwap() async {
 
     final double? amountToSwap = double.tryParse(_amountController.text);
@@ -212,7 +228,8 @@ class _SwapTokenState extends State<SwapToken> {
 
             if (txHash != null) {
               print('Transaction successful! Hash: $txHash');
-              // You can now display a success message to the user
+              // Display the success dialog for ETH transactions
+              _showConfirmationDialog(txHash.toString(), 'ETH');
             } else {
               print('Transaction failed or was rejected.');
               // Display an error message to the user
@@ -240,6 +257,12 @@ class _SwapTokenState extends State<SwapToken> {
             if (jsSignedTransaction != null) {
               print("Sending Solana transaction via gcloud");
               final signature = await sendTransactionSolana(jsSignedTransaction.toString());
+
+              // Assuming 'signature' is the transaction hash/ID upon success
+              if (signature != null) {
+                print('Transaction successful! Signature: $signature');
+                // Display the success dialog for SOL transactions
+                _showConfirmationDialog(signature.toString(), 'SOL');
             } else {
               print("Swap failed: Transaction was not signed or sent.");
             }
