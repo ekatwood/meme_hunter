@@ -87,10 +87,8 @@ class _SwapTokenState extends State<SwapToken> {
 
   Future<double?> _getBalanceSolflare(String contractAddress) async {
     try {
-      //double balance = await getBalanceSolflare(contractAddress);
-      print('unit testing: SOL = 1');
-      return 1.1;
-      //return balance;
+      double balance = await getBalanceSolflare(contractAddress);
+      return balance;
     } catch (e) {
       print('Error getting balance in _getBalanceSolflare: $e');
       return null;
@@ -247,6 +245,7 @@ class _SwapTokenState extends State<SwapToken> {
             final String encodedTransaction = solanaQuote['swapTransaction'];
             print("Received Solana transaction from GCloud function: " + encodedTransaction);
 
+
             // 2. Call the JavaScript function `signAndSendTransactionSolana` to interact with the wallet
             final jsSignedTransaction = await js_util.callMethod(
               html.window,
@@ -263,6 +262,7 @@ class _SwapTokenState extends State<SwapToken> {
                 print('Transaction successful! Signature: $signature');
                 // Display the success dialog for SOL transactions
                 _showConfirmationDialog(signature.toString(), 'SOL');
+              }
             } else {
               print("Swap failed: Transaction was not signed or sent.");
             }
