@@ -88,7 +88,7 @@ class _TokenDetailsState extends State<TokenDetails> {
     final String? contractAddress = widget.tokenData.smartContract;
     if (contractAddress != null && contractAddress.isNotEmpty && contractAddress != 'N/A') {
       // TODO: use contractAddress, for now hard coding to what is in the db
-      _rawChartData = await fetchChartData('0x95af4af910c28e8ece4512bfe46f1f33687424ce');
+      _rawChartData = await fetchChartData(contractAddress);
       _applyTimeFilterAndChartData(); // Apply filter after fetching
     } else {
       _rawChartData = [];
