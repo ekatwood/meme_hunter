@@ -36,10 +36,12 @@ void copyToClipboard(String text, BuildContext context) {
 String convertTimestampToFormattedString(String timestampString) {
   try {
     DateTime dateTime = DateTime.parse(timestampString);
-    DateFormat formatter = DateFormat('EEEE, hh:mm a');
-    return formatter.format(dateTime);
+
+    DateFormat formatter = DateFormat('MMM d h:mm a');
+
+    return formatter.format(dateTime) + ' EST';
   } catch (e) {
-    // Handle any parsing errors.
+    // Handle any parsing errors gracefully.
     return 'Error converting timestamp: $e';
   }
 }
