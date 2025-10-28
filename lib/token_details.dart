@@ -1,15 +1,15 @@
 // token_details.dart
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // For network image loading
-import 'package:provider/provider.dart'; // For AuthProvider
-import 'package:flutter/services.dart'; // For Clipboard
-import 'package:syncfusion_flutter_charts/charts.dart'; // For charts
-import 'firestore_functions.dart'; // For fetchChartData
-import 'auth_provider.dart'; // For accessing connected wallet info
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'firestore_functions.dart';
+import 'auth_provider.dart';
 import 'utils.dart';
 import 'package:meme_hunter/swap_token.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp type
-import 'token_data.dart'; // NEW: Import the TokenData class
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'token_data.dart';
 
 // Chart Data Model for Syncfusion Chart
 class ChartData {
@@ -19,7 +19,6 @@ class ChartData {
 }
 
 class TokenDetails extends StatefulWidget {
-  // MODIFIED: tokenData type changed to TokenData
   final TokenData tokenData;
 
   const TokenDetails({
@@ -33,14 +32,27 @@ class TokenDetails extends StatefulWidget {
 
 class _TokenDetailsState extends State<TokenDetails> {
 
+  // NEW: Mapping from _selectedTimeFilter index to the Firestore field key
+  final List<String> _timeframeKeys = const [
+    'data_1h', // 1H (Index 0)
+    'data_6h', // 6H (Index 1)
+    'data_12h', // 12H (Index 2)
+    'data_1d', // 1D (Index 3)
+    'data_1w', // 1W (Index 4)
+    'data_2w', // 2W (Index 5)
+  ];
+
   final _wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
   // Default 6H selected, but will be overridden by cookie
   List<bool> _selectedTimeFilter = [false, true, false, false, false, false];
 
-  List<Map<String, dynamic>> _rawChartData = []; // Stores the full fetched data
+  // MODIFIED: _rawChartData is removed as data is fetched pre-thinned
   List<ChartData> _filteredChartData = []; // Stores filtered data for chart
   bool _isLoadingChartData = true;
+
+  // NEW: Reference to AuthProvider for cookie management
+  late final AuthProvider _authProvider;
 
   final _darkModeColor = Color(0xFF800020);
   final _lightModeColor = const Color(0xFFA8415B);
@@ -49,13 +61,44 @@ class _TokenDetailsState extends State<TokenDetails> {
   void initState() {
     super.initState();
     _loadChartTimePreference(); // Load preference when state initializes
-    _fetchAndSetChartData();
+    // NOTE: _fetchAndSetChartData is called after didChangeDependencies is run
+    // which is the earliest place we can safely access Provider.
+  }
+
+  // NEW: Initialize AuthProvider reference here
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize AuthProvider reference once here
+    _authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // Fetch data now that AuthProvider is initialized
+    if (_filteredChartData.isEmpty && _isLoadingChartData) {
+      _fetchAndSetChartData();
+    }
+  }
+
+  // NEW: Clean up the cookies when the widget is disposed
+  @override
+  void dispose() {
+    // Delete all possible chart data cookies for this token when the modal closes.
+    final String? contractAddress = widget.tokenData.smartContract;
+    if (contractAddress != null) {
+      for (final key in _timeframeKeys) {
+        final cookieKey = 'chartData_${contractAddress}_$key';
+        _authProvider.deleteChartDataCookie(cookieKey);
+        print('Deleted chart data cookie: $cookieKey');
+      }
+    }
+    super.dispose();
   }
 
   // New: Load chart time preference from cookie
   void _loadChartTimePreference() {
+    // The AuthProvider won't be available via Provider.of here, so we wait for didChangeDependencies.
+    // However, to keep the flow clean, we use the original approach and rely on Flutter's deferred
+    // access to Provider.
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final int? savedIndex = authProvider.getChartTimeCookie(); // Access the private method
+    final int? savedIndex = authProvider.getChartTimeCookie(); // Access the cookie
     if (savedIndex != null && savedIndex >= 0 && savedIndex < _selectedTimeFilter.length) {
       setState(() {
         _selectedTimeFilter = List.generate(_selectedTimeFilter.length, (i) => i == savedIndex);
@@ -79,20 +122,43 @@ class _TokenDetailsState extends State<TokenDetails> {
     }
   }
 
+  // MODIFIED: Function updated to use pre-thinned data and cookie cache
   Future<void> _fetchAndSetChartData() async {
     setState(() {
       _isLoadingChartData = true;
     });
 
-    // MODIFIED: Access SmartContract directly from tokenData object
     final String? contractAddress = widget.tokenData.smartContract;
+
+    // Get the currently selected key (e.g., 'data_6h')
+    final int selectedIndex = _selectedTimeFilter.indexOf(true);
+    final String timeframeKey = selectedIndex != -1 ? _timeframeKeys[selectedIndex] : _timeframeKeys[1]; // Default to 6H
+
     if (contractAddress != null && contractAddress.isNotEmpty && contractAddress != 'N/A') {
-      // TODO: use contractAddress, for now hard coding to what is in the db
-      _rawChartData = await fetchChartData(contractAddress);
-      _applyTimeFilterAndChartData(); // Apply filter after fetching
+      // MODIFIED: Pass the timeframeKey AND the cookie management functions
+      final List<Map<String, dynamic>> rawChartData = await fetchChartData(
+        contractAddress,
+        timeframeKey,
+        _authProvider.getChartDataCookie, // Pass getCookie function
+        _authProvider.setChartDataCookie, // Pass setCookie function
+      );
+
+      // Directly map the fetched, pre-thinned data
+      _filteredChartData = rawChartData.map((dataPoint) {
+        final DateTime? parsedTime = _parseDynamicTimestamp(dataPoint['timestamp']);
+        final double? value = (dataPoint['open'] as num?)?.toDouble();
+
+        if (parsedTime != null && value != null) {
+          return ChartData(parsedTime, value);
+        }
+        return null;
+      }).whereType<ChartData>().toList(); // Filter out any null entries
+
+      // Sort by time to ensure correct chart display
+      _filteredChartData.sort((a, b) => a.time.compareTo(b.time));
+
     } else {
-      _rawChartData = [];
-      // TODO: Log an error or show a message if contract address is missing
+      _filteredChartData = [];
       print('Contract address is null or empty for chart data fetch.');
     }
 
@@ -101,7 +167,7 @@ class _TokenDetailsState extends State<TokenDetails> {
     });
   }
 
-  // Helper to parse dynamic timestamp into DateTime
+  // Helper to parse dynamic timestamp into DateTime (kept as is)
   DateTime? _parseDynamicTimestamp(dynamic timestampData) {
     if (timestampData is Timestamp) { //
       return timestampData.toDate();
@@ -119,83 +185,7 @@ class _TokenDetailsState extends State<TokenDetails> {
     return null; // Return null for unsupported types
   }
 
-  void _applyTimeFilterAndChartData() {
-    if (_rawChartData.isEmpty) {
-      _filteredChartData = [];
-      return;
-    }
-
-    // Step 1: Parse all raw timestamps and find the absolute latest timestamp in your data
-    // This will be our dynamic "current" time reference
-    DateTime? latestDataTimestamp;
-    List<ChartData> tempChartData = []; // To store parsed data for finding max and then filtering
-
-    for (var dataPoint in _rawChartData) {
-      final DateTime? parsedTime = _parseDynamicTimestamp(dataPoint['timestamp']);
-      final double? value = (dataPoint['open'] as num?)?.toDouble();
-
-      if (parsedTime != null && value != null) {
-        tempChartData.add(ChartData(parsedTime, value));
-        if (latestDataTimestamp == null || parsedTime.isAfter(latestDataTimestamp)) {
-          latestDataTimestamp = parsedTime;
-        }
-      }
-    }
-
-    // If no valid timestamps found, return empty
-    if (latestDataTimestamp == null) {
-      _filteredChartData = [];
-      return;
-    }
-
-    // Step 2: Determine the start time for the filter based on the latestDataTimestamp
-    DateTime startTime;
-    int skipInterval = 1; // Default to no skipping
-
-    if (_selectedTimeFilter[0]) { // 1H
-      startTime = latestDataTimestamp.subtract(const Duration(hours: 1));
-      skipInterval = 1;
-    } else if (_selectedTimeFilter[1]) { // 6H
-      startTime = latestDataTimestamp.subtract(const Duration(hours: 6));
-      skipInterval = 3;
-    } else if (_selectedTimeFilter[2]) { // 12H
-      startTime = latestDataTimestamp.subtract(const Duration(hours: 12));
-      skipInterval = 6;
-    } else if (_selectedTimeFilter[3]) { // 1D
-      startTime = latestDataTimestamp.subtract(const Duration(days: 1));
-      skipInterval = 10;
-    } else if (_selectedTimeFilter[4]) { // 1W
-      startTime = latestDataTimestamp.subtract(const Duration(days: 7));
-      skipInterval = 27;
-    } else if (_selectedTimeFilter[5]) { // 2W
-      startTime = latestDataTimestamp.subtract(const Duration(days: 14));
-      skipInterval = 55;
-    } else { // All time (show all data if no specific filter is active or for fallback)
-      startTime = DateTime.fromMillisecondsSinceEpoch(0); // Effectively the beginning of time
-    }
-
-    // Step 3: Filter the data using the calculated startTime
-    List<ChartData> filteredByTime = tempChartData
-        .where((chartData) => chartData.time.isAfter(startTime) || chartData.time.isAtSameMomentAs(startTime))
-        .toList();
-
-    // Step 4: Sort by time to ensure correct chart display
-    filteredByTime.sort((a, b) => a.time.compareTo(b.time));
-
-    // Step 5: Apply the thinning logic
-    _filteredChartData = [];
-    if (skipInterval <= 1) {
-      _filteredChartData = filteredByTime;
-    } else {
-      for (int i = 0; i < filteredByTime.length; i++) {
-        if (i % skipInterval == 0) {
-          _filteredChartData.add(filteredByTime[i]);
-        }
-      }
-    }
-
-    setState(() {}); // Ensure UI updates
-  }
+  // DELETED: _applyTimeFilterAndChartData logic is removed as data is pre-thinned
 
   @override
   Widget build(BuildContext context) {
@@ -368,10 +358,11 @@ class _TokenDetailsState extends State<TokenDetails> {
                     for (int i = 0; i < _selectedTimeFilter.length; i++) { //
                       _selectedTimeFilter[i] = i == index; //
                     }
-                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                    authProvider.setChartTimeCookie(index); // Save the selected index to cookie
-                    _applyTimeFilterAndChartData(); // Re-apply filter
+                    // Save the selected index to cookie
+                    authProvider.setChartTimeCookie(index);
                   });
+                  // NEW: Fetch the new data from Firestore/Cache for the selected time range
+                  _fetchAndSetChartData();
                 },
                 borderRadius: BorderRadius.circular(8.0),
                 selectedColor: Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.white, // Adjusted for dark mode

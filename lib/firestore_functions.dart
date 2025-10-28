@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'token_data.dart';
+import 'dart:convert';
 
 Future<List<TokenData>> fetchDocuments() async {
   // Reference to the collection
@@ -87,18 +88,51 @@ Future<List<TokenData>> fetchSOLDocuments() async {
 }
 
 
-Future<List<Map<String, dynamic>>> fetchChartData(String contractAddress) async {
+Future<List<Map<String, dynamic>>> fetchChartData(
+    String contractAddress,
+    String timeframeKey,
+    String? Function(String) getCookie,
+    void Function(String, String) setCookie,
+    ) async {
+  final cookieKey = 'chartData_${contractAddress}_$timeframeKey';
+
+  // 1. Check Cookie Cache
+  final cachedDataString = getCookie(cookieKey);
+  if (cachedDataString != null) {
+    try {
+      // The cookie is managed by the TokenDetails lifecycle and has a 1-hour expiry.
+      // A simple existence check is sufficient for the in-session cache logic.
+      final List<dynamic> jsonList = jsonDecode(cachedDataString);
+      print('Chart data cache hit for $cookieKey. Returning cached data.');
+      return List<Map<String, dynamic>>.from(jsonList);
+    } catch (e) {
+      errorLogger('Error parsing chart data cache: $e', 'fetchChartData');
+      // Continue to fetch from Firestore if parsing fails
+    }
+  }
+
+  // 2. Fetch from Firestore if cache is missed or invalid
   try {
     final docRef = FirebaseFirestore.instance.collection('charts').doc(contractAddress);
     final docSnapshot = await docRef.get();
 
     if (docSnapshot.exists) {
       final data = docSnapshot.data();
-      if (data != null && data.containsKey('minute_data') && data['minute_data'] is List) {
-        // Cast the list to the expected type
-        return List<Map<String, dynamic>>.from(data['minute_data']);
+      if (data != null && data.containsKey(timeframeKey) && data[timeframeKey] is List) {
+        final List<Map<String, dynamic>> chartData = List<Map<String, dynamic>>.from(data[timeframeKey]);
+
+        // 3. Save to Cookie Cache
+        try {
+          final String jsonString = jsonEncode(chartData);
+          setCookie(cookieKey, jsonString);
+          print('Chart data saved to cookie for $cookieKey.');
+        } catch (e) {
+          errorLogger('Error saving chart data to cookie: $e', 'fetchChartData');
+        }
+
+        return chartData;
       } else {
-        errorLogger('Document for contractAddress $contractAddress exists but does not contain a valid minute_data array.', 'fetchChartData');
+        errorLogger('Document for contractAddress $contractAddress exists but does not contain a valid $timeframeKey array.', 'fetchChartData');
         return [];
       }
     } else {
@@ -106,7 +140,7 @@ Future<List<Map<String, dynamic>>> fetchChartData(String contractAddress) async 
       return [];
     }
   } catch (e) {
-    errorLogger('Error fetching chart data for $contractAddress: $e', 'fetchChartData');
+    errorLogger('Error fetching chart data for $contractAddress, key $timeframeKey: $e', 'fetchChartData');
     return [];
   }
 }

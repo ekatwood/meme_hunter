@@ -92,6 +92,7 @@ class AuthProvider extends ChangeNotifier {
   // New: Set chart time preference cookie
   void setChartTimeCookie(int selectedIndex) {
     if (kIsWeb) {
+      // Keeping this as 365 days as it's a user preference, not hourly data.
       final DateTime expirationDate = DateTime.now().add(const Duration(days: 365));
       html.document.cookie = 'chartTimePreference=$selectedIndex; expires=${_formatHttpDate(expirationDate)}; path=/';
     }
@@ -112,6 +113,44 @@ class AuthProvider extends ChangeNotifier {
       }
     }
     return null;
+  }
+
+  // NEW: Set chart data cookie with a 1-hour expiration.
+  void setChartDataCookie(String key, String data) {
+    if (kIsWeb) {
+      final DateTime expirationDate = DateTime.now().add(const Duration(hours: 1)); // 1-hour expiration
+      // Ensure the cookie key does not contain '=' or ';'
+      String safeKey = key.replaceAll(RegExp(r'[=;]'), '');
+      html.document.cookie = '$safeKey=$data; expires=${_formatHttpDate(expirationDate)}; path=/';
+    }
+  }
+
+  // NEW: Get chart data cookie
+  String? getChartDataCookie(String key) {
+    if (kIsWeb) {
+      final String? cookies = html.document.cookie;
+      if (cookies != null && cookies.isNotEmpty) {
+        final List<String> cookieList = cookies.split(';');
+        for (String cookie in cookieList) {
+          final List<String> parts = cookie.trim().split('=');
+          // Match the cookie key
+          if (parts.length == 2 && parts[0] == key.replaceAll(RegExp(r'[=;]'), '')) {
+            return parts[1];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  // NEW: Delete chart data cookie
+  void deleteChartDataCookie(String key) {
+    if (kIsWeb) {
+      // Set expiration to a past date to force deletion
+      final DateTime pastDate = DateTime.now().subtract(const Duration(days: 1));
+      String safeKey = key.replaceAll(RegExp(r'[=;]'), '');
+      html.document.cookie = '$safeKey=; expires=${_formatHttpDate(pastDate)}; path=/';
+    }
   }
   // --- End Cookie Management Functions ---
 
