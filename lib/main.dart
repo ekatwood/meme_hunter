@@ -101,7 +101,7 @@ class _TokenQuestPageState extends State<TokenQuestPage> {
   // Timestamps to track when the data was last fetched/cached for each blockchain
   String? _ethereumFetchTimestamp;
   String? _solanaFetchTimestamp;
-  String? _timestamp; // This variable is not needed anymore
+  String? _timestamp;
 
   // Cache duration in hours
   static const int _cacheDurationHours = 12;

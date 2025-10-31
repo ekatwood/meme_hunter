@@ -17,10 +17,10 @@ async function connectSolflare() {
 }
 
 /**
- * Signs a Solana transaction using the Solflare wallet and sends it to a
- * Google Cloud Function for broadcast.
+ * Signs a Solana transaction using the Solflare wallet and returns the Base64-encoded,
+ * fully signed transaction for subsequent broadcast via the GCloud function.
  * @param {string} base64Transaction - A base64-encoded string of the Solana transaction.
- * @returns {Promise<string|null>} The transaction signature if successful, null otherwise.
+ * @returns {Promise<string|null>} The Base64 serialized transaction if successful, null otherwise.
  */
 async function signTransactionSolana(base64Transaction) {
   try {
@@ -38,7 +38,8 @@ async function signTransactionSolana(base64Transaction) {
       return null;
     }
 
-    // Deserialize the byte array back into a Transaction object
+    // Deserialize the byte array back into a VersionedTransaction object
+    // This is correct as Jupiter returns a V0 transaction
     const transaction = solanaWeb3.VersionedTransaction.deserialize(decodedBytes);
 
     console.log("Deserialized transaction successfully.");
@@ -47,11 +48,13 @@ async function signTransactionSolana(base64Transaction) {
     const signedTransaction = await window.solflare.signTransaction(transaction);
     console.log("Solflare signed the transaction.");
 
-    // Serialize the signed transaction to base64 using the global bs58 object
-    const serializedTransaction = bs58.encode(signedTransaction.serialize());
+    // --- FIX APPLIED HERE ---
+    // Serialize the signed transaction to a Base64 string for broadcast via GCloud.
+    const serializedTransactionBytes = signedTransaction.serialize();
+    const serializedTransactionBase64 = btoa(String.fromCharCode.apply(null, serializedTransactionBytes));
+    // ------------------------
 
-    // Assuming the GCloud function returns the signature
-    return serializedTransaction;
+    return serializedTransactionBase64;
 
   } catch (error) {
     console.error("Error signing Solana transaction:", error);
@@ -60,4 +63,14 @@ async function signTransactionSolana(base64Transaction) {
     }
     return null;
   }
+}
+
+// Helper to format large numbers to standard display (e.g., 1000000 -> 1,000,000)
+// Not used in this file but kept for consistency
+function formatNumber(number) {
+    const formatted = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 9,
+    }).format(number);
+    return formatted.replace(/\.?0+$/, '');
 }
