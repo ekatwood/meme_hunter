@@ -87,6 +87,7 @@ class _SwapTokenState extends State<SwapToken> {
 
   Future<double?> _getBalanceSolflare(String contractAddress) async {
     try {
+      return 4.0;
       double balance = await getBalanceSolflare(contractAddress);
       return balance;
     } catch (e) {
@@ -185,6 +186,7 @@ class _SwapTokenState extends State<SwapToken> {
 
   /// Helper function to show the transaction confirmation dialog
   void _showConfirmationDialog(String hash, String network) {
+    print('_showConfirmationDialog(String hash, String network)');
     showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -243,19 +245,18 @@ class _SwapTokenState extends State<SwapToken> {
 
           if (solanaQuote.containsKey('swapTransaction')) {
             final String encodedTransaction = solanaQuote['swapTransaction'];
-            print("Received Solana transaction from GCloud function: " + encodedTransaction);
-
+            print("Received Solana transaction from GCloud function");
 
             // 2. Call the JavaScript function `signAndSendTransactionSolana` to interact with the wallet
-            final jsSignedTransaction = await js_util.callMethod(
+            final String signedTransactionBase64 = await js_util.callMethod(
               html.window,
               'signTransactionSolana',
               [encodedTransaction],
             );
 
-            if (jsSignedTransaction != null) {
+            if (signedTransactionBase64.isNotEmpty) {
               print("Sending Solana transaction via gcloud");
-              final signature = await sendTransactionSolana(jsSignedTransaction.toString());
+              final signature = await sendTransactionSolana(signedTransactionBase64);
 
               // Assuming 'signature' is the transaction hash/ID upon success
               if (signature != null) {
@@ -264,7 +265,7 @@ class _SwapTokenState extends State<SwapToken> {
                 _showConfirmationDialog(signature.toString(), 'SOL');
               }
             } else {
-              print("Swap failed: Transaction was not signed or sent.");
+              print("Swap failed: Transaction failed to be processed on Solana network.");
             }
           } else {
             throw Exception('Invalid quote response: missing transaction data.');

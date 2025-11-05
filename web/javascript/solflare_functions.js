@@ -46,15 +46,12 @@ async function signTransactionSolana(base64Transaction) {
 
     // Sign the transaction with Solflare
     const signedTransaction = await window.solflare.signTransaction(transaction);
-    console.log("Solflare signed the transaction.");
 
-    // --- FIX APPLIED HERE ---
     // Serialize the signed transaction to a Base64 string for broadcast via GCloud.
     const serializedTransactionBytes = signedTransaction.serialize();
     const serializedTransactionBase64 = btoa(String.fromCharCode.apply(null, serializedTransactionBytes));
-    // ------------------------
 
-    return serializedTransactionBase64;
+    return serializedTransactionBase64.toString();
 
   } catch (error) {
     console.error("Error signing Solana transaction:", error);
